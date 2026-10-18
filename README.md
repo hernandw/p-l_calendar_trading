@@ -72,7 +72,7 @@ Administra múltiples portafolios de forma independiente (ej. *Charles Schwab Ma
 ### 💰 Control de Capital Real & Flujos Bancarios
 - **Diferenciación entre P&L y Capital:** El crecimiento real de tu portafolio no depende solo de ganar trades, sino de controlar cuánto capital arriesgas, cuánto depositas y cuánto retiras.
 - **Fórmula de Balance en Vivo:**
-  $$\text{Saldo Real de Cuenta} = (\sum \text{Depósitos} - \sum \text{Retiros}) + \text{P\&L Neto Acumulado}$$
+  Saldo Real de Cuenta = (Total Depósitos - Total Retiros) + P&L Neto Acumulado
 - **Edición Completa:** Modifica montos, conceptos o fechas haciendo clic directamente sobre el registro o usando el selector de calendario interactivo.
 
 ### 🧾 Análisis de Comisiones y Descuento Real
