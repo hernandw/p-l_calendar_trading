@@ -120,12 +120,3 @@ El importador reconoce automáticamente dos tipos de reportes exportados de Char
 2. **Transactions History (`Transactions.csv`):**
    - Extrae transferencias bancarias ACH, depósitos y retiros hacia tu cuenta bancaria para mantener el balance al día.
 
----
-
-## 💻 Despliegue Rápido en GitHub Pages
-
-1. Sube los archivos `index.html`, `README.md` y la carpeta `screenshots/` a tu repositorio:
-   ```bash
-   git add .
-   git commit -m "feat: P&L Calendar con multicuenta, capital y comisiones"
-   git push origin main
