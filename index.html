@@ -163,7 +163,7 @@
       </div>
     </header>
 
-    <!-- Controles de Periodo y Pestañas con ICONOS CENTRADOS -->
+    <!-- Controles de Periodo y Pestañas -->
     <div class="flex flex-wrap items-center justify-between gap-2 mt-4 mb-4">
       <div class="flex items-center space-x-2">
         <div class="relative" id="yearSelectorContainer">
@@ -186,7 +186,7 @@
         </div>
       </div>
 
-      <!-- Pestañas -->
+      <!-- Pestañas con ICONOS CENTRADOS -->
       <div class="bg-slate-100 dark:bg-darkSubtle p-0.5 rounded-xl flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-darkBorder overflow-x-auto max-w-full">
         <button id="viewMonthBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5">
           <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
@@ -214,7 +214,7 @@
     <!-- Barra de Subtítulo -->
     <div class="flex items-center justify-between text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase pb-2">
       <span id="sectionSubTitle">Mes Actual</span>
-      <span id="sectionHint" class="text-[11px] font-normal text-slate-400 dark:text-slate-500 lowercase first-letter:uppercase">Haz clic en un día para registrar trades</span>
+      <span id="sectionHint" class="text-[11px] font-normal text-slate-400 dark:text-slate-500 lowercase first-letter:uppercase">Haz clic en un día para registrar o modificar trades</span>
     </div>
 
     <!-- 1. VISTA MENSUAL -->
@@ -433,6 +433,93 @@
     </footer>
   </main>
 
+  <!-- MODAL: DETALLE DEL DÍA (CON EDICIÓN DE TRADES) -->
+  <div id="dayModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder max-h-[90vh] flex flex-col transform transition-all">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
+        <div>
+          <h2 id="modalDateTitle" class="text-lg font-bold text-slate-900 dark:text-white">Operaciones del Día</h2>
+          <div class="flex items-center gap-3 mt-0.5">
+            <span id="modalDailyTotal" class="text-sm font-bold text-slate-500 dark:text-slate-300">P&amp;L Neto: $0.00</span>
+            <span id="modalDailyInvested" class="text-xs font-semibold text-slate-400 dark:text-slate-500">Inversión: $0.00</span>
+          </div>
+        </div>
+        <button id="closeModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Formulario para Agregar o Modificar Trade -->
+      <form id="tradeForm" class="mt-4 bg-slate-50/80 dark:bg-darkSubtle p-3.5 rounded-2xl border border-slate-200/70 dark:border-darkBorder space-y-3 transition">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="plus-circle" id="tradeFormIcon" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+            <span id="tradeFormTitle">Nuevo Trade Manual</span>
+          </span>
+          <button type="button" id="cancelTradeEditBtn" class="hidden text-xs text-rose-500 hover:text-rose-600 lowercase font-bold flex items-center gap-0.5">
+            <i data-lucide="x" class="w-3 h-3"></i> cancelar edición
+          </button>
+        </div>
+
+        <input type="hidden" id="editTradeIndex" value="">
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ticker</label>
+            <input type="text" id="tradeTicker" placeholder="TSLA" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Contratos</label>
+            <input type="number" min="1" id="tradeQty" value="10" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Strike</label>
+            <input type="text" id="tradeStrike" placeholder="340.00" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Tipo</label>
+            <select id="tradeType" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+              <option value="CALL">CALL</option>
+              <option value="PUT" selected>PUT</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Expiración (DTE)</label>
+            <input type="text" id="tradeDteInput" placeholder="0DTE ó 1DTE" value="0DTE" required class="w-full text-xs font-bold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Valor Cto (Compra unit.)</label>
+            <div class="relative flex items-center">
+              <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
+              <input type="number" step="0.01" min="0" id="tradeUnitCost" placeholder="33.66" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Valor Venta (Venta unit.)</label>
+            <div class="relative flex items-center">
+              <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
+              <input type="number" step="0.01" min="0" id="tradeUnitProceeds" placeholder="41.33" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+            </div>
+          </div>
+          <div class="flex items-end">
+            <button type="submit" id="tradeSubmitBtn" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1">
+              <i data-lucide="plus" id="tradeSubmitIcon" class="w-3.5 h-3.5"></i>
+              <span id="tradeSubmitText">Agregar Trade</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Detalle de Operaciones</div>
+        <div id="tradesListContainer" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: TRANSFERENCIA ENTRE CUENTAS -->
   <div id="transferModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
@@ -449,7 +536,7 @@
       <form id="transferForm" class="mt-4 space-y-3 text-xs">
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Cuenta de Origen (Sale)</label>
+            <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Cuenta Origen (Sale)</label>
             <select id="transferFromAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
               <!-- Cuentas -->
             </select>
@@ -479,13 +566,13 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nota / Concepto (Opcional)</label>
+          <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nota / Concepto</label>
           <input type="text" id="transferNote" placeholder="Traspaso de fondos entre brokers" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div class="p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-[11px] text-blue-700 dark:text-blue-300">
           <i data-lucide="info" class="w-3.5 h-3.5 inline mr-1 -mt-0.5"></i>
-          Esta operación registrará un <strong>Retiro</strong> en la cuenta de origen y un <strong>Depósito</strong> en la cuenta de destino en la misma fecha.
+          Esta operación registrará un <strong>Retiro</strong> en la cuenta origen y un <strong>Depósito</strong> en la cuenta destino.
         </div>
 
         <div class="flex items-center justify-end pt-2 gap-2">
@@ -619,15 +706,13 @@
     </div>
   </div>
 
-  <!-- SCRIPT ROBUSTO CON CONTROL DE EXCEPCIONES -->
+  <!-- SCRIPT ROBUSTO -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // Claves de Storage
-      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V6';
-      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V6';
-      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V6';
+      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V7';
+      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V7';
+      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V7';
 
-      // 1. GESTIÓN DE TEMA
       let isDarkMode = localStorage.getItem(THEME_KEY) === 'dark';
       function applyTheme() {
         const htmlEl = document.documentElement;
@@ -659,7 +744,6 @@
         refreshActiveView();
       });
 
-      // 2. PALETA VISUAL POR TICKER
       function getTickerBadgeClass(ticker) {
         const sym = (ticker || '').toUpperCase().trim();
         switch(sym) {
@@ -687,7 +771,6 @@
         }
       }
 
-      // 3. ESTADO GLOBAL
       let accounts = [];
       let activeAccountId = null;
       let currentView = 'Month';
@@ -807,7 +890,7 @@
         safeIcons();
       }
 
-      // 4. BACKUP Y RESTAURAR
+      // BACKUP & RESTORE
       document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
         const backupData = {
           version: '1.0',
@@ -866,7 +949,7 @@
         e.target.value = '';
       });
 
-      // 5. MODAL DE CUENTAS
+      // MODAL DE CUENTAS
       const accountModal = document.getElementById('accountModal');
       const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 
@@ -877,7 +960,11 @@
         document.getElementById('accNumberInput').value = '';
         document.getElementById('accTypeInput').value = 'Margin';
         deleteAccountBtn?.classList.add('hidden');
-        if (accountModal) accountModal.style.display = 'flex';
+        if (accountModal) {
+          accountModal.classList.remove('hidden');
+          accountModal.classList.add('flex');
+          accountModal.style.display = 'flex';
+        }
         safeIcons();
       });
 
@@ -893,12 +980,20 @@
         } else {
           deleteAccountBtn?.classList.add('hidden');
         }
-        if (accountModal) accountModal.style.display = 'flex';
+        if (accountModal) {
+          accountModal.classList.remove('hidden');
+          accountModal.classList.add('flex');
+          accountModal.style.display = 'flex';
+        }
         safeIcons();
       });
 
       function closeAccountModal() {
-        if (accountModal) accountModal.style.display = 'none';
+        if (accountModal) {
+          accountModal.classList.add('hidden');
+          accountModal.classList.remove('flex');
+          accountModal.style.display = 'none';
+        }
       }
       document.getElementById('closeAccountModalBtn')?.addEventListener('click', closeAccountModal);
       document.getElementById('cancelAccountBtn')?.addEventListener('click', closeAccountModal);
@@ -951,7 +1046,7 @@
         }
       });
 
-      // 6. MODAL DE TRANSFERENCIA ENTRE CUENTAS
+      // MODAL TRANSFERENCIA
       const transferModal = document.getElementById('transferModal');
 
       document.getElementById('openTransferModalBtn')?.addEventListener('click', () => {
@@ -985,12 +1080,20 @@
         document.getElementById('transferAmount').value = '';
         document.getElementById('transferNote').value = '';
 
-        if (transferModal) transferModal.style.display = 'flex';
+        if (transferModal) {
+          transferModal.classList.remove('hidden');
+          transferModal.classList.add('flex');
+          transferModal.style.display = 'flex';
+        }
         safeIcons();
       });
 
       function closeTransferModal() {
-        if (transferModal) transferModal.style.display = 'none';
+        if (transferModal) {
+          transferModal.classList.add('hidden');
+          transferModal.classList.remove('flex');
+          transferModal.style.display = 'none';
+        }
       }
       document.getElementById('closeTransferModalBtn')?.addEventListener('click', closeTransferModal);
       document.getElementById('cancelTransferBtn')?.addEventListener('click', closeTransferModal);
@@ -1041,7 +1144,7 @@
         alert(`Transferencia de ${formatExactCurrency(amount)} completada con éxito.`);
       });
 
-      // 7. AUXILIARES
+      // HELPERS
       function getSystemTodayKey() {
         const now = new Date();
         const y = now.getFullYear();
@@ -1119,7 +1222,7 @@
         return String(val).replace(/\$/g, '').trim();
       }
 
-      // 8. RENDERIZADO MENSUAL
+      // VISTA MENSUAL
       function renderMonthView() {
         const grid = document.getElementById('calendarGrid');
         if (!grid) return;
@@ -1129,7 +1232,7 @@
         const subT = document.getElementById('sectionSubTitle');
         const sHint = document.getElementById('sectionHint');
         if (subT) subT.textContent = `Mes: ${monthNames[currentMonth]} ${currentYear}`;
-        if (sHint) sHint.textContent = "Haz clic en un día para registrar trades";
+        if (sHint) sHint.textContent = "Haz clic en un día para registrar o modificar trades";
 
         const firstOfMonth = new Date(currentYear, currentMonth, 1);
         const startDay = new Date(firstOfMonth);
@@ -1226,7 +1329,7 @@
         updateSchwabMetrics();
       }
 
-      // 9. RENDERIZADO ANUAL
+      // VISTA ANUAL
       function renderYearView() {
         const grid = document.getElementById('yearMonthsGrid');
         if (!grid) return;
@@ -1310,7 +1413,7 @@
         updateSchwabMetrics();
       }
 
-      // 10. RENDERIZADO TICKERS
+      // VISTA TICKERS
       function renderTickersView() {
         const grid = document.getElementById('tickersGrid');
         if (!grid) return;
@@ -1436,7 +1539,7 @@
         });
       }
 
-      // 11. RENDERIZADO COMISIONES
+      // VISTA COMISIONES
       function renderCommissionsView() {
         const tbody = document.getElementById('commissionsTableBody');
         if (!tbody) return;
@@ -1528,7 +1631,7 @@
 
       document.getElementById('feePerContractInput')?.addEventListener('input', renderCommissionsView);
 
-      // 12. RENDERIZADO CAPITAL REAL
+      // VISTA CAPITAL REAL
       function renderCapitalView() {
         const subT = document.getElementById('sectionSubTitle');
         const sHint = document.getElementById('sectionHint');
@@ -1646,7 +1749,7 @@
 
       window.quickEditAmount = function(id) {
         const active = getActiveAccount();
-        const flow = active.capitalFlows.find(f => f.id === id);
+        const flow = (active.capitalFlows || []).find(f => f.id === id);
         if (!flow) return;
         const nuevoMonto = prompt(`Ingresa el nuevo monto para este ${flow.type === 'deposit' ? 'depósito' : 'retiro'}:`, flow.amount);
         if (nuevoMonto !== null && !isNaN(parseFloat(nuevoMonto)) && parseFloat(nuevoMonto) > 0) {
@@ -1658,7 +1761,7 @@
 
       window.editCapitalFlow = function(id) {
         const active = getActiveAccount();
-        const flow = active.capitalFlows.find(f => f.id === id);
+        const flow = (active.capitalFlows || []).find(f => f.id === id);
         if (!flow) return;
 
         document.getElementById('capitalEditId').value = flow.id;
@@ -1667,7 +1770,7 @@
         document.getElementById('capitalFlowAmount').value = flow.amount;
         document.getElementById('capitalFlowNote').value = flow.note || '';
 
-        document.getElementById('capitalFormActionLabel').textContent = 'Editar Movimiento de Capital (Modifica Monto o Fecha)';
+        document.getElementById('capitalFormActionLabel').textContent = 'Editar Movimiento de Capital';
         document.getElementById('capitalSubmitText').textContent = 'Guardar Cambios';
         const submitIcon = document.getElementById('capitalSubmitIcon');
         if (submitIcon) submitIcon.setAttribute('data-lucide', 'check');
@@ -1748,7 +1851,7 @@
         renderCapitalView();
       };
 
-      // 13. DETALLE DE TICKER
+      // DETALLE DE TICKER
       const tickerModal = document.getElementById('tickerModal');
       function openTickerDetailsModal(data) {
         document.getElementById('tickerModalTitle').textContent = `Trades de ${data.ticker} (${currentYear})`;
@@ -1780,15 +1883,23 @@
           listContainer.appendChild(item);
         });
 
-        if (tickerModal) tickerModal.style.display = 'flex';
+        if (tickerModal) {
+          tickerModal.classList.remove('hidden');
+          tickerModal.classList.add('flex');
+          tickerModal.style.display = 'flex';
+        }
         safeIcons();
       }
 
       document.getElementById('closeTickerModalBtn')?.addEventListener('click', () => {
-        if (tickerModal) tickerModal.style.display = 'none';
+        if (tickerModal) {
+          tickerModal.classList.add('hidden');
+          tickerModal.classList.remove('flex');
+          tickerModal.style.display = 'none';
+        }
       });
 
-      // 14. MÉTRICAS SCHWAB
+      // MÉTRICAS SCHWAB
       function updateSchwabMetrics() {
         const isMonth = (currentView === 'Month');
         const prefix = isMonth ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}` : `${currentYear}`;
@@ -1851,7 +1962,7 @@
         updateTotalTradesHeader();
       }
 
-      // 15. CONMUTADOR DE PESTAÑAS (CORREGIDO CON style.display DIRECTO)
+      // NAVEGACIÓN DE PESTAÑAS (CONTROL COMPLETO)
       function switchView(view) {
         currentView = view;
         const monthBtn = document.getElementById('viewMonthBtn');
@@ -1876,42 +1987,41 @@
         if (commBtn) commBtn.className = defaultBtn;
         if (capBtn) capBtn.className = defaultBtn;
 
-        if (monthSection) monthSection.style.display = 'none';
-        if (yearSection) yearSection.style.display = 'none';
-        if (tickersSection) tickersSection.style.display = 'none';
-        if (commSection) commSection.style.display = 'none';
-        if (capSection) capSection.style.display = 'none';
+        if (monthSection) { monthSection.classList.add('hidden'); monthSection.style.display = 'none'; }
+        if (yearSection) { yearSection.classList.add('hidden'); yearSection.style.display = 'none'; }
+        if (tickersSection) { tickersSection.classList.add('hidden'); tickersSection.style.display = 'none'; }
+        if (commSection) { commSection.classList.add('hidden'); commSection.style.display = 'none'; }
+        if (capSection) { capSection.classList.add('hidden'); capSection.style.display = 'none'; }
 
         if (view === 'Month') {
           if (monthBtn) monthBtn.className = activeBtn;
-          if (monthSection) monthSection.style.display = 'block';
+          if (monthSection) { monthSection.classList.remove('hidden'); monthSection.style.display = 'block'; }
           if (monthNav) monthNav.style.display = 'flex';
           renderMonthView();
         } else if (view === 'Year') {
           if (yearBtn) yearBtn.className = activeBtn;
-          if (yearSection) yearSection.style.display = 'block';
+          if (yearSection) { yearSection.classList.remove('hidden'); yearSection.style.display = 'block'; }
           if (monthNav) monthNav.style.display = 'flex';
           renderYearView();
         } else if (view === 'Tickers') {
           if (tickersBtn) tickersBtn.className = activeBtn;
-          if (tickersSection) tickersSection.style.display = 'block';
+          if (tickersSection) { tickersSection.classList.remove('hidden'); tickersSection.style.display = 'block'; }
           if (monthNav) monthNav.style.display = 'none';
           renderTickersView();
         } else if (view === 'Commissions') {
           if (commBtn) commBtn.className = activeBtn;
-          if (commSection) commSection.style.display = 'block';
+          if (commSection) { commSection.classList.remove('hidden'); commSection.style.display = 'block'; }
           if (monthNav) monthNav.style.display = 'none';
           renderCommissionsView();
         } else if (view === 'Capital') {
           if (capBtn) capBtn.className = activeBtn;
-          if (capSection) capSection.style.display = 'block';
+          if (capSection) { capSection.classList.remove('hidden'); capSection.style.display = 'block'; }
           if (monthNav) monthNav.style.display = 'none';
           renderCapitalView();
         }
         safeIcons();
       }
 
-      // Eventos de Pestañas
       document.getElementById('viewMonthBtn')?.addEventListener('click', () => switchView('Month'));
       document.getElementById('viewYearBtn')?.addEventListener('click', () => switchView('Year'));
       document.getElementById('viewTickersBtn')?.addEventListener('click', () => switchView('Tickers'));
@@ -1921,34 +2031,104 @@
       document.getElementById('tickerSearchInput')?.addEventListener('input', renderTickersView);
       document.getElementById('tickerSortSelect')?.addEventListener('change', renderTickersView);
 
-      // 16. MODAL DE INFORMACIÓN
       const infoModal = document.getElementById('infoModal');
       document.getElementById('helpBtn')?.addEventListener('click', () => {
-        if (infoModal) infoModal.style.display = 'flex';
+        if (infoModal) {
+          infoModal.classList.remove('hidden');
+          infoModal.classList.add('flex');
+          infoModal.style.display = 'flex';
+        }
         safeIcons();
       });
       document.getElementById('closeInfoModalBtn')?.addEventListener('click', () => {
-        if (infoModal) infoModal.style.display = 'none';
+        if (infoModal) {
+          infoModal.classList.add('hidden');
+          infoModal.classList.remove('flex');
+          infoModal.style.display = 'none';
+        }
       });
 
-      // 17. MODAL DE DÍA
+      // MODAL DÍA (APERTURA, EDICIÓN Y CIERRE GARANTIZADOS)
       const dayModal = document.getElementById('dayModal');
+
       function openDayModal(dateKey, dayNumber, dateObj) {
         selectedDateKey = dateKey;
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        document.getElementById('modalDateTitle').textContent = dateObj.toLocaleDateString('es-ES', options);
+        const dTitle = document.getElementById('modalDateTitle');
+        if (dTitle) dTitle.textContent = dateObj.toLocaleDateString('es-ES', options);
         
+        resetTradeForm();
+        renderDayTradesList();
+
+        if (dayModal) {
+          dayModal.classList.remove('hidden');
+          dayModal.classList.add('flex');
+          dayModal.style.display = 'flex';
+        }
+        safeIcons();
+      }
+
+      function resetTradeForm() {
+        document.getElementById('editTradeIndex').value = '';
         document.getElementById('tradeTicker').value = '';
         document.getElementById('tradeQty').value = '10';
         document.getElementById('tradeStrike').value = '';
+        document.getElementById('tradeType').value = 'PUT';
         document.getElementById('tradeDteInput').value = '0DTE';
         document.getElementById('tradeUnitCost').value = '';
         document.getElementById('tradeUnitProceeds').value = '';
 
-        renderDayTradesList();
-        if (dayModal) dayModal.style.display = 'flex';
+        document.getElementById('tradeFormTitle').textContent = 'Nuevo Trade Manual';
+        document.getElementById('tradeSubmitText').textContent = 'Agregar Trade';
+        const submitIcon = document.getElementById('tradeSubmitIcon');
+        if (submitIcon) submitIcon.setAttribute('data-lucide', 'plus');
+        const formIcon = document.getElementById('tradeFormIcon');
+        if (formIcon) formIcon.setAttribute('data-lucide', 'plus-circle');
+        document.getElementById('cancelTradeEditBtn')?.classList.add('hidden');
         safeIcons();
       }
+
+      document.getElementById('cancelTradeEditBtn')?.addEventListener('click', resetTradeForm);
+
+      window.editTrade = function(index) {
+        if (!selectedDateKey) return;
+        const active = getActiveAccount();
+        const trades = (active.appData && active.appData[selectedDateKey]) || [];
+        const trade = trades[index];
+        if (!trade) return;
+
+        const qty = trade.qty || 1;
+        const costBasis = Number(trade.costBasis || 0);
+        const proceeds = Number(trade.proceeds || (costBasis + Number(trade.pnl || 0)));
+
+        const unitCost = qty > 0 ? (costBasis / qty).toFixed(2) : '0.00';
+        const unitProceeds = qty > 0 ? (proceeds / qty).toFixed(2) : '0.00';
+
+        document.getElementById('editTradeIndex').value = String(index);
+        document.getElementById('tradeTicker').value = trade.ticker || '';
+        document.getElementById('tradeQty').value = qty;
+        document.getElementById('tradeStrike').value = cleanStrike(trade.strike);
+        document.getElementById('tradeType').value = trade.type || 'CALL';
+        document.getElementById('tradeDteInput').value = trade.dte || '0DTE';
+        document.getElementById('tradeUnitCost').value = unitCost;
+        document.getElementById('tradeUnitProceeds').value = unitProceeds;
+
+        document.getElementById('tradeFormTitle').textContent = 'Editar Operación';
+        document.getElementById('tradeSubmitText').textContent = 'Guardar Cambios';
+        const submitIcon = document.getElementById('tradeSubmitIcon');
+        if (submitIcon) submitIcon.setAttribute('data-lucide', 'check');
+        const formIcon = document.getElementById('tradeFormIcon');
+        if (formIcon) formIcon.setAttribute('data-lucide', 'edit-3');
+        document.getElementById('cancelTradeEditBtn')?.classList.remove('hidden');
+
+        const formEl = document.getElementById('tradeForm');
+        formEl?.classList.add('ring-2', 'ring-blue-500');
+        setTimeout(() => formEl?.classList.remove('ring-2', 'ring-blue-500'), 1200);
+
+        const tickerInput = document.getElementById('tradeTicker');
+        tickerInput?.focus();
+        safeIcons();
+      };
 
       function renderDayTradesList() {
         const container = document.getElementById('tradesListContainer');
@@ -2010,7 +2190,7 @@
           const item = document.createElement('div');
           item.className = `p-3 rounded-2xl border flex items-center justify-between transition ${isWin ? 'bg-pnlGreen-bg/60 dark:bg-pnlGreen-darkBg border-pnlGreen-border dark:border-pnlGreen-darkBorder' : 'bg-pnlRed-bg/60 dark:bg-pnlRed-darkBg border-pnlRed-border dark:border-pnlRed-darkBorder'}`;
           item.innerHTML = `
-            <div class="flex flex-col space-y-1.5">
+            <div class="flex flex-col space-y-1.5 cursor-pointer" onclick="editTrade(${idx})">
               <div class="flex items-center space-x-1.5 flex-wrap">
                 <span class="px-1.5 py-0.5 bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-black rounded-md">${qty} ${qty === 1 ? 'cto' : 'ctos'}</span>
                 <span class="text-xs font-black px-2 py-0.5 rounded-lg ${tickerBadgeStyle}">${trade.ticker || 'TRADE'}</span>
@@ -2036,12 +2216,15 @@
               </div>
             </div>
 
-            <div class="flex items-center space-x-3 text-right">
-              <div>
+            <div class="flex items-center space-x-1.5 text-right">
+              <div class="mr-1">
                 <div class="text-xs font-black ${isWin ? 'text-pnlGreen-text dark:text-pnlGreen-darkText' : 'text-pnlRed-text dark:text-pnlRed-darkText'}">${formatExactCurrency(pnl)}</div>
                 <div class="text-[10px] font-bold ${isWin ? 'text-pnlGreen-sub dark:text-emerald-400' : 'text-pnlRed-sub dark:text-rose-400'}">${isWin ? '+' : ''}${roi}%</div>
               </div>
-              <button onclick="removeTrade(${idx})" type="button" class="text-slate-400 hover:text-rose-600 transition p-1" title="Eliminar trade">
+              <button onclick="editTrade(${idx})" type="button" class="p-1.5 text-slate-400 hover:text-blue-500 transition rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Editar este trade">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="removeTrade(${idx})" type="button" class="p-1.5 text-slate-400 hover:text-rose-600 transition rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Eliminar trade">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
               </button>
             </div>
@@ -2071,6 +2254,7 @@
         const active = getActiveAccount();
         if (!active.appData) active.appData = {};
 
+        const editIdxStr = document.getElementById('editTradeIndex').value;
         const ticker = document.getElementById('tradeTicker').value.toUpperCase().trim();
         const qty = parseInt(document.getElementById('tradeQty').value, 10) || 1;
         const strike = cleanStrike(document.getElementById('tradeStrike').value.trim());
@@ -2087,7 +2271,7 @@
           active.appData[selectedDateKey] = [];
         }
 
-        active.appData[selectedDateKey].push({
+        const tradeObj = {
           ticker,
           qty,
           strike,
@@ -2096,27 +2280,42 @@
           costBasis,
           proceeds,
           pnl
-        });
+        };
+
+        if (editIdxStr !== '' && !isNaN(parseInt(editIdxStr, 10))) {
+          // Modificar trade existente
+          const idx = parseInt(editIdxStr, 10);
+          if (active.appData[selectedDateKey][idx]) {
+            active.appData[selectedDateKey][idx] = tradeObj;
+          }
+        } else {
+          // Agregar nuevo trade
+          active.appData[selectedDateKey].push(tradeObj);
+        }
+
         saveAccountsData();
-
-        document.getElementById('tradeTicker').value = '';
-        document.getElementById('tradeStrike').value = '';
-        document.getElementById('tradeUnitCost').value = '';
-        document.getElementById('tradeUnitProceeds').value = '';
-
+        resetTradeForm();
         renderDayTradesList();
         refreshActiveView();
       });
 
       document.getElementById('closeModalBtn')?.addEventListener('click', () => {
-        if (dayModal) dayModal.style.display = 'none';
+        if (dayModal) {
+          dayModal.classList.add('hidden');
+          dayModal.classList.remove('flex');
+          dayModal.style.display = 'none';
+        }
       });
 
-      // 18. MODAL CSV (CORREGIDO)
+      // MODAL CSV
       const csvModal = document.getElementById('csvModal');
 
       document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
-        if (csvModal) csvModal.style.display = 'flex';
+        if (csvModal) {
+          csvModal.classList.remove('hidden');
+          csvModal.classList.add('flex');
+          csvModal.style.display = 'flex';
+        }
         parsedCsvTrades = null;
         parsedCsvFlows = null;
         const processBtn = document.getElementById('processCsvBtn');
@@ -2127,12 +2326,16 @@
         if (mSel) mSel.classList.add('hidden');
         const active = getActiveAccount();
         const tLabel = document.getElementById('csvTargetAccountLabel');
-        if (tLabel) tLabel.textContent = `${active.broker} (${active.number})`;
+        if (tLabel) tLabel.textContent = `${active.broker || 'Broker'} (${active.number || '-'})`;
         safeIcons();
       });
 
       function closeCsvModal() {
-        if (csvModal) csvModal.style.display = 'none';
+        if (csvModal) {
+          csvModal.classList.add('hidden');
+          csvModal.classList.remove('flex');
+          csvModal.style.display = 'none';
+        }
       }
       document.getElementById('closeCsvModalBtn')?.addEventListener('click', closeCsvModal);
       document.getElementById('cancelCsvBtn')?.addEventListener('click', closeCsvModal);
@@ -2201,7 +2404,6 @@
 
             const headers = rows[headerRowIndex].map(h => String(h).trim());
 
-            // CASO A: TRANSACCIONES BANCARIAS
             if (isTransactionsFile) {
               csvFileType = 'transactions';
               const dateIdx = headers.findIndex(h => /date|fecha/i.test(h));
@@ -2263,7 +2465,7 @@
               return;
             }
 
-            // CASO B: TRADES (GAIN/LOSS)
+            // TRADES (GAIN/LOSS)
             csvFileType = 'trades';
             const symbolIdx = headers.findIndex(h => /symbol|símbolo/i.test(h));
             const closedDateIdx = headers.findIndex(h => /closed\s*date|fecha\s*de\s*cierre/i.test(h));
@@ -2445,7 +2647,7 @@
         }
       });
 
-      // 19. NAVEGACIÓN Y ACCIONES GENERALES
+      // EVENTOS GENERALES
       document.getElementById('prevPeriodBtn')?.addEventListener('click', () => {
         if (currentView === 'Month') {
           currentMonth--;
@@ -2505,7 +2707,7 @@
         }
       });
 
-      // 20. INICIALIZACIÓN SEGURA
+      // INICIALIZACIÓN
       applyTheme();
       loadAccountsData();
       const pYear = document.getElementById('periodYearSelect');
