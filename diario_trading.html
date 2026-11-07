@@ -186,7 +186,7 @@
         </div>
       </div>
 
-      <!-- Pestañas con ICONOS CENTRADOS -->
+      <!-- Pestañas -->
       <div class="bg-slate-100 dark:bg-darkSubtle p-0.5 rounded-xl flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-darkBorder overflow-x-auto max-w-full">
         <button id="viewMonthBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5">
           <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
@@ -671,7 +671,34 @@
     </div>
   </div>
 
-  <!-- MODAL: IMPORTADOR CSV FLEXIBLE -->
+  <!-- MODAL: INFORMACIÓN -->
+  <div id="infoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col items-center text-center">
+      <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400">
+        <i data-lucide="layers" class="w-7 h-7 stroke-[1.8]"></i>
+      </div>
+      <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight mb-4">Soporte Multicuenta &amp; Capital</h3>
+      <div class="text-left text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed mb-6">
+        <div>
+          <span class="font-bold text-slate-800 dark:text-white">&bull; Cuentas Separadas &amp; Transferencias:</span>
+          <span class="text-slate-500 dark:text-slate-400"> Administra cuentas independientes (Charles Schwab, Interactive Brokers, Webull). Si tienes 2 o más cuentas, puedes transferir saldo entre ellas con validación estricta de fondos.</span>
+        </div>
+        <div>
+          <span class="font-bold text-slate-800 dark:text-white">&bull; Control de Sobregiros:</span>
+          <span class="text-slate-500 dark:text-slate-400"> El sistema bloquea transferencias o retiros que excedan el saldo disponible en tu cuenta.</span>
+        </div>
+        <div>
+          <span class="font-bold text-slate-800 dark:text-white">&bull; Importador Inteligente CSV:</span>
+          <span class="text-slate-500 dark:text-slate-400"> Evita duplicar operaciones ya existentes y permite sustituir de forma segura solo el período del archivo.</span>
+        </div>
+      </div>
+      <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-2xl text-xs font-bold tracking-wide transition active:scale-95 shadow-md shadow-slate-900/10">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORTADOR CSV FLEXIBLE (SCHWAB & IBKR) -->
   <div id="csvModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
@@ -685,7 +712,7 @@
       </div>
 
       <div class="mt-4 space-y-4 text-xs text-slate-600 dark:text-slate-300">
-        <p>Sube tu reporte de <strong>Gain/Loss</strong> o <strong>Transactions</strong>. Los datos se cargarán en la cuenta activa: <strong id="csvTargetAccountLabel" class="text-blue-500">...</strong></p>
+        <p>Sube tu reporte de <strong>Charles Schwab</strong> o <strong>Interactive Brokers</strong>. Se cargará en la cuenta: <strong id="csvTargetAccountLabel" class="text-blue-500">...</strong></p>
         
         <label id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50/60 dark:bg-darkSubtle hover:bg-blue-50/40 dark:hover:bg-slate-900/40 transition">
           <i data-lucide="upload" class="w-8 h-8 text-slate-400 dark:text-slate-500 mb-2"></i>
@@ -707,11 +734,15 @@
           <div class="space-y-1.5">
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
               <input type="radio" name="csvImportMode" value="merge" checked class="text-blue-600 focus:ring-blue-500">
-              <span><strong>Combinar con existentes</strong> (Mantiene lo ya cargado sin sobreescribir)</span>
+              <span><strong>Combinar (Solo nuevos)</strong> - Omite transacciones y trades idénticos ya existentes.</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
+              <input type="radio" name="csvImportMode" value="replace_range" class="text-amber-600 focus:ring-amber-500">
+              <span class="text-amber-700 dark:text-amber-300"><strong>Sustituir período del archivo</strong> - Reemplaza los días que vienen en este CSV y conserva los demás.</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
               <input type="radio" name="csvImportMode" value="replace" class="text-rose-600 focus:ring-rose-500">
-              <span class="text-rose-600 dark:text-rose-400"><strong>Reemplazar cuenta activa</strong> (Borra solo los datos de esta cuenta)</span>
+              <span class="text-rose-600 dark:text-rose-400"><strong>Reemplazar cuenta completa</strong> - Borra todo el historial previo de esta cuenta.</span>
             </label>
           </div>
         </div>
@@ -724,12 +755,12 @@
     </div>
   </div>
 
-  <!-- SCRIPT DEFINITIVO ROBUSTO Y BLINDADO -->
+  <!-- SCRIPT DEFINITIVO ROBUSTO Y BLINDADO CON SOPORTE IBKR -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V14';
-      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V14';
-      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V14';
+      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V17';
+      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V17';
+      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V17';
 
       // 1. TEMA DARK / LIGHT
       let isDarkMode = localStorage.getItem(THEME_KEY) === 'dark';
@@ -802,6 +833,8 @@
       let parsedCsvTrades = null;
       let parsedCsvFlows = null;
       let csvFileType = 'trades';
+      let csvMinDate = null;
+      let csvMaxDate = null;
 
       function getDefaultAccounts() {
         return [
@@ -871,12 +904,21 @@
       function calculateExactDte(openedDateStr, expDateStr) {
         if (!openedDateStr || !expDateStr) return '0DTE';
         try {
-          const pOpen = openedDateStr.split('/');
-          const pExp = expDateStr.split('/');
-          if (pOpen.length !== 3 || pExp.length !== 3) return '0DTE';
+          const pOpen = openedDateStr.includes('/') ? openedDateStr.split('/') : openedDateStr.split('-');
+          const pExp = expDateStr.includes('/') ? expDateStr.split('/') : expDateStr.split('-');
+          
+          let dOpen, dExp;
+          if (openedDateStr.includes('/')) {
+            dOpen = new Date(parseInt(pOpen[2], 10), parseInt(pOpen[0], 10) - 1, parseInt(pOpen[1], 10));
+          } else {
+            dOpen = new Date(parseInt(pOpen[0], 10), parseInt(pOpen[1], 10) - 1, parseInt(pOpen[2], 10));
+          }
 
-          const dOpen = new Date(parseInt(pOpen[2], 10), parseInt(pOpen[0], 10) - 1, parseInt(pOpen[1], 10));
-          const dExp = new Date(parseInt(pExp[2], 10), parseInt(pExp[0], 10) - 1, parseInt(pExp[1], 10));
+          if (expDateStr.includes('/')) {
+            dExp = new Date(parseInt(pExp[2], 10), parseInt(pExp[0], 10) - 1, parseInt(pExp[1], 10));
+          } else {
+            dExp = new Date(parseInt(pExp[0], 10), parseInt(pExp[1], 10) - 1, parseInt(pExp[2], 10));
+          }
 
           const diffTime = dExp.getTime() - dOpen.getTime();
           const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
@@ -2418,17 +2460,29 @@
 
       // 16. MODAL DE INFORMACIÓN
       const infoModal = document.getElementById('infoModal');
+
       document.getElementById('helpBtn')?.addEventListener('click', () => {
         if (infoModal) {
           infoModal.classList.remove('hidden');
           infoModal.classList.add('flex');
+          infoModal.style.display = 'flex';
         }
         safeIcons();
       });
+
       document.getElementById('closeInfoModalBtn')?.addEventListener('click', () => {
         if (infoModal) {
           infoModal.classList.add('hidden');
           infoModal.classList.remove('flex');
+          infoModal.style.display = 'none';
+        }
+      });
+
+      infoModal?.addEventListener('click', (e) => {
+        if (e.target === infoModal) {
+          infoModal.classList.add('hidden');
+          infoModal.classList.remove('flex');
+          infoModal.style.display = 'none';
         }
       });
 
@@ -2686,7 +2740,7 @@
         }
       });
 
-      // 18. MODAL CSV
+      // 18. MODAL CSV (COMPATIBLE CON CHARLES SCHWAB E INTERACTIVE BROKERS)
       const csvModal = document.getElementById('csvModal');
 
       document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
@@ -2696,6 +2750,8 @@
         }
         parsedCsvTrades = null;
         parsedCsvFlows = null;
+        csvMinDate = null;
+        csvMaxDate = null;
         const processBtn = document.getElementById('processCsvBtn');
         const pBox = document.getElementById('csvPreviewBox');
         const mSel = document.getElementById('csvModeSelection');
@@ -2740,6 +2796,30 @@
         }
       });
 
+      function parseFlexibleDate(dateStr) {
+        if (!dateStr) return null;
+        const clean = String(dateStr).trim().split(' ')[0].split('T')[0];
+        if (clean.includes('/')) {
+          const parts = clean.split('/');
+          if (parts.length === 3) {
+            const mm = parts[0].padStart(2, '0');
+            const dd = parts[1].padStart(2, '0');
+            const yyyy = parts[2].length === 2 ? '20' + parts[2] : parts[2];
+            return `${yyyy}-${mm}-${dd}`;
+          }
+        }
+        if (clean.includes('-')) {
+          const parts = clean.split('-');
+          if (parts.length === 3) {
+            return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+          }
+        }
+        if (/^\d{8}$/.test(clean)) {
+          return `${clean.substring(0, 4)}-${clean.substring(4, 6)}-${clean.substring(6, 8)}`;
+        }
+        return null;
+      }
+
       function handleCsvFile(file) {
         document.getElementById('csvFileName').textContent = file.name;
 
@@ -2755,40 +2835,52 @@
 
             let headerRowIndex = -1;
             let isTransactionsFile = false;
+            let brokerDetected = 'Schwab';
 
-            for (let i = 0; i < Math.min(rows.length, 25); i++) {
+            for (let i = 0; i < Math.min(rows.length, 30); i++) {
               const rowStr = rows[i].map(c => String(c).trim().toLowerCase());
               
-              if (rowStr.some(c => c.includes('action') || c.includes('acción')) && 
-                  rowStr.some(c => c.includes('amount') || c.includes('monto') || c.includes('importe'))) {
+              const hasAction = rowStr.some(c => c.includes('action') || c.includes('acción') || c.includes('type') || c.includes('tipo'));
+              const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto') || c.includes('importe') || c.includes('netamount'));
+              const isIbkrCash = rowStr.some(c => c === 'cashtransaction' || c === 'deposits/withdrawals' || c.includes('cash transactions'));
+
+              if ((hasAction && hasAmount) || isIbkrCash) {
                 headerRowIndex = i;
                 isTransactionsFile = true;
+                if (rowStr.some(c => c.includes('ibkr') || c.includes('settledate') || c.includes('fxratetobase'))) brokerDetected = 'IBKR';
                 break;
               }
               
-              if (rowStr.some(c => c.includes('symbol') || c.includes('símbolo')) && 
-                  rowStr.some(c => c.includes('closed date') || c.includes('fecha de cierre') || c.includes('gain/loss') || c.includes('ganancia'))) {
+              const hasSymbol = rowStr.some(c => c.includes('symbol') || c.includes('símbolo') || c.includes('description') || c.includes('instrument'));
+              const hasPnl = rowStr.some(c => c.includes('gain/loss') || c.includes('fifopnlrealized') || c.includes('realized p/l') || c.includes('realizedpnl') || c.includes('p&l'));
+
+              if (hasSymbol && hasPnl) {
                 headerRowIndex = i;
                 isTransactionsFile = false;
+                if (rowStr.some(c => c.includes('fifopnlrealized') || c.includes('ibcommission') || c.includes('trades'))) brokerDetected = 'IBKR';
                 break;
               }
             }
 
             if (headerRowIndex === -1) {
-              alert("No se encontró el formato esperado en el archivo CSV.");
+              alert("No se encontró el formato de Charles Schwab ni de Interactive Brokers en el archivo CSV.");
               return;
             }
 
             const headers = rows[headerRowIndex].map(h => String(h).trim());
 
+            // CASO A: HISTORIAL DE EFECTIVO (DEPÓSITOS Y RETIROS)
             if (isTransactionsFile) {
               csvFileType = 'transactions';
-              const dateIdx = headers.findIndex(h => /date|fecha/i.test(h));
-              const actionIdx = headers.findIndex(h => /action|acción/i.test(h));
-              const descIdx = headers.findIndex(h => /description|descripción/i.test(h));
-              const amountIdx = headers.findIndex(h => /amount|monto|importe/i.test(h));
+              const dateIdx = headers.findIndex(h => /date|fecha|settledate/i.test(h));
+              const actionIdx = headers.findIndex(h => /action|acción|type|tipo/i.test(h));
+              const descIdx = headers.findIndex(h => /description|descripción|comment/i.test(h));
+              const amountIdx = headers.findIndex(h => /amount|monto|importe|netamount/i.test(h));
 
               const flows = [];
+              let minD = null;
+              let maxD = null;
+
               for (let r = headerRowIndex + 1; r < rows.length; r++) {
                 const row = rows[r];
                 if (!row || row.length <= Math.max(dateIdx, amountIdx)) continue;
@@ -2811,31 +2903,31 @@
                                       /deposit|transfer\s*in|wire\s*in|credit|received|ingreso|depósito/i.test(descRaw);
 
                 let isWithdrawal = isExplicitNegative || (isWithdrawalText && !isDepositText);
+                const formattedDate = parseFlexibleDate(dateRaw);
+                if (!formattedDate) continue;
 
-                const dateParts = dateRaw.split('/');
-                let dateKey = dateRaw;
-                if (dateParts.length === 3) {
-                  dateKey = `${dateParts[2]}-${dateParts[0].padStart(2, '0')}-${dateParts[1].padStart(2, '0')}`;
-                }
-
-                const isCapitalAction = isWithdrawalText || isDepositText || /transfer|wire|moneylink|funds|ach/i.test(actionRaw) || /transfer|wire|moneylink|funds|ach/i.test(descRaw);
+                const isCapitalAction = isWithdrawalText || isDepositText || /transfer|wire|moneylink|funds|ach|deposit/i.test(actionRaw) || /transfer|wire|moneylink|funds|ach|deposit/i.test(descRaw);
 
                 if (isCapitalAction) {
                   flows.push({
                     id: Date.now() + Math.random(),
                     type: isWithdrawal ? 'withdrawal' : 'deposit',
                     category: 'external',
-                    date: dateKey,
+                    date: formattedDate,
                     amount: Math.abs(cleanAmount),
                     note: `${actionRaw} ${descRaw ? '- ' + descRaw : ''}`.substring(0, 45)
                   });
+                  if (!minD || formattedDate < minD) minD = formattedDate;
+                  if (!maxD || formattedDate > maxD) maxD = formattedDate;
                 }
               }
 
               parsedCsvFlows = flows;
               parsedCsvTrades = null;
-              document.getElementById('csvTradesFound').textContent = `${flows.length} movimientos de capital`;
-              document.getElementById('csvSummaryText').textContent = `Reporte de Transacciones detectado correctamente.`;
+              csvMinDate = minD;
+              csvMaxDate = maxD;
+              document.getElementById('csvTradesFound').textContent = `${flows.length} movimientos (${brokerDetected})`;
+              document.getElementById('csvSummaryText').textContent = `Período: ${minD || '-'} al ${maxD || '-'} | Reporte de Transacciones detectado.`;
               document.getElementById('csvPreviewBox')?.classList.remove('hidden');
               document.getElementById('csvModeSelection')?.classList.remove('hidden');
               const pBtn = document.getElementById('processCsvBtn');
@@ -2843,15 +2935,16 @@
               return;
             }
 
-            // TRADES (GAIN/LOSS)
+            // CASO B: TRADES (GAIN/LOSS SCHWAB O TRADES IBKR)
             csvFileType = 'trades';
-            const symbolIdx = headers.findIndex(h => /symbol|símbolo/i.test(h));
-            const closedDateIdx = headers.findIndex(h => /closed\s*date|fecha\s*de\s*cierre/i.test(h));
-            const openedDateIdx = headers.findIndex(h => /opened\s*date|fecha\s*de\s*apertura/i.test(h));
-            const qtyIdx = headers.findIndex(h => /quantity|cantidad/i.test(h));
-            const costBasisIdx = headers.findIndex(h => /cost\s*basis|base\s*del\s*costo/i.test(h));
+            const symbolIdx = headers.findIndex(h => /symbol|símbolo|description|instrument/i.test(h));
+            const closedDateIdx = headers.findIndex(h => /closed\s*date|fecha\s*de\s*cierre|tradedate|date\/time|datetime|date/i.test(h));
+            const openedDateIdx = headers.findIndex(h => /opened\s*date|fecha\s*de\s*apertura|opendate/i.test(h));
+            const qtyIdx = headers.findIndex(h => /quantity|cantidad|qty/i.test(h));
+            const costBasisIdx = headers.findIndex(h => /cost\s*basis|base\s*del\s*costo|cost|basis/i.test(h));
             const proceedsIdx = headers.findIndex(h => /proceeds|ingresos/i.test(h));
-            const gainLossIdx = headers.findIndex(h => /gain\/loss|ganancia\/pérdida/i.test(h));
+            const gainLossIdx = headers.findIndex(h => /gain\/loss|ganancia\/pérdida|fifopnlrealized|realized\s*p\/l|realizedpnl/i.test(h));
+            const commIdx = headers.findIndex(h => /ibcommission|commission|comisión/i.test(h));
             
             const washSaleIdx = headers.findIndex(h => /wash\s*sale/i.test(h));
             const disallowedIdx = headers.findIndex(h => /disallowed\s*loss/i.test(h));
@@ -2859,7 +2952,7 @@
             const txCostBasisIdx = headers.findIndex(h => /transaction\s*cost\s*basis/i.test(h));
 
             if (symbolIdx === -1 || closedDateIdx === -1 || gainLossIdx === -1) {
-              alert("Columnas esenciales no encontradas en el archivo CSV.");
+              alert("Columnas esenciales de operaciones no encontradas en el archivo CSV.");
               return;
             }
 
@@ -2883,15 +2976,23 @@
               const rawPnl = parseFloat(gainLossRaw.replace(/\$/g, '').replace(/,/g, '').trim());
               if (isNaN(rawPnl)) continue;
 
-              const qty = (qtyIdx !== -1 && row[qtyIdx]) ? (parseInt(String(row[qtyIdx]).trim(), 10) || 1) : 1;
-              let costBasis = (costBasisIdx !== -1 && row[costBasisIdx]) ? parseFloat(String(row[costBasisIdx]).replace(/\$/g, '').replace(/,/g, '').trim()) || 0 : 0;
-              let proceeds = (proceedsIdx !== -1 && row[proceedsIdx]) ? parseFloat(String(row[proceedsIdx]).replace(/\$/g, '').replace(/,/g, '').trim()) || 0 : (costBasis + rawPnl);
+              const qty = (qtyIdx !== -1 && row[qtyIdx]) ? Math.abs(parseInt(String(row[qtyIdx]).trim(), 10) || 1) : 1;
+              let costBasis = (costBasisIdx !== -1 && row[costBasisIdx]) ? Math.abs(parseFloat(String(row[costBasisIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
+              let proceeds = (proceedsIdx !== -1 && row[proceedsIdx]) ? Math.abs(parseFloat(String(row[proceedsIdx]).replace(/[\$\,]/g, '').trim()) || 0) : (costBasis + rawPnl);
 
               let operationalPnl = rawPnl;
+
+              if (commIdx !== -1 && row[commIdx]) {
+                const commVal = Math.abs(parseFloat(String(row[commIdx]).replace(/[\$\,]/g, '').trim()) || 0);
+                if (commVal > 0 && Math.abs(rawPnl) > commVal && !gainLossRaw.includes('net')) {
+                  operationalPnl = rawPnl - commVal;
+                }
+              }
+
               const isWash = (washSaleIdx !== -1 && row[washSaleIdx]) ? String(row[washSaleIdx]).trim().toLowerCase() === 'yes' : false;
-              const disallowed = (disallowedIdx !== -1 && row[disallowedIdx]) ? parseFloat(String(row[disallowedIdx]).replace(/\$/g, '').replace(/,/g, '').trim()) || 0 : 0;
-              const totalTxPnl = (totalTxPnlIdx !== -1 && row[totalTxPnlIdx]) ? parseFloat(String(row[totalTxPnlIdx]).replace(/\$/g, '').replace(/,/g, '').trim()) : NaN;
-              const txCostBasis = (txCostBasisIdx !== -1 && row[txCostBasisIdx]) ? parseFloat(String(row[txCostBasisIdx]).replace(/\$/g, '').replace(/,/g, '').trim()) : NaN;
+              const disallowed = (disallowedIdx !== -1 && row[disallowedIdx]) ? parseFloat(String(row[disallowedIdx]).replace(/[\$\,]/g, '').trim()) || 0 : 0;
+              const totalTxPnl = (totalTxPnlIdx !== -1 && row[totalTxPnlIdx]) ? parseFloat(String(row[totalTxPnlIdx]).replace(/[\$\,]/g, '').trim()) : NaN;
+              const txCostBasis = (txCostBasisIdx !== -1 && row[txCostBasisIdx]) ? parseFloat(String(row[txCostBasisIdx]).replace(/[\$\,]/g, '').trim()) : NaN;
 
               if (!isNaN(totalTxPnl)) {
                 operationalPnl = totalTxPnl;
@@ -2900,27 +3001,42 @@
                 operationalPnl = -Math.abs(disallowed > 0 ? disallowed : (costBasis - proceeds));
               }
 
-              const dateParts = closedDateRaw.split('/');
-              if (dateParts.length !== 3) continue;
-              const mm = dateParts[0].padStart(2, '0');
-              const dd = dateParts[1].padStart(2, '0');
-              const yyyy = dateParts[2];
-              const dateKey = `${yyyy}-${mm}-${dd}`;
+              const dateKey = parseFlexibleDate(closedDateRaw);
+              if (!dateKey) continue;
 
               let ticker = symbolRaw;
               let strike = "-";
               let type = "CALL";
               let dte = "0DTE";
 
-              const optRegex = /^([A-Z0-9]+)\s+(\d{2}\/\d{2}\/\d{4})\s+([\d\.]+)\s+([CP])$/i;
-              const match = symbolRaw.match(optRegex);
+              const schwabOptRegex = /^([A-Z0-9]+)\s+(\d{2}\/\d{2}\/\d{4})\s+([\d\.]+)\s+([CP])$/i;
+              const ibkrOptRegex1 = /^([A-Z0-9]+)\s+(\d{1,2}[A-Z]{3}\d{2})\s+([\d\.]+)\s+([CP])$/i;
+              const ibkrOptRegex2 = /^([A-Z]+)\s*(\d{2})(\d{2})(\d{2})([CP])(\d{8})$/i;
 
-              if (match) {
-                ticker = match[1];
-                const expDate = match[2];
-                strike = cleanStrike(match[3]);
-                type = match[4].toUpperCase() === 'C' ? 'CALL' : 'PUT';
+              const matchSchwab = symbolRaw.match(schwabOptRegex);
+              const matchIbkr1 = symbolRaw.match(ibkrOptRegex1);
+              const matchIbkr2 = symbolRaw.match(ibkrOptRegex2);
+
+              if (matchSchwab) {
+                ticker = matchSchwab[1];
+                const expDate = matchSchwab[2];
+                strike = cleanStrike(matchSchwab[3]);
+                type = matchSchwab[4].toUpperCase() === 'C' ? 'CALL' : 'PUT';
                 dte = calculateExactDte(openedDateRaw, expDate);
+              } else if (matchIbkr1) {
+                ticker = matchIbkr1[1];
+                strike = cleanStrike(matchIbkr1[3]);
+                type = matchIbkr1[4].toUpperCase() === 'C' ? 'CALL' : 'PUT';
+                dte = calculateExactDte(dateKey, matchIbkr1[2]);
+              } else if (matchIbkr2) {
+                ticker = matchIbkr2[1];
+                const yy = '20' + matchIbkr2[2];
+                const mm = matchIbkr2[3];
+                const dd = matchIbkr2[4];
+                const expDateStr = `${yy}-${mm}-${dd}`;
+                type = matchIbkr2[5].toUpperCase() === 'C' ? 'CALL' : 'PUT';
+                strike = cleanStrike((parseInt(matchIbkr2[6], 10) / 1000).toFixed(2));
+                dte = calculateExactDte(dateKey, expDateStr);
               }
 
               trades.push({
@@ -2950,8 +3066,10 @@
 
             parsedCsvTrades = trades;
             parsedCsvFlows = null;
+            csvMinDate = minDate;
+            csvMaxDate = maxDate;
             const roiOverall = totalInvested > 0 ? ((totalNet / totalInvested) * 100).toFixed(1) : 0;
-            document.getElementById('csvTradesFound').textContent = `${trades.length} trades procesados`;
+            document.getElementById('csvTradesFound').textContent = `${trades.length} trades procesados (${brokerDetected})`;
             document.getElementById('csvSummaryText').textContent = `Rango: ${minDate} al ${maxDate} | Inversión: ${formatExactCurrency(totalInvested)} | Balance: ${formatExactCurrency(totalNet)} (${roiOverall}%)`;
             document.getElementById('csvPreviewBox')?.classList.remove('hidden');
             document.getElementById('csvModeSelection')?.classList.remove('hidden');
@@ -2964,45 +3082,79 @@
         });
       }
 
+      // PROCESAMIENTO INTELIGENTE SIN DUPLICADOS
       document.getElementById('processCsvBtn')?.addEventListener('click', () => {
         const selectedMode = document.querySelector('input[name="csvImportMode"]:checked')?.value || 'merge';
         const active = getActiveAccount();
 
+        // 1. FLUJOS DE CAPITAL (TRANSACTIONS)
         if (csvFileType === 'transactions' && parsedCsvFlows) {
-          if (selectedMode === 'replace') {
-            active.capitalFlows = [];
-          }
           if (!active.capitalFlows) active.capitalFlows = [];
 
+          if (selectedMode === 'replace') {
+            // Reemplazar cuenta completa conservando solo traspasos internos
+            active.capitalFlows = active.capitalFlows.filter(f => f.category === 'transfer');
+          } else if (selectedMode === 'replace_range' && csvMinDate && csvMaxDate) {
+            // Sustituir solo movimientos externos dentro de las fechas del archivo
+            active.capitalFlows = active.capitalFlows.filter(f => {
+              if (f.category === 'transfer') return true;
+              return f.date < csvMinDate || f.date > csvMaxDate;
+            });
+          }
+
+          // Cargar flujos evitando duplicados por fecha, monto y tipo
           parsedCsvFlows.forEach(flow => {
-            const isDup = active.capitalFlows.some(cf => cf.date === flow.date && Math.abs(cf.amount - flow.amount) < 0.01 && cf.type === flow.type);
-            if (!isDup) active.capitalFlows.push(flow);
+            const isDup = active.capitalFlows.some(cf => 
+              cf.date === flow.date && 
+              Math.abs(cf.amount - flow.amount) < 0.05 && 
+              cf.type === flow.type
+            );
+            if (!isDup) {
+              active.capitalFlows.push(flow);
+            }
           });
+
           saveAccountsData();
           closeCsvModal();
           switchView('Capital');
           return;
         }
 
+        // 2. OPERACIONES / TRADES
         if (csvFileType === 'trades' && parsedCsvTrades) {
-          if (selectedMode === 'replace') {
-            active.appData = {};
-          }
           if (!active.appData) active.appData = {};
 
+          if (selectedMode === 'replace') {
+            active.appData = {};
+          } else if (selectedMode === 'replace_range' && csvMinDate && csvMaxDate) {
+            // Borrar únicamente los días comprendidos en el archivo para reinsertarlos limpios
+            Object.keys(active.appData).forEach(dKey => {
+              if (dKey >= csvMinDate && dKey <= csvMaxDate) {
+                delete active.appData[dKey];
+              }
+            });
+          }
+
+          // Inserción normalizada evitando duplicados
           parsedCsvTrades.forEach(item => {
             if (!active.appData[item.dateKey]) {
               active.appData[item.dateKey] = [];
             }
 
-            const isDuplicate = active.appData[item.dateKey].some(existing => 
-              existing.ticker === item.trade.ticker &&
-              existing.strike === item.trade.strike &&
-              existing.type === item.trade.type &&
-              existing.qty === item.trade.qty &&
-              Math.abs(existing.pnl - item.trade.pnl) < 0.01 &&
-              Math.abs(existing.costBasis - item.trade.costBasis) < 0.01
-            );
+            const isDuplicate = active.appData[item.dateKey].some(existing => {
+              const sameTicker = (existing.ticker || '').toUpperCase().trim() === (item.trade.ticker || '').toUpperCase().trim();
+              const sameType = (existing.type || '').toUpperCase() === (item.trade.type || '').toUpperCase();
+              const sameQty = parseInt(existing.qty, 10) === parseInt(item.trade.qty, 10);
+              
+              const strikeExist = parseFloat(String(existing.strike).replace(/[^\d\.]/g, '')) || 0;
+              const strikeNew = parseFloat(String(item.trade.strike).replace(/[^\d\.]/g, '')) || 0;
+              const sameStrike = Math.abs(strikeExist - strikeNew) < 0.01;
+
+              const samePnl = Math.abs(Number(existing.pnl || 0) - Number(item.trade.pnl || 0)) < 0.05;
+              const sameCost = Math.abs(Number(existing.costBasis || 0) - Number(item.trade.costBasis || 0)) < 0.05;
+
+              return sameTicker && sameType && sameQty && sameStrike && (samePnl || sameCost);
+            });
 
             if (!isDuplicate) {
               active.appData[item.dateKey].push(item.trade);
