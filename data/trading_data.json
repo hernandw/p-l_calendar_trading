@@ -1,0 +1,15 @@
+{
+  "activeAccountId": "acc_schwab_main",
+  "isDarkMode": true,
+  "accounts": [
+    {
+      "id": "acc_schwab_main",
+      "broker": "Charles Schwab",
+      "number": "XXXX7484",
+      "type": "Margin",
+      "currency": "USD",
+      "appData": {},
+      "capitalFlows": []
+    }
+  ]
+}
