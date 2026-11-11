@@ -1,0 +1,26 @@
+{
+  "name": "trading_diario",
+  "version": "1.0.0",
+  "description": "Un diario de trading profesional, visual e interactivo para opciones financieras y acciones. Diseñado para monitorear el **P&L real**, la **curva de capital de cuenta (Equity Curve)**, **comisiones del broker**, **gestión multicuenta**, **transferencias internas** y estadísticas oficiales bajo las métricas de **Charles Schwab / Thinkorswim**.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hernandw/p-l_calendar_trading.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/hernandw/p-l_calendar_trading/issues"
+  },
+  "homepage": "https://github.com/hernandw/p-l_calendar_trading#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0"
+  }
+}
