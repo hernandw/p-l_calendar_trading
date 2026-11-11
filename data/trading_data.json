@@ -39,6 +39,28 @@
             "costBasis": 263.32,
             "proceeds": 318.67,
             "pnl": 55.35
+          },
+          {
+            "ticker": "SPY",
+            "qty": 2,
+            "strike": "771.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 275.32,
+            "proceeds": 1.11,
+            "pnl": 0,
+            "commission": 0
+          },
+          {
+            "ticker": "SPY",
+            "qty": 2,
+            "strike": "771.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 315.96,
+            "proceeds": 1.59,
+            "pnl": 2.71,
+            "commission": 0
           }
         ],
         "2026-10-26": [
@@ -165,6 +187,28 @@
             "costBasis": 73.66,
             "proceeds": 0.9,
             "pnl": 16.68
+          },
+          {
+            "ticker": "SPY",
+            "qty": 1,
+            "strike": "777.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 89.66,
+            "proceeds": 0.76,
+            "pnl": 0,
+            "commission": 0
+          },
+          {
+            "ticker": "SPY",
+            "qty": 1,
+            "strike": "777.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 86.98,
+            "proceeds": 0.9,
+            "pnl": 3.36,
+            "commission": 0
           }
         ],
         "2026-10-12": [
@@ -384,8 +428,8 @@
             "strike": "773.00",
             "type": "PUT",
             "dte": "0DTE",
-            "costBasis": 108.66,
-            "proceeds": 1.23,
+            "costBasis": 277.66,
+            "proceeds": 2.92,
             "pnl": 14.68
           },
           {
@@ -2771,177 +2815,13 @@
             "pnl": 1181.32
           }
         ],
-        "2026-11-04": [
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "284.00",
-            "type": "PUT",
-            "dte": "0DTE",
-            "costBasis": 0.65,
-            "proceeds": 0.63,
-            "pnl": -2.64
-          },
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "285.00",
-            "type": "PUT",
-            "dte": "0DTE",
-            "costBasis": 1.59,
-            "proceeds": 1.52,
-            "pnl": -12.65
-          },
-          {
-            "ticker": "SPY",
-            "qty": 2,
-            "strike": "767.00",
-            "type": "CALL",
-            "dte": "0DTE",
-            "costBasis": 2.59,
-            "proceeds": 1.32,
-            "pnl": -252.65
-          }
-        ],
-        "2026-11-03": [
-          {
-            "ticker": "IWM",
-            "qty": 3,
-            "strike": "280.00",
-            "type": "CALL",
-            "dte": "0DTE",
-            "costBasis": 1.2,
-            "proceeds": 0.98,
-            "pnl": -63.97
-          },
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "281.00",
-            "type": "CALL",
-            "dte": "1DTE",
-            "costBasis": 2.25,
-            "proceeds": 2.16,
-            "pnl": -16.65
-          }
-        ],
-        "2026-11-02": [
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "280.00",
-            "type": "CALL",
-            "dte": "0DTE",
-            "costBasis": 1.93,
-            "proceeds": 2.12,
-            "pnl": 39.35
-          },
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "282.00",
-            "type": "PUT",
-            "dte": "0DTE",
-            "costBasis": 1.64,
-            "proceeds": 1.78,
-            "pnl": 29.35
-          },
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "283.00",
-            "type": "PUT",
-            "dte": "0DTE",
-            "costBasis": 1.16,
-            "proceeds": 0.98,
-            "pnl": -34.64
-          }
-        ],
-        "2026-10-30": [
-          {
-            "ticker": "IWM",
-            "qty": 3,
-            "strike": "280.00",
-            "type": "PUT",
-            "dte": "3DTE",
-            "costBasis": 1.95,
-            "proceeds": 2.03,
-            "pnl": 26.03
-          }
-        ],
-        "2026-10-29": [
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "283.00",
-            "type": "CALL",
-            "dte": "0DTE",
-            "costBasis": 1.24,
-            "proceeds": 1.4,
-            "pnl": 33.35
-          },
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "283.00",
-            "type": "CALL",
-            "dte": "0DTE",
-            "costBasis": 1.58,
-            "proceeds": 1.72,
-            "pnl": 29.35
-          }
-        ],
-        "2026-10-28": [
-          {
-            "ticker": "IWM",
-            "qty": 2,
-            "strike": "280.00",
-            "type": "CALL",
-            "dte": "0DTE",
-            "costBasis": 1.25,
-            "proceeds": 1.42,
-            "pnl": 35.35
-          }
-        ],
-        "2026-10-27": [
-          {
-            "ticker": "SPY",
-            "qty": 2,
-            "strike": "766.00",
-            "type": "CALL",
-            "dte": "0DTE",
-            "costBasis": 1.69,
-            "proceeds": 1.92,
-            "pnl": 47.35
-          },
-          {
-            "ticker": "SPY",
-            "qty": 2,
-            "strike": "766.00",
-            "type": "PUT",
-            "dte": "0DTE",
-            "costBasis": 1.41,
-            "proceeds": 1.38,
-            "pnl": -4.65
-          },
-          {
-            "ticker": "SPY",
-            "qty": 2,
-            "strike": "767.00",
-            "type": "PUT",
-            "dte": "0DTE",
-            "costBasis": 2.02,
-            "proceeds": 1.74,
-            "pnl": -54.65
-          }
-        ],
         "2026-11-10": [
           {
             "ticker": "IWM",
             "qty": 2,
-            "strike": "-",
-            "type": "CALL",
-            "dte": "-",
+            "strike": "279.00",
+            "type": "PUT",
+            "dte": "0DTE",
             "costBasis": 287.32,
             "proceeds": 0.67,
             "pnl": -152.64,
@@ -2952,9 +2832,9 @@
           {
             "ticker": "IWM",
             "qty": 2,
-            "strike": "-",
+            "strike": "278.00",
             "type": "CALL",
-            "dte": "-",
+            "dte": "0DTE",
             "costBasis": 277.32,
             "proceeds": 1.51,
             "pnl": 25.35,
@@ -2963,12 +2843,191 @@
           {
             "ticker": "IWM",
             "qty": 2,
-            "strike": "-",
+            "strike": "282.00",
             "type": "CALL",
-            "dte": "-",
+            "dte": "0DTE",
             "costBasis": 376.32,
             "proceeds": 1.83,
             "pnl": -10.65,
+            "commission": 0
+          }
+        ],
+        "2026-11-04": [
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "284.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 129.32,
+            "proceeds": 0.63,
+            "pnl": -2.64,
+            "commission": 0
+          },
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "285.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 317.32,
+            "proceeds": 1.52,
+            "pnl": -12.65,
+            "commission": 0
+          },
+          {
+            "ticker": "SPY",
+            "qty": 2,
+            "strike": "767.00",
+            "type": "CALL",
+            "dte": "0DTE",
+            "costBasis": 517.32,
+            "proceeds": 1.32,
+            "pnl": -252.65,
+            "commission": 0
+          }
+        ],
+        "2026-11-03": [
+          {
+            "ticker": "IWM",
+            "qty": 3,
+            "strike": "280.00",
+            "type": "CALL",
+            "dte": "0DTE",
+            "costBasis": 358.98,
+            "proceeds": 0.98,
+            "pnl": -63.97,
+            "commission": 0
+          },
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "281.00",
+            "type": "CALL",
+            "dte": "0DTE",
+            "costBasis": 449.32,
+            "proceeds": 2.16,
+            "pnl": -16.65,
+            "commission": 0
+          }
+        ],
+        "2026-11-02": [
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "280.00",
+            "type": "CALL",
+            "dte": "0DTE",
+            "costBasis": 385.32,
+            "proceeds": 2.12,
+            "pnl": 39.35,
+            "commission": 0
+          },
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "282.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 327.32,
+            "proceeds": 1.78,
+            "pnl": 29.35,
+            "commission": 0
+          },
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "283.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 231.32,
+            "proceeds": 0.98,
+            "pnl": -34.64,
+            "commission": 0
+          }
+        ],
+        "2026-10-30": [
+          {
+            "ticker": "IWM",
+            "qty": 3,
+            "strike": "280.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 583.98,
+            "proceeds": 2.03,
+            "pnl": 26.03,
+            "commission": 0
+          }
+        ],
+        "2026-10-29": [
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "283.00",
+            "type": "CALL",
+            "dte": "0DTE",
+            "costBasis": 247.32,
+            "proceeds": 1.4,
+            "pnl": 33.35,
+            "commission": 0
+          },
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "283.00",
+            "type": "CALL",
+            "dte": "0DTE",
+            "costBasis": 315.32,
+            "proceeds": 1.72,
+            "pnl": 29.35,
+            "commission": 0
+          }
+        ],
+        "2026-10-28": [
+          {
+            "ticker": "IWM",
+            "qty": 2,
+            "strike": "280.00",
+            "type": "CALL",
+            "dte": "0DTE",
+            "costBasis": 249.32,
+            "proceeds": 1.42,
+            "pnl": 35.35,
+            "commission": 0
+          }
+        ],
+        "2026-10-27": [
+          {
+            "ticker": "SPY",
+            "qty": 2,
+            "strike": "766.00",
+            "type": "CALL",
+            "dte": "0DTE",
+            "costBasis": 337.32,
+            "proceeds": 1.92,
+            "pnl": 47.35,
+            "commission": 0
+          },
+          {
+            "ticker": "SPY",
+            "qty": 2,
+            "strike": "766.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 281.32,
+            "proceeds": 1.38,
+            "pnl": -4.65,
+            "commission": 0
+          },
+          {
+            "ticker": "SPY",
+            "qty": 2,
+            "strike": "767.00",
+            "type": "PUT",
+            "dte": "0DTE",
+            "costBasis": 403.32,
+            "proceeds": 1.74,
+            "pnl": -54.65,
             "commission": 0
           }
         ]
@@ -3503,49 +3562,6 @@
           "amount": 52,
           "rawNote": "Transferencia de Capital entre broker",
           "note": "Transferencia desde Charles Schwab (XXXX7484) - Transferencia de Capital entre broker"
-        }
-      ]
-    },
-    {
-      "id": "acc_1794060336128",
-      "broker": "Interactive Brokers",
-      "number": "XXXX9702",
-      "type": "Cash",
-      "currency": "USD",
-      "appData": {
-        "2026-11-10": [
-          {
-            "ticker": "PXLW",
-            "qty": 10,
-            "strike": "-",
-            "type": "STK",
-            "dte": "-",
-            "costBasis": 63.503461,
-            "proceeds": 68,
-            "pnl": 4.496539,
-            "commission": 1.3034607999999999
-          },
-          {
-            "ticker": "SMX",
-            "qty": 5,
-            "strike": "-",
-            "type": "STK",
-            "dte": "-",
-            "costBasis": 99.123693,
-            "proceeds": 105,
-            "pnl": 5.876307,
-            "commission": 1.973693
-          }
-        ]
-      },
-      "capitalFlows": [
-        {
-          "id": 1794060408704,
-          "type": "deposit",
-          "category": "external",
-          "date": "2026-11-06",
-          "amount": 247.34,
-          "note": "Fondeo inicial IBKR"
         }
       ]
     }

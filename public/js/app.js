@@ -113,7 +113,6 @@ function renderDayTradesList() {
           <span class="text-[10px]">Total: <span class="text-slate-300">${formatExactCurrency(cost)}</span> &rarr; <span class="text-slate-300">${formatExactCurrency(proceeds)}</span></span>
         </div>
       </div>
-      <!-- BOTONES DE EDITAR Y ELIMINAR TRADES RESTAURADOS -->
       <div class="flex items-center space-x-2 text-right">
         <div>
           <span class="font-extrabold text-sm block ${isWin ? 'text-emerald-400' : 'text-rose-400'}">${formatExactCurrency(pnl)}</span>
@@ -212,6 +211,56 @@ window.removeCapitalFlow = async function(id) {
   }
 };
 
+// MODAL DE TRANSFERENCIA ENTRE CUENTAS
+window.openTransferModal = function() {
+  const tModal = document.getElementById('transferModal');
+  if (!tModal) return;
+  const fromSelect = document.getElementById('transferFromAccount');
+  const toSelect = document.getElementById('transferToAccount');
+  if (fromSelect && toSelect) {
+    fromSelect.innerHTML = '';
+    toSelect.innerHTML = '';
+    state.accounts.forEach(acc => {
+      const opt1 = document.createElement('option');
+      opt1.value = acc.id;
+      opt1.textContent = `${acc.broker} (${acc.number})`;
+      fromSelect.appendChild(opt1);
+
+      const opt2 = document.createElement('option');
+      opt2.value = acc.id;
+      opt2.textContent = `${acc.broker} (${acc.number})`;
+      toSelect.appendChild(opt2);
+    });
+    fromSelect.value = state.activeAccountId;
+    const other = state.accounts.find(a => a.id !== state.activeAccountId);
+    if (other) toSelect.value = other.id;
+  }
+  document.getElementById('editTransferId').value = '';
+  document.getElementById('transferAmount').value = '';
+  document.getElementById('transferNote').value = '';
+  document.getElementById('deleteTransferBtn')?.classList.add('hidden');
+  document.getElementById('submitTransferText').textContent = 'Confirmar Transferencia';
+  tModal.classList.remove('hidden');
+  tModal.classList.add('flex');
+  safeIcons();
+};
+
+window.openEditTransferModal = function(transferId, flowId) {
+  const tModal = document.getElementById('transferModal');
+  if (!tModal) return;
+  window.openTransferModal();
+  document.getElementById('editTransferId').value = transferId;
+  const active = getActiveAccount();
+  const f = active.capitalFlows.find(flow => flow.id === flowId || String(flow.transferId) === String(transferId));
+  if (f) {
+    document.getElementById('transferDate').value = f.date;
+    document.getElementById('transferAmount').value = f.amount;
+    document.getElementById('transferNote').value = f.note || '';
+  }
+  document.getElementById('deleteTransferBtn')?.classList.remove('hidden');
+  document.getElementById('submitTransferText').textContent = 'Guardar Cambios';
+};
+
 window.openTickerDetailsModal = function(data) {
   const modalTitle = document.getElementById('tickerDetailsModalTitle');
   const modalSub = document.getElementById('tickerDetailsModalSub');
@@ -272,7 +321,7 @@ function setupEventListeners() {
     refreshActiveView();
   });
 
-  // GESTIÓN DE CUENTAS: BOTÓN NUEVA Y CONFIGURAR RESTAURADOS
+  // GESTIÓN DE CUENTAS
   const accountModal = document.getElementById('accountModal');
   const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 
@@ -350,6 +399,69 @@ function setupEventListeners() {
     }
   });
 
+  // TRANSFERENCIAS ENTRE CUENTAS
+  document.getElementById('openTransferModalBtn')?.addEventListener('click', () => window.openTransferModal());
+  document.getElementById('closeTransferModalBtn')?.addEventListener('click', () => {
+    document.getElementById('transferModal')?.classList.add('hidden');
+    document.getElementById('transferModal')?.classList.remove('flex');
+  });
+  document.getElementById('cancelTransferBtn')?.addEventListener('click', () => {
+    document.getElementById('transferModal')?.classList.add('hidden');
+    document.getElementById('transferModal')?.classList.remove('flex');
+  });
+
+  document.getElementById('transferForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fromId = document.getElementById('transferFromAccount').value;
+    const toId = document.getElementById('transferToAccount').value;
+    const date = document.getElementById('transferDate').value;
+    const amount = parseFloat(document.getElementById('transferAmount').value);
+    const note = document.getElementById('transferNote').value.trim() || 'Traspaso de fondos';
+    const editTId = document.getElementById('editTransferId').value;
+
+    if (fromId === toId) return alert("La cuenta origen y destino deben ser diferentes.");
+    if (isNaN(amount) || amount <= 0 || !date) return;
+
+    const fromAcc = state.accounts.find(a => a.id === fromId);
+    const toAcc = state.accounts.find(a => a.id === toId);
+    if (!fromAcc || !toAcc) return;
+
+    if (editTId) {
+      state.accounts.forEach(acc => {
+        acc.capitalFlows = (acc.capitalFlows || []).filter(f => String(f.transferId) !== String(editTId));
+      });
+    }
+
+    const tId = editTId || 'tr_' + Date.now();
+    if (!fromAcc.capitalFlows) fromAcc.capitalFlows = [];
+    if (!toAcc.capitalFlows) toAcc.capitalFlows = [];
+
+    fromAcc.capitalFlows.push({
+      id: Date.now(),
+      transferId: tId,
+      type: 'withdrawal',
+      category: 'transfer',
+      date,
+      amount,
+      note: `${note} (Hacia ${toAcc.broker})`
+    });
+
+    toAcc.capitalFlows.push({
+      id: Date.now() + 1,
+      transferId: tId,
+      type: 'deposit',
+      category: 'transfer',
+      date,
+      amount,
+      note: `${note} (Desde ${fromAcc.broker})`
+    });
+
+    await saveAccountsData();
+    document.getElementById('transferModal')?.classList.add('hidden');
+    document.getElementById('transferModal')?.classList.remove('flex');
+    renderCapitalView();
+  });
+
   // REGISTRO Y EDICIÓN MANUAL DE TRADES
   document.getElementById('tradeForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -414,7 +526,7 @@ function setupEventListeners() {
     reader.readAsText(file);
   });
 
-  // FORMULARIO DE CAPITAL (DEPÓSITOS Y RETIROS)
+  // FORMULARIO DE CAPITAL
   document.getElementById('capitalFlowForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const active = getActiveAccount();
@@ -501,8 +613,15 @@ function setupEventListeners() {
         const pBtn = document.getElementById('processCsvBtn');
 
         if (fName) fName.textContent = file.name;
-        if (fFound) fFound.textContent = `${data.type === 'transactions' ? data.flows.length : data.trades.length} registros (${data.broker})`;
-        if (sText) sText.textContent = `Rango: ${data.minDate || '-'} al ${data.maxDate || '-'}`;
+        if (fFound) {
+          fFound.textContent = data.type === 'transactions' 
+            ? `${data.flows.length} movimiento(s) de capital (${data.broker})` 
+            : `${data.trades.length} operaciones (${data.broker})`;
+        }
+        if (sText) {
+          sText.textContent = `Rango: ${data.minDate || '-'} al ${data.maxDate || '-'}`;
+        }
+
         document.getElementById('csvPreviewBox')?.classList.remove('hidden');
         document.getElementById('csvModeSelection')?.classList.remove('hidden');
         if (pBtn) pBtn.disabled = false;
@@ -540,36 +659,23 @@ function setupEventListeners() {
       state.parsedCsvTrades.forEach(item => {
         if (!active.appData[item.dateKey]) active.appData[item.dateKey] = [];
 
+        // Comparador de duplicados que preserva lotes independientes
         const isDup = active.appData[item.dateKey].some(ex => {
           const sameTicker = (ex.ticker || '').split(' ')[0].toUpperCase().trim() === (item.trade.ticker || '').split(' ')[0].toUpperCase().trim();
-          const samePnl = Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.20;
+          const samePnl = Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.001;
           const sameQty = parseInt(ex.qty, 10) === parseInt(item.trade.qty, 10);
           const sameType = (ex.type || '').toUpperCase() === (item.trade.type || '').toUpperCase();
           const sameStrike = cleanStrike(ex.strike) === cleanStrike(item.trade.strike);
-          return sameTicker && samePnl && sameQty && sameType && sameStrike;
+          const sameCost = Math.abs(Number(ex.costBasis || 0) - Number(item.trade.costBasis || 0)) < 0.05;
+          return sameTicker && samePnl && sameQty && sameType && sameStrike && sameCost;
         });
 
         if (!isDup) {
           active.appData[item.dateKey].push(item.trade);
           agregados++;
-        } else {
-          const existing = active.appData[item.dateKey].find(ex =>
-            (ex.ticker || '').split(' ')[0].toUpperCase().trim() === (item.trade.ticker || '').split(' ')[0].toUpperCase().trim() &&
-            Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.20
-          );
-          if (existing) {
-            if (item.trade.commission !== undefined && item.trade.commission > 0) {
-              existing.commission = item.trade.commission;
-            }
-            if (Number(item.trade.costBasis || 0) > Number(existing.costBasis || 0)) {
-              existing.costBasis = item.trade.costBasis;
-              existing.proceeds = item.trade.proceeds;
-            }
-          }
         }
       });
 
-      deduplicateAccountData(active);
       await saveAccountsData();
 
       if (csvModal) { csvModal.classList.add('hidden'); csvModal.classList.remove('flex'); }
