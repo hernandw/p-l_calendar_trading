@@ -79,21 +79,32 @@
     </div>
     
     <div class="flex items-center gap-1.5">
-      <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95">
+      <!-- Botón Tema Oscuro / Claro -->
+      <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95 cursor-pointer">
         <i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i>
       </button>
 
-      <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad completa (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
+      <!-- Botón Descargar Backup -->
+      <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad completa (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span>Backup</span>
       </button>
 
-      <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
+      <!-- Botón Restaurar Backup (Totalmente Activo) -->
+      <label title="Restaurar copia de seguridad desde un archivo JSON" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
+        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+        <span>Restaurar</span>
+        <input type="file" id="restoreBackupInput" accept=".json" class="hidden">
+      </label>
+
+      <!-- Botón Importar CSV -->
+      <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
         <span>CSV</span>
       </button>
       
-      <button id="clearAllBtn" type="button" title="Vaciar datos de la cuenta activa" class="p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60 rounded-xl transition active:scale-95">
+      <!-- Botón Vaciar Cuenta Activa -->
+      <button id="clearAllBtn" type="button" title="Vaciar datos de la cuenta activa" class="p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60 rounded-xl transition active:scale-95 cursor-pointer">
         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
       </button>
     </div>
@@ -166,41 +177,41 @@
         </div>
 
         <div class="flex items-center bg-slate-100/80 dark:bg-darkSubtle p-0.5 rounded-xl border border-slate-200/60 dark:border-darkBorder" id="monthNavArrows">
-          <button id="prevPeriodBtn" type="button" class="p-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition">
+          <button id="prevPeriodBtn" type="button" class="p-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer">
             <i data-lucide="chevron-left" class="w-4 h-4"></i>
           </button>
-          <button id="nextPeriodBtn" type="button" class="p-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition">
+          <button id="nextPeriodBtn" type="button" class="p-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition cursor-pointer">
             <i data-lucide="chevron-right" class="w-4 h-4"></i>
           </button>
         </div>
       </div>
 
-      <!-- Pestañas -->
+      <!-- Barra de Pestañas con Iconos -->
       <div class="bg-slate-100 dark:bg-darkSubtle p-0.5 rounded-xl flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-darkBorder overflow-x-auto max-w-full">
-        <button id="viewMonthBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5">
+        <button id="viewMonthBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer">
           <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
           <span>Month</span>
         </button>
-        <button id="viewYearBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5">
+        <button id="viewYearBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer">
           <i data-lucide="calendar-range" class="w-3.5 h-3.5"></i>
           <span>Year</span>
         </button>
-        <button id="viewTickersBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5">
+        <button id="viewTickersBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer">
           <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
           <span>Tickers</span>
         </button>
-        <button id="viewCommissionsBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5">
+        <button id="viewCommissionsBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer">
           <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
           <span>Comisiones</span>
         </button>
-        <button id="viewCapitalBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5">
+        <button id="viewCapitalBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer">
           <i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-500"></i>
           <span>Capital</span>
         </button>
       </div>
     </div>
 
-    <!-- Subtítulo -->
+    <!-- Barra de Subtítulo -->
     <div class="flex items-center justify-between text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase pb-2">
       <span id="sectionSubTitle">Mes Actual</span>
       <span id="sectionHint" class="text-[11px] font-normal text-slate-400 dark:text-slate-500 lowercase first-letter:uppercase">Haz clic en un día para ver operaciones</span>
@@ -219,12 +230,12 @@
       <div id="yearMonthsGrid" class="grid grid-cols-3 gap-3 py-1"></div>
     </section>
 
-    <!-- 3. VISTA TICKERS (DISEÑO EXACTO RESTAURADO A TU IMAGEN 3) -->
+    <!-- 3. VISTA TICKERS (DISEÑO RESTAURADO) -->
     <section id="tickersView" class="hidden w-full space-y-3">
       <div class="flex items-center justify-between gap-2 pb-1">
         <div class="relative flex-1">
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          <input type="text" id="tickerSearchInput" placeholder="Buscar por ticker (SPY, TSLA, AMD...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-800 bg-[#0d1424] text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="tickerSearchInput" placeholder="Buscar por ticker (SPY, TSLA, PXLW...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-800 bg-[#0d1424] text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <select id="tickerSortSelect" class="text-xs font-semibold px-2.5 py-2 rounded-xl border border-slate-800 bg-[#0d1424] text-slate-200 focus:outline-none cursor-pointer">
           <option value="pnl-desc">Mayor P&amp;L</option>
@@ -236,7 +247,7 @@
       <div id="tickersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto custom-scrollbar pr-1"></div>
     </section>
 
-    <!-- 4. VISTA COMISIONES (DISEÑO EXACTO RESTAURADO A TU IMAGEN 2) -->
+    <!-- 4. VISTA COMISIONES (DISEÑO RESTAURADO) -->
     <section id="commissionsView" class="hidden w-full space-y-3">
       <div id="commissionsNoticeBox" class="p-3.5 bg-slate-900/60 dark:bg-[#0d1424] rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-white">
         <div class="flex items-center space-x-2">
@@ -252,8 +263,8 @@
 
       <div class="grid grid-cols-3 gap-2 text-center">
         <div class="p-3 bg-[#0d1424] rounded-2xl border border-slate-800">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Contratos</span>
-          <span id="commTotalContracts" class="text-sm font-extrabold text-white mt-0.5 block">0 ctos</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Operaciones</span>
+          <span id="commTotalContracts" class="text-sm font-extrabold text-white mt-0.5 block">0 ops</span>
         </div>
         <div class="p-3 bg-[#0d1424] rounded-2xl border border-slate-800">
           <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Comisiones</span>
@@ -271,8 +282,8 @@
             <thead>
               <tr class="bg-slate-900/80 border-b border-slate-800 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 <th class="py-2.5 px-3">Ticker</th>
-                <th class="py-2.5 px-2 text-center">Contratos</th>
-                <th class="py-2.5 px-2 text-right">Comisión Est.</th>
+                <th class="py-2.5 px-2 text-center">Cant.</th>
+                <th class="py-2.5 px-2 text-right">Comisión</th>
                 <th class="py-2.5 px-2 text-right">P&amp;L Bruto</th>
                 <th class="py-2.5 px-3 text-right">P&amp;L Neto</th>
               </tr>
@@ -283,7 +294,7 @@
       </div>
     </section>
 
-    <!-- 5. PESTAÑA CAPITAL REAL (DISEÑO EXACTO RESTAURADO A TU IMAGEN 1) -->
+    <!-- 5. PESTAÑA CAPITAL REAL -->
     <section id="capitalView" class="hidden w-full space-y-4">
       <div class="p-5 bg-[#0d1424] text-white rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs text-slate-300 font-bold uppercase tracking-wider">
@@ -297,13 +308,13 @@
         </div>
 
         <div class="my-3">
-          <div id="accountCurrentBalance" class="text-3xl font-black tracking-tight text-white">+$0.00</div>
+          <div id="accountCurrentBalance" class="text-3xl font-black tracking-tight text-white">$0.00</div>
           <div class="text-[11px] text-slate-400 font-medium mt-1 flex flex-wrap items-center gap-2">
-            <span>Depósitos: <strong id="accountTotalDeposits" class="text-emerald-400 font-bold">+$0.00</strong></span>
+            <span>Depósitos: <strong id="accountTotalDeposits" class="text-emerald-400 font-bold">$0.00</strong></span>
             <span>&bull;</span>
-            <span>Retiros: <strong id="accountTotalWithdrawals" class="text-rose-400 font-bold">-$0.00</strong></span>
+            <span>Retiros: <strong id="accountTotalWithdrawals" class="text-rose-400 font-bold">$0.00</strong></span>
             <span>&bull;</span>
-            <span>Capital Neto: <strong id="accountNetCapitalInflow" class="text-slate-200 font-bold">+$0.00</strong></span>
+            <span>Capital Neto: <strong id="accountNetCapitalInflow" class="text-slate-200 font-bold">$0.00</strong></span>
           </div>
         </div>
 
@@ -320,7 +331,7 @@
       </div>
 
       <div id="transferButtonContainer" class="hidden">
-        <button id="openTransferModalBtn" type="button" class="w-full py-2.5 px-3 bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-300 border border-emerald-800/60 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-95">
+        <button id="openTransferModalBtn" type="button" class="w-full py-2.5 px-3 bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-300 border border-emerald-800/60 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
           <i data-lucide="arrow-left-right" class="w-4 h-4 text-emerald-400"></i>
           <span>Transferir Capital entre Cuentas</span>
         </button>
@@ -332,7 +343,7 @@
             <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-blue-400"></i>
             <span id="capitalFormActionLabel">Registrar Movimiento Externo (Banco / Fondeo)</span>
           </span>
-          <button type="button" id="cancelCapitalEditBtn" class="hidden text-xs text-rose-400 hover:text-rose-500 font-bold flex items-center gap-0.5">
+          <button type="button" id="cancelCapitalEditBtn" class="hidden text-xs text-rose-400 hover:text-rose-500 font-bold flex items-center gap-0.5 cursor-pointer">
             <i data-lucide="x" class="w-3 h-3"></i> Cancelar edición
           </button>
         </div>
@@ -355,9 +366,7 @@
             <input type="date" id="capitalFlowDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold focus:outline-none cursor-pointer">
           </div>
           <div>
-            <div class="flex items-center justify-between mb-0.5">
-              <label class="block text-[10px] font-bold text-slate-400 uppercase">Monto ($)</label>
-            </div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Monto ($)</label>
             <input type="number" step="0.01" min="0.01" id="capitalFlowAmount" placeholder="1000.00" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white font-bold focus:outline-none">
           </div>
           <div>
@@ -366,7 +375,7 @@
           </div>
         </div>
 
-        <button type="submit" id="capitalSubmitBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5">
+        <button type="submit" id="capitalSubmitBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
           <i data-lucide="plus" id="capitalSubmitIcon" class="w-3.5 h-3.5"></i>
           <span id="capitalSubmitText">Agregar Movimiento Externo</span>
         </button>
@@ -411,7 +420,7 @@
     </footer>
   </main>
 
-  <!-- MODAL: DETALLE DEL DÍA (RESTAURADO A TU IMAGEN 4) -->
+  <!-- MODAL: DETALLE DEL DÍA -->
   <div id="dayModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-[#090d16] text-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-800 max-h-[90vh] flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -422,12 +431,12 @@
             <span id="modalDailyInvested" class="text-xs text-slate-500">Inversión: $0.00</span>
           </div>
         </div>
-        <button id="closeModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white">
+        <button id="closeModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white cursor-pointer">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
-      <!-- FORMULARIO MANUAL DE TRADE COMPLETO -->
+      <!-- Formulario de Trade Manual -->
       <form id="tradeForm" class="mt-4 bg-[#0d1424] p-3.5 rounded-2xl border border-slate-800 space-y-3">
         <input type="hidden" id="editTradeIndex" value="">
 
@@ -437,7 +446,7 @@
             <input type="text" id="tradeTicker" placeholder="TSLA / SPY" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white uppercase focus:ring-2 focus:ring-blue-500 focus:outline-none">
           </div>
           <div>
-            <label class="block mb-0.5">Contratos</label>
+            <label class="block mb-0.5">Cantidad</label>
             <input type="number" min="1" id="tradeQty" value="10" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
           </div>
           <div>
@@ -453,28 +462,28 @@
             </select>
           </div>
           <div>
-            <label class="block mb-0.5">Expiracion (DTE)</label>
+            <label class="block mb-0.5">Expiración</label>
             <input type="text" id="tradeDteInput" placeholder="0DTE" value="0DTE" class="w-full text-xs font-bold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white uppercase focus:outline-none">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Valor Cto (Compra unit.)</label>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Compra unitaria</label>
             <div class="relative flex items-center">
               <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
               <input type="number" step="0.01" min="0" id="tradeUnitCost" placeholder="33.66" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
             </div>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Valor Venta (Venta unit.)</label>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Venta unitaria</label>
             <div class="relative flex items-center">
               <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
               <input type="number" step="0.01" min="0" id="tradeUnitProceeds" placeholder="41.33" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
             </div>
           </div>
           <div class="flex items-end">
-            <button type="submit" id="tradeSubmitBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1">
+            <button type="submit" id="tradeSubmitBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
               <i data-lucide="plus" id="tradeSubmitIcon" class="w-3.5 h-3.5"></i>
               <span id="tradeSubmitText">Agregar Trade</span>
             </button>
@@ -489,7 +498,7 @@
     </div>
   </div>
 
-  <!-- MODAL: DETALLE DEL TICKER (AUDITORÍA INDIVIDUAL) -->
+  <!-- MODAL: DETALLE DEL TICKER -->
   <div id="tickerDetailsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-[#090d16] text-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-800 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -497,7 +506,7 @@
           <h2 id="tickerDetailsModalTitle" class="text-base font-black text-white">Historial de Ticker</h2>
           <p id="tickerDetailsModalSub" class="text-xs text-slate-400 mt-0.5"></p>
         </div>
-        <button id="closeTickerDetailsModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white">
+        <button id="closeTickerDetailsModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white cursor-pointer">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -515,7 +524,7 @@
           <i data-lucide="arrow-left-right" class="w-5 h-5 text-emerald-400"></i>
           <h2 id="transferModalTitle" class="text-base font-black text-white">Transferencia de Fondos entre Brokers</h2>
         </div>
-        <button id="closeTransferModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-white">
+        <button id="closeTransferModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-white cursor-pointer">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -556,12 +565,12 @@
         </div>
 
         <div class="flex items-center justify-between pt-2 gap-2">
-          <button type="button" id="deleteTransferBtn" class="hidden px-3 py-2 bg-rose-950/60 text-rose-400 font-bold rounded-xl hover:bg-rose-900 transition">
+          <button type="button" id="deleteTransferBtn" class="hidden px-3 py-2 bg-rose-950/60 text-rose-400 font-bold rounded-xl hover:bg-rose-900 transition cursor-pointer">
             Eliminar
           </button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="cancelTransferBtn" class="px-3.5 py-2 border border-slate-700 rounded-xl text-slate-400">Cancelar</button>
-            <button type="submit" id="submitTransferBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition">
+            <button type="button" id="cancelTransferBtn" class="px-3.5 py-2 border border-slate-700 rounded-xl text-slate-400 cursor-pointer">Cancelar</button>
+            <button type="submit" id="submitTransferBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition cursor-pointer">
               <span id="submitTransferText">Confirmar Transferencia</span>
             </button>
           </div>
@@ -578,7 +587,7 @@
           <i data-lucide="building-2" class="w-5 h-5 text-blue-400"></i>
           <h2 id="accountModalTitle" class="text-base font-black text-white">Nueva Cuenta de Broker</h2>
         </div>
-        <button id="closeAccountModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-white">
+        <button id="closeAccountModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-white cursor-pointer">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -606,12 +615,12 @@
         </div>
 
         <div class="flex items-center justify-between pt-3 gap-2">
-          <button type="button" id="deleteAccountBtn" class="hidden px-3 py-2 bg-rose-950/60 text-rose-400 font-bold rounded-xl hover:bg-rose-900 transition">
+          <button type="button" id="deleteAccountBtn" class="hidden px-3 py-2 bg-rose-950/60 text-rose-400 font-bold rounded-xl hover:bg-rose-900 transition cursor-pointer">
             Eliminar
           </button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="cancelAccountBtn" class="px-3 py-2 border border-slate-700 rounded-xl text-slate-400">Cancelar</button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition">Guardar</button>
+            <button type="button" id="cancelAccountBtn" class="px-3 py-2 border border-slate-700 rounded-xl text-slate-400 cursor-pointer">Cancelar</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition cursor-pointer">Guardar</button>
           </div>
         </div>
       </form>
@@ -627,10 +636,10 @@
       <h3 class="text-lg font-black text-white tracking-tight mb-4">Soporte Multicuenta &amp; Capital</h3>
       <div class="text-left text-xs text-slate-300 space-y-3 mb-6">
         <div><strong class="text-white">&bull; Cuentas Separadas:</strong> Administra balances independientes en Charles Schwab e Interactive Brokers.</div>
-        <div><strong class="text-white">&bull; Comisiones Exactas:</strong> Si el archivo trae columna de comisión (IBKR), usa la cifra real; si es Schwab (TOS), calcula por contrato.</div>
-        <div><strong class="text-white">&bull; Sin Duplicados:</strong> Comprueba cada operación por firma inmutable antes de insertarla.</div>
+        <div><strong class="text-white">&bull; Comisiones Exactas:</strong> Si el archivo trae columna IBCommission (IBKR), usa la cifra real; si es Schwab (TOS), calcula por contrato[cite: 2].</div>
+        <div><strong class="text-white">&bull; Sin Duplicados:</strong> Comprueba cada operación por firma inmutable antes de insertarla[cite: 2].</div>
       </div>
-      <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-bold transition">
+      <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-xs font-bold transition cursor-pointer">
         Entendido
       </button>
     </div>
@@ -644,7 +653,7 @@
           <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-400"></i>
           <h2 class="text-lg font-bold text-white">Importar Archivo CSV</h2>
         </div>
-        <button id="closeCsvModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400">
+        <button id="closeCsvModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 cursor-pointer">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
@@ -669,23 +678,23 @@
         <div id="csvModeSelection" class="hidden space-y-1.5">
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="radio" name="csvImportMode" value="merge" checked class="text-blue-600">
-            <span><strong>Combinar (Solo nuevos)</strong> - Omite operaciones ya existentes sin duplicar.</span>
+            <span><strong>Combinar (Solo nuevos)</strong> - Omite operaciones ya existentes sin duplicar[cite: 2].</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="radio" name="csvImportMode" value="replace" class="text-rose-400">
-            <span class="text-rose-400"><strong>Reemplazar cuenta activa</strong> - Borra el historial previo.</span>
+            <span class="text-rose-400"><strong>Reemplazar cuenta activa</strong> - Borra el historial previo[cite: 2].</span>
           </label>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-2">
-          <button id="cancelCsvBtn" type="button" class="px-3 py-1.5 rounded-xl border border-slate-700 text-slate-300">Cancelar</button>
-          <button id="processCsvBtn" type="button" disabled class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-semibold shadow-sm transition">Cargar a la Cuenta</button>
+          <button id="cancelCsvBtn" type="button" class="px-3 py-1.5 rounded-xl border border-slate-700 text-slate-300 cursor-pointer">Cancelar</button>
+          <button id="processCsvBtn" type="button" disabled class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-semibold shadow-sm transition cursor-pointer">Cargar a la Cuenta</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ARRANQUE MODULAR DE LA APLICACIÓN -->
+  <!-- CONEXIÓN MODULAR: CARGA APP.JS DE MANERA SEGURA -->
   <script type="module">
     import { initApp } from './js/app.js';
     initApp();

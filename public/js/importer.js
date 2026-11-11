@@ -2,6 +2,10 @@
  * public/js/importer.js - Analizador CSV especializado para Schwab e IBKR
  */
 
+ex/**
+ * public/js/importer.js - Analizador CSV con soporte nativo de Acciones y Opciones
+ */
+
 export function parseFlexibleDate(dateStr) {
   if (!dateStr) return null;
   const clean = String(dateStr).trim().split(';')[0].split(' ')[0].split('T')[0];
@@ -20,7 +24,7 @@ export function parseFlexibleDate(dateStr) {
 }
 
 export function cleanStrike(val) {
-  if (!val || val === '-') return '-';
+  if (!val || val === '-' || val === 'NaN') return '-';
   return String(val).replace(/\$/g, '').trim();
 }
 
@@ -43,7 +47,6 @@ export function parseCsvFile(file, callbacks) {
       for (let i = 0; i < Math.min(rows.length, 30); i++) {
         const rowStr = rows[i].map(c => String(c).trim().toLowerCase());
         
-        // Detección de resumen de caja IBKR (cash_balanced.csv)
         if (rowStr.some(c => c === 'startingcash' || c === 'depositsmtd')) {
           headerRowIndex = i;
           isTransactionsFile = true;
@@ -52,7 +55,6 @@ export function parseCsvFile(file, callbacks) {
           break;
         }
 
-        // Detección de movimientos de efectivo individuales
         const hasAction = rowStr.some(c => c.includes('action') || c.includes('type'));
         const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto'));
         if (hasAction && hasAmount) {
@@ -62,7 +64,6 @@ export function parseCsvFile(file, callbacks) {
           break;
         }
 
-        // Detección de operaciones (Trades)
         const hasSymbol = rowStr.some(c => c === 'symbol' || c === 'description');
         const hasPnl = rowStr.some(c => c.includes('gain/loss') || c.includes('fifopnlrealized'));
         const hasIbkrCols = rowStr.some(c => c.includes('fifopnlrealized') || c.includes('tradedate'));
@@ -82,7 +83,7 @@ export function parseCsvFile(file, callbacks) {
 
       const headers = rows[headerRowIndex].map(h => String(h).trim());
 
-      // CASO A: HISTORIAL O RESUMEN DE EFECTIVO
+      // CASO A: FLUJOS DE EFECTIVO
       if (isTransactionsFile) {
         const flows = [];
         let minD = null, maxD = null;
@@ -90,7 +91,7 @@ export function parseCsvFile(file, callbacks) {
         if (isIbkrCashSummary) {
           const fromDateIdx = headers.findIndex(h => /fromdate/i.test(h));
           const startingCashIdx = headers.findIndex(h => /^startingcash$/i.test(h));
-          const depositsIdx = headers.findIndex(h => /^deposits$\vert{}^depositsmtd$/i.test(h));
+          const depositsIdx = headers.findIndex(h => /^deposits$|^depositsmtd$/i.test(h));
 
           for (let r = headerRowIndex + 1; r < rows.length; r++) {
             const row = rows[r];
@@ -129,7 +130,7 @@ export function parseCsvFile(file, callbacks) {
 
       // CASO B: TRADES (OPCIONES Y ACCIONES)
       const symbolIdx = headers.findIndex(h => /^symbol$|description/i.test(h));
-      const closedDateIdx = headers.findIndex(h => /closed\s*date|^tradedate$\vert{}datetime\vert{}^date$/i.test(h));
+      const closedDateIdx = headers.findIndex(h => /closed\s*date|^tradedate$|datetime|^date$/i.test(h));
       const qtyIdx = headers.findIndex(h => /quantity|^qty$/i.test(h));
       const priceIdx = headers.findIndex(h => /tradeprice|price/i.test(h));
       const costBasisIdx = headers.findIndex(h => /cost\s*basis|^cost$|basis/i.test(h));
@@ -138,6 +139,7 @@ export function parseCsvFile(file, callbacks) {
       const commIdx = headers.findIndex(h => /ibcommission|commission/i.test(h));
       const assetClassIdx = headers.findIndex(h => /assetclass/i.test(h));
 
+      // Sumar comisiones de compra si están separadas
       const buyCommissionsByTicker = {};
       if (brokerDetected === 'IBKR' && commIdx !== -1) {
         for (let r = headerRowIndex + 1; r < rows.length; r++) {
@@ -167,7 +169,7 @@ export function parseCsvFile(file, callbacks) {
         const rawPnl = parseFloat(gainLossRaw.replace(/\$/g, '').replace(/,/g, '').trim());
         if (isNaN(rawPnl)) continue;
 
-        // Omitir aperturas en IBKR
+        // En IBKR, las aperturas tienen PnL 0; se omiten
         if (brokerDetected === 'IBKR' && rawPnl === 0) continue;
 
         const qty = (qtyIdx !== -1 && row[qtyIdx]) ? Math.abs(parseInt(String(row[qtyIdx]).trim(), 10) || 1) : 1;
