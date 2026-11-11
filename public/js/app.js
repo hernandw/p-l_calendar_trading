@@ -1,9 +1,9 @@
 /**
- * public/js/app.js - Inicializador y Controladores de Eventos
+ * public/js/app.js - Inicializador y Eventos de la Interfaz
  */
-import { state, getActiveAccount, loadAccountsData, saveAccountsData, deduplicateAccountData, formatExactCurrency } from './state.js';
+import { state, getActiveAccount, loadAccountsData, saveAccountsData, deduplicateAccountData, formatExactCurrency, cleanStrike } from './state.js';
 import { applyTheme, safeIcons, renderAccountSelector, updateTotalTradesHeader, renderMonthView, renderYearView, renderTickersView, renderCommissionsView, renderCapitalView } from './renderers.js';
-import { parseCsvFile, cleanStrike } from './importer.js';
+import { parseCsvFile } from './importer.js';
 
 export function refreshActiveView() {
   renderAccountSelector();
@@ -23,8 +23,8 @@ window.switchView = function(view) {
     const btn = document.getElementById('view' + s + 'Btn');
     if (btn) {
       btn.className = s === view
-        ? "px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5"
-        : "px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5";
+        ? "px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer"
+        : "px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer";
     }
   });
 
@@ -45,20 +45,9 @@ window.openDayModal = function(dateKey) {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
   }
-  resetTradeForm();
   renderDayTradesList();
   safeIcons();
 };
-
-function resetTradeForm() {
-  const fields = ['editTradeIndex', 'tradeTicker', 'tradeUnitCost', 'tradeUnitProceeds'];
-  fields.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  const q = document.getElementById('tradeQty'); if (q) q.value = '10';
-  const s = document.getElementById('tradeStrike'); if (s) s.value = '340.00';
-  const t = document.getElementById('tradeType'); if (t) t.value = 'PUT';
-  const d = document.getElementById('tradeDteInput'); if (d) d.value = '0DTE';
-  const btn = document.getElementById('tradeSubmitText'); if (btn) btn.textContent = 'Agregar Trade';
-}
 
 function renderDayTradesList() {
   const container = document.getElementById('tradesListContainer');
@@ -105,8 +94,7 @@ function renderDayTradesList() {
           <span class="font-extrabold text-sm block ${isWin ? 'text-emerald-400' : 'text-rose-400'}">${formatExactCurrency(pnl)}</span>
           <span class="text-[10px] font-bold ${isWin ? 'text-emerald-400' : 'text-rose-400'}">${isWin ? '+' : ''}${roi}%</span>
         </div>
-        <button onclick="window.editTrade(${idx})" class="p-1 text-slate-400 hover:text-white"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-        <button onclick="window.removeTrade(${idx})" class="p-1 text-slate-400 hover:text-rose-400"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+        <button onclick="window.removeTrade(${idx})" class="p-1 text-slate-400 hover:text-rose-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
       </div>
     `;
     container.appendChild(item);
@@ -118,25 +106,6 @@ function renderDayTradesList() {
   if (invEl) invEl.textContent = `Inversión: ${formatExactCurrency(dailyInvested)}`;
   safeIcons();
 }
-
-window.editTrade = function(idx) {
-  const active = getActiveAccount();
-  const t = active.appData?.[state.selectedDateKey]?.[idx];
-  if (!t) return;
-  const qty = t.qty || 1;
-  const cost = Number(t.costBasis || 0);
-  const proceeds = Number(t.proceeds || (cost + Number(t.pnl || 0)));
-
-  const eIdx = document.getElementById('editTradeIndex'); if (eIdx) eIdx.value = String(idx);
-  const ticker = document.getElementById('tradeTicker'); if (ticker) ticker.value = t.ticker;
-  const qEl = document.getElementById('tradeQty'); if (qEl) qEl.value = qty;
-  const sEl = document.getElementById('tradeStrike'); if (sEl) sEl.value = cleanStrike(t.strike);
-  const typEl = document.getElementById('tradeType'); if (typEl) typEl.value = t.type;
-  const dteEl = document.getElementById('tradeDteInput'); if (dteEl) dteEl.value = t.dte || '0DTE';
-  const cEl = document.getElementById('tradeUnitCost'); if (cEl) cEl.value = (cost / qty).toFixed(2);
-  const pEl = document.getElementById('tradeUnitProceeds'); if (pEl) pEl.value = (proceeds / qty).toFixed(2);
-  const sText = document.getElementById('tradeSubmitText'); if (sText) sText.textContent = 'Guardar Cambios';
-};
 
 window.removeTrade = async function(idx) {
   const active = getActiveAccount();
@@ -327,7 +296,7 @@ function setupEventListeners() {
           active.appData[item.dateKey].push(item.trade);
           agregados++;
         } else {
-          // ACTUALIZAR COMISIONES SI VIENEN DEL CSV IBKR
+          // Actualización de comisiones de IBKR
           const existing = active.appData[item.dateKey].find(ex =>
             (ex.ticker || '').split(' ')[0].toUpperCase().trim() === (item.trade.ticker || '').split(' ')[0].toUpperCase().trim() &&
             Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.20

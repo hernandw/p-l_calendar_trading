@@ -1,10 +1,7 @@
 /**
- * public/js/importer.js - Analizador CSV especializado para Schwab e IBKR
+ * public/js/importer.js - Lector de CSVs con extracción de comisiones reales de IBKR y Schwab
  */
-
-ex/**
- * public/js/importer.js - Analizador CSV con soporte nativo de Acciones y Opciones
- */
+import { cleanStrike } from './state.js';
 
 export function parseFlexibleDate(dateStr) {
   if (!dateStr) return null;
@@ -21,11 +18,6 @@ export function parseFlexibleDate(dateStr) {
     return `${clean.substring(0, 4)}-${clean.substring(4, 6)}-${clean.substring(6, 8)}`;
   }
   return null;
-}
-
-export function cleanStrike(val) {
-  if (!val || val === '-' || val === 'NaN') return '-';
-  return String(val).replace(/\$/g, '').trim();
 }
 
 export function parseCsvFile(file, callbacks) {
@@ -46,7 +38,6 @@ export function parseCsvFile(file, callbacks) {
 
       for (let i = 0; i < Math.min(rows.length, 30); i++) {
         const rowStr = rows[i].map(c => String(c).trim().toLowerCase());
-        
         if (rowStr.some(c => c === 'startingcash' || c === 'depositsmtd')) {
           headerRowIndex = i;
           isTransactionsFile = true;
@@ -54,7 +45,6 @@ export function parseCsvFile(file, callbacks) {
           brokerDetected = 'IBKR';
           break;
         }
-
         const hasAction = rowStr.some(c => c.includes('action') || c.includes('type'));
         const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto'));
         if (hasAction && hasAmount) {
@@ -63,11 +53,9 @@ export function parseCsvFile(file, callbacks) {
           brokerDetected = 'IBKR';
           break;
         }
-
         const hasSymbol = rowStr.some(c => c === 'symbol' || c === 'description');
         const hasPnl = rowStr.some(c => c.includes('gain/loss') || c.includes('fifopnlrealized'));
         const hasIbkrCols = rowStr.some(c => c.includes('fifopnlrealized') || c.includes('tradedate'));
-
         if ((hasSymbol && hasPnl) || hasIbkrCols) {
           headerRowIndex = i;
           isTransactionsFile = false;
@@ -83,7 +71,7 @@ export function parseCsvFile(file, callbacks) {
 
       const headers = rows[headerRowIndex].map(h => String(h).trim());
 
-      // CASO A: FLUJOS DE EFECTIVO
+      // CASO A: FLUJO DE CAPITAL
       if (isTransactionsFile) {
         const flows = [];
         let minD = null, maxD = null;
@@ -128,7 +116,7 @@ export function parseCsvFile(file, callbacks) {
         return;
       }
 
-      // CASO B: TRADES (OPCIONES Y ACCIONES)
+      // CASO B: OPERACIONES (TRADES)
       const symbolIdx = headers.findIndex(h => /^symbol$|description/i.test(h));
       const closedDateIdx = headers.findIndex(h => /closed\s*date|^tradedate$|datetime|^date$/i.test(h));
       const qtyIdx = headers.findIndex(h => /quantity|^qty$/i.test(h));
@@ -139,7 +127,7 @@ export function parseCsvFile(file, callbacks) {
       const commIdx = headers.findIndex(h => /ibcommission|commission/i.test(h));
       const assetClassIdx = headers.findIndex(h => /assetclass/i.test(h));
 
-      // Sumar comisiones de compra si están separadas
+      // Extraer comisiones previas de apertura en IBKR
       const buyCommissionsByTicker = {};
       if (brokerDetected === 'IBKR' && commIdx !== -1) {
         for (let r = headerRowIndex + 1; r < rows.length; r++) {
@@ -168,8 +156,6 @@ export function parseCsvFile(file, callbacks) {
 
         const rawPnl = parseFloat(gainLossRaw.replace(/\$/g, '').replace(/,/g, '').trim());
         if (isNaN(rawPnl)) continue;
-
-        // En IBKR, las aperturas tienen PnL 0; se omiten
         if (brokerDetected === 'IBKR' && rawPnl === 0) continue;
 
         const qty = (qtyIdx !== -1 && row[qtyIdx]) ? Math.abs(parseInt(String(row[qtyIdx]).trim(), 10) || 1) : 1;

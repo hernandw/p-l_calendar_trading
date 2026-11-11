@@ -69,7 +69,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-start bg-[#EBF1F6] dark:bg-darkBg text-slate-800 dark:text-slate-100">
+<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-start bg-[#EBF1F6] dark:bg-darkBg text-slate-800 dark:text-slate-100 font-sans">
 
   <!-- BARRA EXTERIOR SUPERIOR -->
   <div class="w-full max-w-xl flex items-center justify-between mb-3 px-1">
@@ -79,18 +79,18 @@
     </div>
     
     <div class="flex items-center gap-1.5">
-      <!-- Botón Tema Oscuro / Claro -->
+      <!-- Botón Tema Dark/Light -->
       <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95 cursor-pointer">
         <i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i>
       </button>
 
       <!-- Botón Descargar Backup -->
-      <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad completa (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
+      <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad en servidor (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span>Backup</span>
       </button>
 
-      <!-- Botón Restaurar Backup (Totalmente Activo) -->
+      <!-- Botón Restaurar Backup (Activo y Visible) -->
       <label title="Restaurar copia de seguridad desde un archivo JSON" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
         <span>Restaurar</span>
@@ -123,20 +123,10 @@
           </label>
           <div class="relative">
             <select id="accountSelect" class="w-full appearance-none text-xs font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-darkSubtle hover:bg-slate-100 dark:hover:bg-slate-800/60 px-3 py-2 pr-8 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none cursor-pointer">
-              <!-- Opciones dinámicas -->
+              <!-- Cuentas dinámicas -->
             </select>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
           </div>
-        </div>
-
-        <div class="flex items-end gap-1.5 pt-4">
-          <button id="openNewAccountBtn" type="button" class="px-2.5 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-sm active:scale-95 flex items-center gap-1" title="Crear nueva cuenta">
-            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>Nueva</span>
-          </button>
-          <button id="editActiveAccountBtn" type="button" class="p-2 border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition" title="Editar detalles de cuenta">
-            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
-          </button>
         </div>
       </div>
 
@@ -151,7 +141,7 @@
     <header class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-darkBorder">
       <div class="flex items-center space-x-2">
         <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">P&amp;L Calendar</h1>
-        <button id="helpBtn" type="button" title="Información" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition p-0.5 rounded-full">
+        <button id="helpBtn" type="button" title="Información" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition p-0.5 rounded-full cursor-pointer">
           <i data-lucide="info" class="w-4 h-4"></i>
         </button>
       </div>
@@ -186,7 +176,7 @@
         </div>
       </div>
 
-      <!-- Barra de Pestañas con Iconos -->
+      <!-- Pestañas -->
       <div class="bg-slate-100 dark:bg-darkSubtle p-0.5 rounded-xl flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-darkBorder overflow-x-auto max-w-full">
         <button id="viewMonthBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5 cursor-pointer">
           <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
@@ -330,60 +320,9 @@
         </div>
       </div>
 
-      <div id="transferButtonContainer" class="hidden">
-        <button id="openTransferModalBtn" type="button" class="w-full py-2.5 px-3 bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-300 border border-emerald-800/60 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
-          <i data-lucide="arrow-left-right" class="w-4 h-4 text-emerald-400"></i>
-          <span>Transferir Capital entre Cuentas</span>
-        </button>
-      </div>
-
-      <form id="capitalFlowForm" class="p-3.5 bg-[#0d1424] rounded-2xl border border-slate-800 space-y-2.5 text-xs text-white">
-        <div class="flex items-center justify-between font-bold text-slate-200">
-          <span class="flex items-center gap-1.5">
-            <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-blue-400"></i>
-            <span id="capitalFormActionLabel">Registrar Movimiento Externo (Banco / Fondeo)</span>
-          </span>
-          <button type="button" id="cancelCapitalEditBtn" class="hidden text-xs text-rose-400 hover:text-rose-500 font-bold flex items-center gap-0.5 cursor-pointer">
-            <i data-lucide="x" class="w-3 h-3"></i> Cancelar edición
-          </button>
-        </div>
-
-        <input type="hidden" id="capitalEditId" value="">
-
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Tipo</label>
-            <select id="capitalFlowType" class="w-full px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none">
-              <option value="deposit">Depósito Bancario (+)</option>
-              <option value="withdrawal">Retiro a Banco (-)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5 flex items-center justify-between">
-              <span>Fecha</span>
-              <span class="text-[9px] text-blue-400 cursor-pointer font-normal" onclick="document.getElementById('capitalFlowDate').showPicker?.()">Elegir</span>
-            </label>
-            <input type="date" id="capitalFlowDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold focus:outline-none cursor-pointer">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Monto ($)</label>
-            <input type="number" step="0.01" min="0.01" id="capitalFlowAmount" placeholder="1000.00" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white font-bold focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Concepto</label>
-            <input type="text" id="capitalFlowNote" placeholder="Aporte bancario / ACH" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold focus:outline-none">
-          </div>
-        </div>
-
-        <button type="submit" id="capitalSubmitBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
-          <i data-lucide="plus" id="capitalSubmitIcon" class="w-3.5 h-3.5"></i>
-          <span id="capitalSubmitText">Agregar Movimiento Externo</span>
-        </button>
-      </form>
-
       <div class="space-y-1.5">
         <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-          <span>Movimientos Registrados (Depósitos, Retiros y Transferencias)</span>
+          <span>Movimientos Registrados (Depósitos y Retiros)</span>
           <span id="capitalCountLabel" class="text-[10px] font-normal lowercase">0 movimientos</span>
         </div>
         <div id="capitalFlowsList" class="space-y-1.5 max-h-[260px] overflow-y-auto custom-scrollbar pr-1"></div>
@@ -436,61 +375,6 @@
         </button>
       </div>
 
-      <!-- Formulario de Trade Manual -->
-      <form id="tradeForm" class="mt-4 bg-[#0d1424] p-3.5 rounded-2xl border border-slate-800 space-y-3">
-        <input type="hidden" id="editTradeIndex" value="">
-
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[10px] uppercase font-bold text-slate-400">
-          <div>
-            <label class="block mb-0.5">Ticker</label>
-            <input type="text" id="tradeTicker" placeholder="TSLA / SPY" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white uppercase focus:ring-2 focus:ring-blue-500 focus:outline-none">
-          </div>
-          <div>
-            <label class="block mb-0.5">Cantidad</label>
-            <input type="number" min="1" id="tradeQty" value="10" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
-          </div>
-          <div>
-            <label class="block mb-0.5">Strike</label>
-            <input type="text" id="tradeStrike" placeholder="340.00" value="-" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
-          </div>
-          <div>
-            <label class="block mb-0.5">Tipo</label>
-            <select id="tradeType" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
-              <option value="CALL">CALL</option>
-              <option value="PUT" selected>PUT</option>
-              <option value="STK">STK</option>
-            </select>
-          </div>
-          <div>
-            <label class="block mb-0.5">Expiración</label>
-            <input type="text" id="tradeDteInput" placeholder="0DTE" value="0DTE" class="w-full text-xs font-bold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white uppercase focus:outline-none">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Compra unitaria</label>
-            <div class="relative flex items-center">
-              <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
-              <input type="number" step="0.01" min="0" id="tradeUnitCost" placeholder="33.66" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
-            </div>
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Venta unitaria</label>
-            <div class="relative flex items-center">
-              <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
-              <input type="number" step="0.01" min="0" id="tradeUnitProceeds" placeholder="41.33" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
-            </div>
-          </div>
-          <div class="flex items-end">
-            <button type="submit" id="tradeSubmitBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
-              <i data-lucide="plus" id="tradeSubmitIcon" class="w-3.5 h-3.5"></i>
-              <span id="tradeSubmitText">Agregar Trade</span>
-            </button>
-          </div>
-        </div>
-      </form>
-
       <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
         <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Detalle de Operaciones</div>
         <div id="tradesListContainer" class="space-y-2"></div>
@@ -513,117 +397,6 @@
       <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
         <div id="tickerDetailsModalList" class="space-y-2"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- MODAL: TRANSFERENCIA ENTRE CUENTAS -->
-  <div id="transferModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-[#090d16] text-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-800 flex flex-col">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <i data-lucide="arrow-left-right" class="w-5 h-5 text-emerald-400"></i>
-          <h2 id="transferModalTitle" class="text-base font-black text-white">Transferencia de Fondos entre Brokers</h2>
-        </div>
-        <button id="closeTransferModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-white cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <form id="transferForm" class="mt-4 space-y-3 text-xs">
-        <input type="hidden" id="editTransferId" value="">
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-bold text-slate-400 mb-1">Cuenta Origen (Sale)</label>
-            <select id="transferFromAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold focus:outline-none"></select>
-            <span id="transferFromAvailableLabel" class="text-[10px] text-emerald-400 font-bold block mt-1">Disponible: $0.00</span>
-          </div>
-          <div>
-            <label class="block font-bold text-slate-400 mb-1">Cuenta Destino (Entra)</label>
-            <select id="transferToAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold focus:outline-none"></select>
-            <span id="transferToCurrentLabel" class="text-[10px] text-slate-400 font-medium block mt-1">Saldo actual: $0.00</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block font-bold text-slate-400 mb-1 flex items-center justify-between">
-              <span>Fecha</span>
-              <span class="text-[9px] text-blue-400 cursor-pointer font-normal" onclick="document.getElementById('transferDate').showPicker?.()">Elegir</span>
-            </label>
-            <input type="date" id="transferDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold focus:outline-none cursor-pointer">
-          </div>
-          <div>
-            <label class="block font-bold text-slate-400 mb-1">Monto a Transferir ($)</label>
-            <input type="number" step="0.01" min="0.01" id="transferAmount" placeholder="500.00" required class="w-full px-2.5 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-bold focus:outline-none">
-          </div>
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-400 mb-1">Nota / Concepto</label>
-          <input type="text" id="transferNote" placeholder="Transferencia entre brokers" class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold focus:outline-none">
-        </div>
-
-        <div class="flex items-center justify-between pt-2 gap-2">
-          <button type="button" id="deleteTransferBtn" class="hidden px-3 py-2 bg-rose-950/60 text-rose-400 font-bold rounded-xl hover:bg-rose-900 transition cursor-pointer">
-            Eliminar
-          </button>
-          <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="cancelTransferBtn" class="px-3.5 py-2 border border-slate-700 rounded-xl text-slate-400 cursor-pointer">Cancelar</button>
-            <button type="submit" id="submitTransferBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition cursor-pointer">
-              <span id="submitTransferText">Confirmar Transferencia</span>
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- MODAL: GESTOR DE CUENTAS -->
-  <div id="accountModal" style="display: none;" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4">
-    <div class="bg-[#090d16] text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-800 flex flex-col">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <i data-lucide="building-2" class="w-5 h-5 text-blue-400"></i>
-          <h2 id="accountModalTitle" class="text-base font-black text-white">Nueva Cuenta de Broker</h2>
-        </div>
-        <button id="closeAccountModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-white cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <form id="accountForm" class="mt-4 space-y-3 text-xs">
-        <input type="hidden" id="editAccountId" value="">
-
-        <div>
-          <label class="block font-bold text-slate-400 mb-1">Broker / Plataforma</label>
-          <input type="text" id="accBrokerInput" placeholder="Ej. Charles Schwab, Interactive Brokers" required class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold">
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-400 mb-1">Nro. de Cuenta</label>
-          <input type="text" id="accNumberInput" placeholder="Ej. XXXX7484 / U24279702" required class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-mono">
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-400 mb-1">Tipo de Cuenta</label>
-          <select id="accTypeInput" class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold">
-            <option value="Margin">Margin (Apalancada / Opciones)</option>
-            <option value="Cash">Cash (Efectivo)</option>
-            <option value="IRA / Retiro">IRA / Retiro</option>
-          </select>
-        </div>
-
-        <div class="flex items-center justify-between pt-3 gap-2">
-          <button type="button" id="deleteAccountBtn" class="hidden px-3 py-2 bg-rose-950/60 text-rose-400 font-bold rounded-xl hover:bg-rose-900 transition cursor-pointer">
-            Eliminar
-          </button>
-          <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="cancelAccountBtn" class="px-3 py-2 border border-slate-700 rounded-xl text-slate-400 cursor-pointer">Cancelar</button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition cursor-pointer">Guardar</button>
-          </div>
-        </div>
-      </form>
     </div>
   </div>
 
@@ -694,7 +467,7 @@
     </div>
   </div>
 
-  <!-- CONEXIÓN MODULAR: CARGA APP.JS DE MANERA SEGURA -->
+  <!-- ARRANQUE MODULAR DE LA APLICACIÓN -->
   <script type="module">
     import { initApp } from './js/app.js';
     initApp();

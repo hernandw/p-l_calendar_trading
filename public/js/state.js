@@ -1,7 +1,6 @@
 /**
- * public/js/state.js - Estado global y persistencia con Express
+ * public/js/state.js - Estado Global y Persistencia en Disco vía Express
  */
-import { cleanStrike } from './importer.js';
 
 export const state = {
   isDarkMode: true,
@@ -16,8 +15,9 @@ export const state = {
   csvFileType: 'trades'
 };
 
-export function getActiveAccount() {
-  return state.accounts.find(a => a.id === state.activeAccountId) || state.accounts[0] || { appData: {}, capitalFlows: [] };
+export function cleanStrike(val) {
+  if (!val || val === '-') return '-';
+  return String(val).replace(/\$/g, '').trim();
 }
 
 export function formatExactCurrency(val) {
@@ -34,63 +34,16 @@ export function formatMoney(val) {
   return `${sign}${absVal.toFixed(2)}`;
 }
 
-export function getDayPnL(dateKey) {
-  const active = getActiveAccount();
-  const trades = active.appData?.[dateKey] || [];
-  if (trades.length === 0) return null;
-  return trades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
+export function getActiveAccount() {
+  return state.accounts.find(a => a.id === state.activeAccountId) || state.accounts[0] || { appData: {}, capitalFlows: [] };
 }
 
-export function getAccountBalance(accountId, excludeFlowId = null, excludeTransferId = null) {
-  const acc = state.accounts.find(a => a.id === accountId);
-  if (!acc) return 0;
-
-  let totalDeposited = 0;
-  let totalWithdrawn = 0;
-
-  (acc.capitalFlows || []).forEach(f => {
-    if (excludeTransferId && f.transferId && String(f.transferId) === String(excludeTransferId)) return;
-    if (excludeFlowId && (f.id === excludeFlowId || String(f.id) === String(excludeFlowId))) return;
-    const amt = Number(f.amount || 0);
-    if (f.type === 'deposit') totalDeposited += amt;
-    else if (f.type === 'withdrawal') totalWithdrawn += amt;
-  });
-
-  const netCapitalInflow = totalDeposited - totalWithdrawn;
-  let cumulativePnl = 0;
-  Object.keys(acc.appData || {}).forEach(k => {
-    (acc.appData[k] || []).forEach(t => {
-      cumulativePnl += Number(t.pnl || 0);
-    });
-  });
-
-  return netCapitalInflow + cumulativePnl;
-}
-
-export function calculatePeakBalance(acc) {
-  if (!acc) return 0;
-  let runningBalance = 0;
-  let peak = 0;
-
-  const events = [];
-  (acc.capitalFlows || []).forEach(f => {
-    events.push({ date: f.date, amount: f.type === 'deposit' ? Number(f.amount) : -Number(f.amount) });
-  });
-
-  Object.keys(acc.appData || {}).forEach(dKey => {
-    (acc.appData[dKey] || []).forEach(t => {
-      events.push({ date: dKey, amount: Number(t.pnl || 0) });
-    });
-  });
-
-  events.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  events.forEach(e => {
-    runningBalance += e.amount;
-    if (runningBalance > peak) peak = runningBalance;
-  });
-
-  return peak;
+export function getSystemTodayKey() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 export function deduplicateAccountData(acc) {
@@ -114,13 +67,10 @@ export function deduplicateAccountData(acc) {
         cleanTrades.push(t);
       } else {
         const existing = seen.get(sig);
-        // Actualizar datos si el nuevo trae costo o comisión real de IBKR
+        if (t.commission !== undefined && t.commission > 0) existing.commission = t.commission;
         if (Number(t.costBasis || 0) > Number(existing.costBasis || 0)) {
           existing.costBasis = t.costBasis;
           existing.proceeds = t.proceeds;
-        }
-        if (t.commission !== undefined && t.commission > 0) {
-          existing.commission = t.commission;
         }
       }
     });
@@ -137,7 +87,6 @@ export async function loadAccountsData() {
     state.accounts = data.accounts || [];
     state.activeAccountId = data.activeAccountId || state.accounts[0]?.id;
     state.isDarkMode = data.isDarkMode ?? true;
-
     state.accounts.forEach(acc => deduplicateAccountData(acc));
   } catch (err) {
     console.error('Error al conectar con la API de Express:', err);

@@ -1,8 +1,7 @@
 /**
- * public/js/renderers.js - Renderizado de UI y Comisiones Corregidas
+ * public/js/renderers.js - Funciones de Renderizado Visual
  */
-import { state, getActiveAccount, formatExactCurrency, formatMoney, getDayPnL, getAccountBalance, calculatePeakBalance } from './state.js';
-import { cleanStrike } from './importer.js';
+import { state, getActiveAccount, getDayPnL, formatMoney, formatExactCurrency, getSystemTodayKey, cleanStrike } from './state.js';
 
 export function safeIcons() {
   try {
@@ -55,15 +54,15 @@ export function renderAccountSelector() {
   });
 
   const active = getActiveAccount();
-  const bBroker = document.getElementById('badgeBrokerName');
-  const bType = document.getElementById('badgeAccountType');
-  const bNum = document.getElementById('badgeAccountNumber');
-  const cTarget = document.getElementById('csvTargetAccountLabel');
+  const badgeBroker = document.getElementById('badgeBrokerName');
+  const badgeType = document.getElementById('badgeAccountType');
+  const badgeNum = document.getElementById('badgeAccountNumber');
+  const csvLabel = document.getElementById('csvTargetAccountLabel');
 
-  if (bBroker) bBroker.textContent = active.broker || 'Broker';
-  if (bType) bType.textContent = active.type || 'Margin';
-  if (bNum) bNum.textContent = `Nro: ${active.number || '-'}`;
-  if (cTarget) cTarget.textContent = `${active.broker} (${active.number})`;
+  if (badgeBroker) badgeBroker.textContent = active.broker || 'Broker';
+  if (badgeType) badgeType.textContent = active.type || 'Margin';
+  if (badgeNum) badgeNum.textContent = `Nro: ${active.number || '-'}`;
+  if (csvLabel) csvLabel.textContent = `${active.broker} (${active.number})`;
 
   const transferBtnCont = document.getElementById('transferButtonContainer');
   if (transferBtnCont) {
@@ -141,8 +140,7 @@ export function renderMonthView() {
     cursor.setDate(cursor.getDate() + 1);
   }
 
-  const now = new Date();
-  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  const todayStr = getSystemTodayKey();
   const active = getActiveAccount();
 
   days.forEach(dObj => {
@@ -314,7 +312,7 @@ export function renderTickersView() {
   });
 }
 
-// 4. VISTA COMISIONES CORREGIDA (REGLA ACCIONES VS OPCIONES E IBCOMMISSION)
+// CORRECCIÓN EXACTA DE COMISIONES IBKR VS SCHWAB
 export function renderCommissionsView() {
   const tbody = document.getElementById('commissionsTableBody');
   if (!tbody) return;
@@ -332,21 +330,20 @@ export function renderCommissionsView() {
         const qty = parseInt(t.qty, 10) || 1;
         const pnl = Number(t.pnl || 0);
 
-        // REGLA EXACTA:
-        // 1. Si el trade trae t.commission (de la columna IBCommission de IBKR), usarlo 100% real.
-        // 2. Si es una acción (STK) y no trae comisión, es $0.00 (las acciones no pagan $1.30 de opciones).
-        // 3. Si es opción (CALL/PUT), calcular qty * 1.30 (Schwab/TOS round-trip).
         let comm = 0;
+        // Si trae la comisión explícita del CSV (IBCommission), se usa directa
         if (t.commission !== undefined && t.commission > 0) {
           comm = t.commission;
         } else if (t.type === 'STK') {
+          // Si son acciones sin comisión explícita, no se cobra tarifa de opciones
           comm = 0;
         } else {
+          // Si son opciones de Schwab, se cobra $1.30 por contrato round-trip
           comm = qty * fallbackRate;
         }
 
         if (!tickerStats[sym]) {
-          tickerStats[sym] = { ticker: sym, type: t.type, contracts: 0, netPnl: 0, commission: 0 };
+          tickerStats[sym] = { ticker: sym, contracts: 0, netPnl: 0, commission: 0 };
         }
         tickerStats[sym].contracts += qty;
         tickerStats[sym].netPnl += pnl;
@@ -363,7 +360,7 @@ export function renderCommissionsView() {
   const cFees = document.getElementById('commTotalFees');
   const cImp = document.getElementById('commTotalImpact');
 
-  if (cCtos) cCtos.textContent = `${totalContracts} ctos/acc`;
+  if (cCtos) cCtos.textContent = `${totalContracts} ops`;
   if (cFees) cFees.textContent = `-${formatExactCurrency(totalComms).replace('-', '').replace('+', '')}`;
   const gross = totalNet + totalComms;
   const impact = gross > 0 ? ((totalComms / gross) * 100).toFixed(1) : 0;
@@ -376,7 +373,7 @@ export function renderCommissionsView() {
       <td class="py-2.5 px-3">
         <span class="px-2 py-0.5 rounded-lg font-black ${getTickerBadgeClass(s.ticker)}">${s.ticker}</span>
       </td>
-      <td class="py-2.5 px-2 text-center font-bold text-slate-300">${s.contracts} ${s.type === 'STK' ? 'acc' : 'ctos'}</td>
+      <td class="py-2.5 px-2 text-center font-bold text-slate-300">${s.contracts} ops</td>
       <td class="py-2.5 px-2 text-right font-bold text-rose-400">-${formatExactCurrency(s.commission).replace('-', '').replace('+', '')}</td>
       <td class="py-2.5 px-2 text-right font-bold text-slate-200">${formatExactCurrency(s.netPnl + s.commission)}</td>
       <td class="py-2.5 px-3 text-right font-black ${s.netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatExactCurrency(s.netPnl)}</td>
@@ -387,7 +384,6 @@ export function renderCommissionsView() {
 
 export function renderCapitalView() {
   const active = getActiveAccount();
-  const currentBal = getAccountBalance(active.id);
   let dep = 0, wth = 0;
   (active.capitalFlows || []).forEach(f => {
     if (f.type === 'deposit') dep += Number(f.amount || 0);
@@ -400,7 +396,7 @@ export function renderCapitalView() {
     (active.appData[k] || []).forEach(t => cumulativePnl += Number(t.pnl || 0));
   });
 
-  const peakBalance = calculatePeakBalance(active);
+  const currentBal = netInflow + cumulativePnl;
 
   const curBalEl = document.getElementById('accountCurrentBalance');
   const depEl = document.getElementById('accountTotalDeposits');
@@ -420,7 +416,7 @@ export function renderCapitalView() {
     pnlEl.className = `font-extrabold text-sm ${cumulativePnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
   }
 
-  if (peakEl) peakEl.textContent = formatExactCurrency(peakBalance);
+  if (peakEl) peakEl.textContent = formatExactCurrency(Math.max(currentBal, netInflow));
 
   const roi = netInflow > 0 ? ((cumulativePnl / netInflow) * 100).toFixed(1) : 0;
   if (roiBadge) {
@@ -451,12 +447,10 @@ export function renderCapitalView() {
     let iconColor = isTransfer ? 'bg-cyan-500/15 text-cyan-400' : (isDep ? 'bg-emerald-500/15 text-emerald-400' : 'bg-rose-500/15 text-rose-400');
     let title = isTransfer ? (isDep ? 'Transferencia (Entrada)' : 'Transferencia (Salida)') : (isDep ? 'Depósito Bancario' : 'Retiro a Banco');
 
-    const editCall = isTransfer ? `window.openEditTransferModal('${f.transferId}', ${f.id})` : `window.editCapitalFlow(${f.id})`;
-
     const item = document.createElement('div');
     item.className = "p-2.5 rounded-xl border border-slate-800 bg-[#0d1424] text-white flex items-center justify-between text-xs hover:border-blue-500 transition";
     item.innerHTML = `
-      <div class="flex items-center space-x-2.5 cursor-pointer" onclick="${editCall}">
+      <div class="flex items-center space-x-2.5 cursor-pointer">
         <div class="w-7 h-7 rounded-lg flex items-center justify-center ${iconColor}">
           <i data-lucide="${icon}" class="w-4 h-4"></i>
         </div>
@@ -472,12 +466,6 @@ export function renderCapitalView() {
         <span class="font-black text-xs ${isDep ? 'text-emerald-400' : 'text-rose-400'}">
           ${isDep ? '+' : '-'}${formatExactCurrency(f.amount).replace('-', '').replace('+', '')}
         </span>
-        <button onclick="${editCall}" type="button" class="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800" title="Editar">
-          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-        </button>
-        <button onclick="window.removeCapitalFlow(${f.id})" type="button" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800" title="Eliminar">
-          <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-        </button>
       </div>
     `;
     list.appendChild(item);
