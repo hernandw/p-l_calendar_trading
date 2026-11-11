@@ -230,7 +230,7 @@
       <div id="yearMonthsGrid" class="grid grid-cols-3 gap-3 py-1"></div>
     </section>
 
-    <!-- 3. VISTA TICKERS (DISEÑO RESTAURADO A TU IMAGEN 3) -->
+    <!-- 3. VISTA TICKERS (DISEÑO EXACTO RESTAURADO A TU IMAGEN 3) -->
     <section id="tickersView" class="hidden w-full space-y-3">
       <div class="flex items-center justify-between gap-2 pb-1">
         <div class="relative flex-1">
@@ -247,7 +247,7 @@
       <div id="tickersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto custom-scrollbar pr-1"></div>
     </section>
 
-    <!-- 4. VISTA COMISIONES (DISEÑO RESTAURADO A TU IMAGEN 2) -->
+    <!-- 4. VISTA COMISIONES (DISEÑO EXACTO RESTAURADO A TU IMAGEN 2) -->
     <section id="commissionsView" class="hidden w-full space-y-3">
       <div id="commissionsNoticeBox" class="p-3.5 bg-slate-900/60 dark:bg-[#0d1424] rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-white">
         <div class="flex items-center space-x-2">
@@ -294,7 +294,7 @@
       </div>
     </section>
 
-    <!-- 5. PESTAÑA CAPITAL REAL (DISEÑO RESTAURADO A TU IMAGEN 1) -->
+    <!-- 5. PESTAÑA CAPITAL REAL (DISEÑO EXACTO RESTAURADO A TU IMAGEN 1) -->
     <section id="capitalView" class="hidden w-full space-y-4">
       <div class="p-5 bg-[#0d1424] text-white rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs text-slate-300 font-bold uppercase tracking-wider">
@@ -438,7 +438,6 @@
         </button>
       </div>
 
-      <!-- FORMULARIO MANUAL DE TRADE COMPLETO -->
       <form id="tradeForm" class="mt-4 bg-[#0d1424] p-3.5 rounded-2xl border border-slate-800 space-y-3">
         <input type="hidden" id="editTradeIndex" value="">
 
@@ -496,6 +495,24 @@
       <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
         <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Detalle de Operaciones</div>
         <div id="tradesListContainer" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALLE DEL TICKER (AUDITORÍA INDIVIDUAL) -->
+  <div id="tickerDetailsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-[#090d16] text-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-800 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <h2 id="tickerDetailsModalTitle" class="text-base font-black text-white">Historial de Ticker</h2>
+          <p id="tickerDetailsModalSub" class="text-xs text-slate-400 mt-0.5"></p>
+        </div>
+        <button id="closeTickerDetailsModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
+        <div id="tickerDetailsModalList" class="space-y-2"></div>
       </div>
     </div>
   </div>
@@ -563,7 +580,7 @@
     </div>
   </div>
 
-  <!-- MODAL: GESTOR DE CUENTAS (CORREGIDO PARA ABRIR INMEDIATAMENTE) -->
+  <!-- MODAL: GESTOR DE CUENTAS (CONTROL CON STYLE.DISPLAY DIRECTO) -->
   <div id="accountModal" style="display: none;" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4">
     <div class="bg-[#090d16] text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-800 flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -731,6 +748,32 @@
         }];
       }
 
+      // RUTINA DE DESDUPLICACIÓN Y PURGA PROFUNDA
+      function deduplicateAccountData(acc) {
+        if (!acc || !acc.appData) return;
+        Object.keys(acc.appData).forEach(dKey => {
+          const trades = acc.appData[dKey] || [];
+          const seen = new Set();
+          const cleanTrades = [];
+
+          trades.forEach(t => {
+            // Normalizar Ticker raíz eliminando fechas y strikes pegados
+            const cleanTicker = (t.ticker || 'OTHER').split(' ')[0].toUpperCase().trim();
+            t.ticker = cleanTicker;
+
+            // Clave única inmutable de la operación
+            const sig = `${dKey}_${cleanTicker}_${t.type}_${t.qty}_${cleanStrike(t.strike)}_${Number(t.pnl).toFixed(2)}_${Number(t.costBasis).toFixed(2)}`;
+            if (!seen.has(sig)) {
+              seen.add(sig);
+              cleanTrades.push(t);
+            }
+          });
+
+          acc.appData[dKey] = cleanTrades;
+          if (cleanTrades.length === 0) delete acc.appData[dKey];
+        });
+      }
+
       function loadAccountsData() {
         try {
           const saved = localStorage.getItem(STORAGE_KEY_MULTI);
@@ -747,6 +790,10 @@
         } catch(e) {
           accounts = getDefaultAccounts();
         }
+
+        // Purgar duplicados de todas las cuentas al cargar
+        accounts.forEach(acc => deduplicateAccountData(acc));
+        saveAccountsData();
 
         const savedActive = localStorage.getItem(ACTIVE_ACCOUNT_KEY);
         if (savedActive && accounts.some(a => a.id === savedActive)) {
@@ -800,7 +847,7 @@
       }
 
       function getTickerBadgeClass(ticker) {
-        const sym = (ticker || '').toUpperCase().trim();
+        const sym = (ticker || '').split(' ')[0].toUpperCase().trim();
         switch(sym) {
           case 'NVDA': return 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40';
           case 'SPY': return 'bg-blue-950/80 text-blue-400 border border-blue-500/40';
@@ -846,15 +893,14 @@
         let runningBalance = 0;
         let peak = 0;
 
-        // Sumar flujos de capital ordenados cronológicamente
         const events = [];
         (acc.capitalFlows || []).forEach(f => {
-          events.push({ date: f.date, type: 'capital', amount: f.type === 'deposit' ? Number(f.amount) : -Number(f.amount) });
+          events.push({ date: f.date, amount: f.type === 'deposit' ? Number(f.amount) : -Number(f.amount) });
         });
 
         Object.keys(acc.appData || {}).forEach(dKey => {
           (acc.appData[dKey] || []).forEach(t => {
-            events.push({ date: dKey, type: 'trade', amount: Number(t.pnl || 0) });
+            events.push({ date: dKey, amount: Number(t.pnl || 0) });
           });
         });
 
@@ -1033,7 +1079,7 @@
         }
       }
 
-      // 3. RENDERIZADO TICKERS (IDÉNTICO A TU IMAGEN 3)
+      // 3. RENDERIZADO TICKERS (AUDITADO, SIN DUPLICADOS Y EXACTO A TU IMAGEN 3)
       function renderTickersView() {
         const grid = document.getElementById('tickersGrid');
         if (!grid) return;
@@ -1046,14 +1092,26 @@
         Object.keys(active.appData || {}).forEach(k => {
           if (k.startsWith(`${currentYear}`)) {
             (active.appData[k] || []).forEach(t => {
-              const sym = (t.ticker || 'OTHER').toUpperCase().trim();
-              if (!tickerStats[sym]) tickerStats[sym] = { ticker: sym, total: 0, pnl: 0, wins: 0, losses: 0, cost: 0 };
-              tickerStats[sym].total++;
+              // Extraer Ticker raíz limpio
+              const sym = (t.ticker || 'OTHER').split(' ')[0].toUpperCase().trim();
+              if (!tickerStats[sym]) {
+                tickerStats[sym] = { ticker: sym, total: 0, pnl: 0, wins: 0, losses: 0, cost: 0, tradesList: [] };
+              }
+
               const p = Number(t.pnl || 0);
+              const cost = Number(t.costBasis || 0);
+
+              tickerStats[sym].total++;
               tickerStats[sym].pnl += p;
-              tickerStats[sym].cost += Number(t.costBasis || 0);
-              if (p > 0) tickerStats[sym].wins++;
-              else if (p < 0) tickerStats[sym].losses++;
+              tickerStats[sym].cost += cost;
+              tickerStats[sym].tradesList.push({ ...t, dateKey: k });
+
+              // Clasificación precisa de Win / Loss
+              if (p > 0.005) {
+                tickerStats[sym].wins++;
+              } else if (p < -0.005) {
+                tickerStats[sym].losses++;
+              }
             });
           }
         });
@@ -1065,7 +1123,11 @@
           if (sortBy === 'pnl-desc') return b.pnl - a.pnl;
           if (sortBy === 'pnl-asc') return a.pnl - b.pnl;
           if (sortBy === 'trades-desc') return b.total - a.total;
-          if (sortBy === 'winrate-desc') return (b.wins / b.total) - (a.wins / a.total);
+          if (sortBy === 'winrate-desc') {
+            const wrA = (a.wins + a.losses) > 0 ? (a.wins / (a.wins + a.losses)) : 0;
+            const wrB = (b.wins + b.losses) > 0 ? (b.wins / (b.wins + b.losses)) : 0;
+            return wrB - wrA;
+          }
           return 0;
         });
 
@@ -1075,7 +1137,8 @@
         }
 
         list.forEach(data => {
-          const winRate = data.total > 0 ? Math.round((data.wins / data.total) * 100) : 0;
+          const decidedTrades = data.wins + data.losses;
+          const winRate = decidedTrades > 0 ? Math.round((data.wins / decidedTrades) * 100) : (data.total > 0 ? 100 : 0);
           const isNetWin = data.pnl >= 0;
           const roi = data.cost > 0 ? ((data.pnl / data.cost) * 100).toFixed(1) : 0;
           const tickerBadgeStyle = getTickerBadgeClass(data.ticker);
@@ -1086,7 +1149,7 @@
             : 'bg-rose-950/80 text-rose-400 border border-rose-500/40';
 
           const card = document.createElement('div');
-          card.className = "p-4 rounded-2xl border border-slate-800 bg-[#0d1424] text-white flex flex-col justify-between shadow-md hover:border-blue-500 transition";
+          card.className = "p-4 rounded-2xl border border-slate-800 bg-[#0d1424] text-white flex flex-col justify-between shadow-md hover:border-blue-500 transition cursor-pointer";
           card.innerHTML = `
             <div class="flex items-center justify-between pb-3">
               <div class="flex items-center space-x-2">
@@ -1110,9 +1173,44 @@
               </div>
             </div>
           `;
+          card.onclick = () => openTickerDetailsModal(data);
           grid.appendChild(card);
         });
       }
+
+      // MODAL DE AUDITORÍA INDIVIDUAL POR TICKER
+      function openTickerDetailsModal(data) {
+        document.getElementById('tickerDetailsModalTitle').textContent = `Auditoría: ${data.ticker} (${currentYear})`;
+        document.getElementById('tickerDetailsModalSub').textContent = `${data.total} trades registrados | Inversión: ${formatExactCurrency(data.cost)} | Balance: ${formatExactCurrency(data.pnl)}`;
+        
+        const listContainer = document.getElementById('tickerDetailsModalList');
+        if (!listContainer) return;
+        listContainer.innerHTML = '';
+
+        data.tradesList.forEach(t => {
+          const isWin = Number(t.pnl) >= 0;
+          const item = document.createElement('div');
+          item.className = `p-2.5 rounded-xl border border-slate-800 bg-[#0d1424] flex items-center justify-between text-xs`;
+          item.innerHTML = `
+            <div>
+              <span class="font-bold text-white">${t.dateKey}</span>
+              <span class="text-slate-400 text-[10px] ml-1">(${t.qty} ${t.type} Strike ${cleanStrike(t.strike)})</span>
+              <div class="text-[10px] text-slate-500">Inversión: ${formatExactCurrency(t.costBasis)} &bull; Venta: ${formatExactCurrency(t.proceeds)}</div>
+            </div>
+            <span class="font-extrabold text-sm ${isWin ? 'text-emerald-400' : 'text-rose-400'}">${formatExactCurrency(t.pnl)}</span>
+          `;
+          listContainer.appendChild(item);
+        });
+
+        document.getElementById('tickerDetailsModal').classList.remove('hidden');
+        document.getElementById('tickerDetailsModal').classList.add('flex');
+        safeIcons();
+      }
+
+      document.getElementById('closeTickerDetailsModalBtn')?.addEventListener('click', () => {
+        document.getElementById('tickerDetailsModal').classList.add('hidden');
+        document.getElementById('tickerDetailsModal').classList.remove('flex');
+      });
 
       // 4. RENDERIZADO COMISIONES (IDÉNTICO A TU IMAGEN 2)
       function renderCommissionsView() {
@@ -1121,20 +1219,17 @@
         tbody.innerHTML = '';
 
         const active = getActiveAccount();
-        const isIbkr = (active.broker || '').toLowerCase().includes('interactive');
         const fallbackRate = parseFloat(document.getElementById('feePerContractInput')?.value) || 1.30;
-        
         const tickerStats = {};
         let totalComms = 0, totalContracts = 0, totalNet = 0;
 
         Object.keys(active.appData || {}).forEach(dKey => {
           if (dKey.startsWith(`${currentYear}`)) {
             (active.appData[dKey] || []).forEach(t => {
-              const sym = (t.ticker || 'OTHER').toUpperCase().trim();
+              const sym = (t.ticker || 'OTHER').split(' ')[0].toUpperCase().trim();
               const qty = parseInt(t.qty, 10) || 1;
               const pnl = Number(t.pnl || 0);
 
-              // Si tiene comisión exacta (IBKR), se toma real. Si es Schwab/TOS, se calcula qty * 1.30
               let comm = 0;
               if (t.commission !== undefined && t.commission > 0) {
                 comm = t.commission;
@@ -1194,7 +1289,6 @@
           (active.appData[k] || []).forEach(t => cumulativePnl += Number(t.pnl || 0));
         });
 
-        // Pico histórico real (Peak Equity)
         const peakBalance = calculatePeakBalance(active);
 
         document.getElementById('accountCurrentBalance').textContent = `+${formatExactCurrency(currentBal).replace('$', '$')}`;
@@ -1480,7 +1574,7 @@
         if (!active.appData[selectedDateKey]) active.appData[selectedDateKey] = [];
 
         const idxStr = document.getElementById('editTradeIndex').value;
-        const ticker = document.getElementById('tradeTicker').value.toUpperCase().trim();
+        const ticker = (document.getElementById('tradeTicker').value || '').split(' ')[0].toUpperCase().trim();
         const qty = parseInt(document.getElementById('tradeQty').value, 10) || 1;
         const strike = cleanStrike(document.getElementById('tradeStrike').value.trim());
         const type = document.getElementById('tradeType').value;
@@ -1650,6 +1744,62 @@
         }
       });
 
+      // RESTAURACIÓN DE BACKUP ROBUSTA
+      document.getElementById('restoreBackupInput')?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          try {
+            const parsed = JSON.parse(event.target.result);
+            if (!parsed.accounts || !Array.isArray(parsed.accounts)) {
+              alert("El archivo no tiene un formato de respaldo válido.");
+              return;
+            }
+            if (confirm(`¿Restaurar respaldo con ${parsed.accounts.length} cuenta(s)?`)) {
+              accounts = parsed.accounts;
+              // Purgar duplicados que vengan dentro del propio archivo de respaldo
+              accounts.forEach(acc => deduplicateAccountData(acc));
+              activeAccountId = parsed.activeAccountId || accounts[0].id;
+              saveAccountsData();
+              localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+              if (parsed.isDarkMode !== undefined) {
+                isDarkMode = parsed.isDarkMode;
+                localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
+                applyTheme();
+              }
+              renderAccountSelector();
+              refreshActiveView();
+              alert("¡Copia de seguridad restaurada con éxito!");
+            }
+          } catch(err) {
+            alert("Error al leer JSON: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      // BACKUP
+      document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
+        const backupData = {
+          version: '1.0',
+          exportedAt: new Date().toISOString(),
+          activeAccountId: activeAccountId,
+          isDarkMode: isDarkMode,
+          accounts: accounts
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trading_journal_backup_${getSystemTodayKey()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
       // MODAL CSV (COMPATIBLE CON SCHWAB E IBKR CON DEDUPLICACIÓN INMUTABLE)
       const csvModal = document.getElementById('csvModal');
       document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
@@ -1778,6 +1928,8 @@
 
               parsedCsvFlows = flows;
               parsedCsvTrades = null;
+              csvMinDate = minD;
+              csvMaxDate = maxD;
               document.getElementById('csvFileName').textContent = file.name;
               document.getElementById('csvTradesFound').textContent = `${flows.length} movimiento(s) de capital (${brokerDetected})`;
               document.getElementById('csvSummaryText').textContent = `Período: ${minD || '-'} al ${maxD || '-'}`;
@@ -1834,15 +1986,15 @@
               const assetClass = (assetClassIdx !== -1 && row[assetClassIdx]) ? String(row[assetClassIdx]).trim().toUpperCase() : '';
               const isStock = assetClass === 'STK' || brokerDetected === 'IBKR';
 
-              // Extraer Ticker, Strike y DTE
-              let ticker = symbolRaw;
+              // Extraer Ticker raíz limpio
+              let ticker = symbolRaw.split(' ')[0].toUpperCase().trim();
               let strike = "-";
               let type = isStock ? "STK" : "CALL";
               let dte = "-";
 
               const schwabMatch = symbolRaw.match(/^([A-Z0-9]+)\s+(\d{2}\/\d{2}\/\d{4})\s+([\d\.]+)\s+([CP])$/i);
               if (schwabMatch) {
-                ticker = schwabMatch[1];
+                ticker = schwabMatch[1].toUpperCase().trim();
                 strike = cleanStrike(schwabMatch[3]);
                 type = schwabMatch[4].toUpperCase() === 'C' ? 'CALL' : 'PUT';
                 dte = '0DTE';
@@ -1915,7 +2067,7 @@
             
             // Verificación estricta por ticker, P&L, costo y cantidad
             const isDup = active.appData[item.dateKey].some(ex => {
-              const sameTicker = (ex.ticker || '').toUpperCase().trim() === (item.trade.ticker || '').toUpperCase().trim();
+              const sameTicker = (ex.ticker || '').split(' ')[0].toUpperCase().trim() === (item.trade.ticker || '').split(' ')[0].toUpperCase().trim();
               const samePnl = Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.05;
               const sameCost = Math.abs(Number(ex.costBasis || 0) - Number(item.trade.costBasis || 0)) < 0.05;
               const sameQty = parseInt(ex.qty, 10) === parseInt(item.trade.qty, 10);
@@ -1925,11 +2077,13 @@
             if (!isDup) active.appData[item.dateKey].push(item.trade);
           });
 
+          // Purgar y consolidar la cuenta antes de guardar
+          deduplicateAccountData(active);
           saveAccountsData();
+
           csvModal.classList.add('hidden');
           csvModal.classList.remove('flex');
 
-          // Desplazar automáticamente al mes de los trades subidos
           if (parsedCsvTrades.length > 0) {
             const lastDate = parsedCsvTrades[parsedCsvTrades.length - 1].dateKey;
             const parts = lastDate.split('-');
