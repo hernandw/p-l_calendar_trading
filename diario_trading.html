@@ -252,7 +252,7 @@
       <div class="p-3 bg-slate-50 dark:bg-darkSubtle rounded-2xl border border-slate-200/80 dark:border-darkBorder flex flex-wrap items-center justify-between gap-2 text-xs">
         <div class="flex items-center space-x-2">
           <i data-lucide="receipt" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
-          <span class="font-bold text-slate-700 dark:text-slate-300">Comisión estimada por contrato/trade (Opciones):</span>
+          <span class="font-bold text-slate-700 dark:text-slate-300">Tarifa estimada para opciones (Schwab):</span>
         </div>
         <div class="flex items-center space-x-1.5">
           <span class="text-xs font-bold text-slate-400">$</span>
@@ -443,64 +443,6 @@
         </button>
       </div>
 
-      <form id="tradeForm" class="mt-4 bg-slate-50/80 dark:bg-darkSubtle p-3.5 rounded-2xl border border-slate-200/70 dark:border-darkBorder space-y-3 transition">
-        <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
-          <span class="flex items-center gap-1.5">
-            <i data-lucide="plus-circle" id="tradeFormIcon" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
-            <span id="tradeFormTitle">Nuevo Trade Manual</span>
-          </span>
-          <button type="button" id="cancelTradeEditBtn" class="hidden text-xs text-rose-500 hover:text-rose-600 lowercase font-bold flex items-center gap-0.5">
-            <i data-lucide="x" class="w-3 h-3"></i> cancelar edición
-          </button>
-        </div>
-
-        <input type="hidden" id="editTradeIndex" value="">
-
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ticker</label>
-            <input type="text" id="tradeTicker" placeholder="PXLW / SPY" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Cantidad</label>
-            <input type="number" min="1" id="tradeQty" value="10" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Strike (o -)</label>
-            <input type="text" id="tradeStrike" placeholder="340.00" value="-" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Tipo</label>
-            <select id="tradeType" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-              <option value="CALL">CALL</option>
-              <option value="PUT">PUT</option>
-              <option value="STK" selected>STK (Acciones)</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">DTE / Plazo</label>
-            <input type="text" id="tradeDteInput" placeholder="0DTE / -" value="-" class="w-full text-xs font-bold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Precio Compra ($)</label>
-            <input type="number" step="0.01" min="0" id="tradeUnitCost" placeholder="6.22" required class="w-full text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-          </div>
-          <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Precio Venta ($)</label>
-            <input type="number" step="0.01" min="0" id="tradeUnitProceeds" placeholder="6.80" required class="w-full text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-          </div>
-          <div class="flex items-end">
-            <button type="submit" id="tradeSubmitBtn" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1">
-              <i data-lucide="plus" id="tradeSubmitIcon" class="w-3.5 h-3.5"></i>
-              <span id="tradeSubmitText">Guardar Trade</span>
-            </button>
-          </div>
-        </div>
-      </form>
-
       <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
         <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Detalle de Operaciones</div>
         <div id="tradesListContainer" class="space-y-2"></div>
@@ -516,7 +458,7 @@
           <i data-lucide="arrow-left-right" class="w-5 h-5 text-emerald-500"></i>
           <h2 id="transferModalTitle" class="text-base font-black text-slate-900 dark:text-white">Transferencia de Fondos entre Brokers</h2>
         </div>
-        <button id="closeTransferModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <button id="closeTransferModalBtn" type="button" class="p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -565,11 +507,6 @@
         <div>
           <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nota / Concepto</label>
           <input type="text" id="transferNote" placeholder="Transferencia de capital entre brokers" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-
-        <div class="p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-[11px] text-blue-700 dark:text-blue-300">
-          <i data-lucide="info" class="w-3.5 h-3.5 inline mr-1 -mt-0.5"></i>
-          Este movimiento se registrará como <strong>Transferencia de Fondos</strong> entre brokers (no como un retiro externo a banco). No se permite transferir más del saldo disponible en la cuenta de origen.
         </div>
 
         <div class="flex items-center justify-between pt-2 gap-2">
@@ -637,24 +574,6 @@
     </div>
   </div>
 
-  <!-- MODAL: DETALLE DE TICKER -->
-  <div id="tickerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder max-h-[85vh] flex flex-col">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
-        <div>
-          <h2 id="tickerModalTitle" class="text-lg font-black text-slate-900 dark:text-white">Historial Ticker</h2>
-          <p id="tickerModalSub" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
-        </div>
-        <button id="closeTickerModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
-        <div id="tickerModalList" class="space-y-2"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- MODAL: INFORMACIÓN -->
   <div id="infoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white dark:bg-darkCard w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col items-center text-center">
@@ -665,7 +584,7 @@
       <div class="text-left text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed mb-6">
         <div>
           <span class="font-bold text-slate-800 dark:text-white">&bull; Cuentas Separadas &amp; Transferencias:</span>
-          <span class="text-slate-500 dark:text-slate-400"> Administra cuentas independientes (Charles Schwab, Interactive Brokers, Webull). Si tienes 2 o más cuentas, puedes transferir saldo entre ellas con validación estricta de fondos.</span>
+          <span class="text-slate-500 dark:text-slate-400"> Administra cuentas independientes. Si tienes 2 o más cuentas, puedes transferir saldo entre ellas con validación estricta de fondos.</span>
         </div>
         <div>
           <span class="font-bold text-slate-800 dark:text-white">&bull; Control de Sobregiros:</span>
@@ -673,7 +592,7 @@
         </div>
         <div>
           <span class="font-bold text-slate-800 dark:text-white">&bull; Importador Inteligente CSV:</span>
-          <span class="text-slate-500 dark:text-slate-400"> Evita duplicar operaciones ya existentes y permite procesar tanto reportes de operaciones como de resumen de efectivo de IBKR.</span>
+          <span class="text-slate-500 dark:text-slate-400"> Evita duplicar operaciones ya existentes y permite procesar tanto reportes de operaciones como de resumen de efectivo de IBKR y Schwab.</span>
         </div>
       </div>
       <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-2xl text-xs font-bold tracking-wide transition active:scale-95 shadow-md shadow-slate-900/10">
@@ -742,9 +661,9 @@
   <!-- SCRIPT DEFINITIVO AUTÓNOMO (SIN MÓDULOS EXTERNOS) -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V21';
-      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V21';
-      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V21';
+      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_STABLE';
+      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_STABLE';
+      const THEME_KEY = 'TRADING_PNL_THEME_MODE_STABLE';
 
       let isDarkMode = localStorage.getItem(THEME_KEY) === 'dark';
       function applyTheme() {
@@ -1209,6 +1128,70 @@
       document.getElementById('closeTransferModalBtn')?.addEventListener('click', closeTransferModal);
       document.getElementById('cancelTransferBtn')?.addEventListener('click', closeTransferModal);
 
+      window.openEditTransferModal = function(transferId, flowId = null) {
+        let foundSourceId = null;
+        let foundTargetId = null;
+        let foundFlow = null;
+
+        if (transferId) {
+          accounts.forEach(acc => {
+            (acc.capitalFlows || []).forEach(f => {
+              if (String(f.transferId) === String(transferId)) {
+                foundFlow = f;
+                if (f.type === 'withdrawal') foundSourceId = acc.id;
+                if (f.type === 'deposit') foundTargetId = acc.id;
+              }
+            });
+          });
+        }
+
+        if (!foundFlow && flowId) {
+          const active = getActiveAccount();
+          foundFlow = (active.capitalFlows || []).find(f => f.id === flowId);
+          if (foundFlow) {
+            transferId = 'TRF_' + foundFlow.id;
+            foundFlow.transferId = transferId;
+            foundFlow.category = 'transfer';
+            if (foundFlow.type === 'withdrawal') {
+              foundSourceId = active.id;
+              foundTargetId = accounts.find(a => a.id !== active.id)?.id;
+            } else {
+              foundTargetId = active.id;
+              foundSourceId = accounts.find(a => a.id !== active.id)?.id;
+            }
+          }
+        }
+
+        if (!foundFlow) return;
+
+        document.getElementById('editTransferId').value = String(transferId);
+        document.getElementById('transferModalTitle').textContent = 'Modificar Transferencia entre Cuentas';
+        document.getElementById('submitTransferText').textContent = 'Guardar Cambios';
+        deleteTransferBtn?.classList.remove('hidden');
+
+        populateTransferDropdowns(foundSourceId, foundTargetId, transferId);
+        document.getElementById('transferDate').value = foundFlow.date;
+        document.getElementById('transferAmount').value = foundFlow.amount;
+        document.getElementById('transferNote').value = foundFlow.note || '';
+
+        transferModal.classList.remove('hidden');
+        transferModal.classList.add('flex');
+        safeIcons();
+      };
+
+      deleteTransferBtn?.addEventListener('click', () => {
+        const transferId = document.getElementById('editTransferId').value;
+        if (!transferId) return;
+        if (confirm("¿Deseas anular esta transferencia en ambas cuentas?")) {
+          accounts.forEach(acc => {
+            acc.capitalFlows = (acc.capitalFlows || []).filter(f => String(f.transferId) !== String(transferId));
+          });
+          saveAccountsData();
+          closeTransferModal();
+          refreshActiveView();
+        }
+      });
+
       document.getElementById('transferForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const editTransferId = document.getElementById('editTransferId').value;
@@ -1268,72 +1251,6 @@
         refreshActiveView();
       });
 
-      // RENDERIZADO MENSUAL
-      function renderMonthView() {
-        const grid = document.getElementById('calendarGrid');
-        if (!grid) return;
-        grid.innerHTML = '';
-
-        const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        document.getElementById('sectionSubTitle').textContent = `Mes: ${monthNames[currentMonth]} ${currentYear}`;
-
-        const firstOfMonth = new Date(currentYear, currentMonth, 1);
-        const startDay = new Date(firstOfMonth);
-        let dow = startDay.getDay();
-        let diff = (dow === 0 ? 1 : (dow === 6 ? 2 : 1 - dow));
-        startDay.setDate(startDay.getDate() + diff);
-
-        const days = [];
-        const cursor = new Date(startDay);
-        while (days.length < 25) {
-          if (cursor.getDay() >= 1 && cursor.getDay() <= 5) days.push(new Date(cursor));
-          cursor.setDate(cursor.getDate() + 1);
-        }
-
-        const todayStr = getSystemTodayKey();
-        const active = getActiveAccount();
-
-        days.forEach(dObj => {
-          const y = dObj.getFullYear();
-          const m = String(dObj.getMonth() + 1).padStart(2, '0');
-          const d = String(dObj.getDate()).padStart(2, '0');
-          const dateKey = `${y}-${m}-${d}`;
-          const pnl = getDayPnL(dateKey);
-          const trades = active.appData?.[dateKey] || [];
-          const isToday = dateKey === todayStr;
-
-          let bg = "bg-slate-50/40 dark:bg-darkSubtle/40 border border-slate-200/80 dark:border-darkBorder";
-          let textCls = "text-slate-400";
-          let pnlDisplay = "0.00";
-
-          if (pnl !== null) {
-            if (pnl > 0) {
-              bg = "bg-pnlGreen-bg dark:bg-pnlGreen-darkBg border border-pnlGreen-border dark:border-pnlGreen-darkBorder";
-              textCls = "text-pnlGreen-text dark:text-pnlGreen-darkText";
-              pnlDisplay = formatMoney(pnl);
-            } else if (pnl < 0) {
-              bg = "bg-pnlRed-bg dark:bg-pnlRed-darkBg border border-pnlRed-border dark:border-pnlRed-darkBorder";
-              textCls = "text-pnlRed-text dark:text-pnlRed-darkText";
-              pnlDisplay = formatMoney(pnl);
-            }
-          }
-
-          const cell = document.createElement('div');
-          cell.className = `min-h-[74px] p-2.5 rounded-2xl flex flex-col justify-between cursor-pointer select-none ${bg}`;
-          cell.innerHTML = `
-            <div class="flex items-center justify-between w-full">
-              <span class="text-xs font-bold ${isToday ? 'text-blue-600 bg-blue-50 dark:bg-blue-950 px-2 rounded' : 'text-slate-700 dark:text-slate-300'}">${isToday ? 'Today' : dObj.getDate()}</span>
-              ${trades.length > 0 ? `<span class="px-1 text-[10px] font-bold rounded bg-slate-200 dark:bg-slate-800">${trades.length}t</span>` : ''}
-            </div>
-            <div class="text-right text-xs font-extrabold ${textCls}">${pnl !== null ? pnlDisplay : '-'}</div>
-          `;
-          cell.onclick = () => openDayModal(dateKey, dObj);
-          grid.appendChild(cell);
-        });
-
-        updateSchwabMetrics();
-      }
-
       // RENDERIZADO COMISIONES
       function renderCommissionsView() {
         const tbody = document.getElementById('commissionsTableBody');
@@ -1389,7 +1306,7 @@
         });
       }
 
-      // RENDERIZADO CAPITAL REAL
+      // RENDERIZADO CAPITAL REAL CON BOTONES DE EDITAR Y ELIMINAR
       function renderCapitalView() {
         const active = getActiveAccount();
         const currentBal = getAccountBalance(active.id);
@@ -1419,49 +1336,156 @@
         const list = document.getElementById('capitalFlowsList');
         if (!list) return;
         list.innerHTML = '';
-        (active.capitalFlows || []).forEach(f => {
+
+        const flows = active.capitalFlows || [];
+        document.getElementById('capitalCountLabel').textContent = `${flows.length} movimientos`;
+
+        if (flows.length === 0) {
+          list.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">No hay movimientos registrados.</div>`;
+          return;
+        }
+
+        const sortedFlows = [...flows].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        sortedFlows.forEach(f => {
+          const isTransfer = Boolean(f.transferId || f.category === 'transfer');
+          const isDep = f.type === 'deposit';
+
+          let icon = isTransfer ? 'arrow-left-right' : (isDep ? 'arrow-down-left' : 'arrow-up-right');
+          let iconColor = isTransfer ? 'bg-cyan-500/15 text-cyan-500' : (isDep ? 'bg-emerald-500/15 text-emerald-500' : 'bg-rose-500/15 text-rose-500');
+          let title = isTransfer ? (isDep ? 'Transferencia (Entrada)' : 'Transferencia (Salida)') : (isDep ? 'Depósito Bancario' : 'Retiro a Banco');
+
+          const editCall = isTransfer ? `openEditTransferModal('${f.transferId}', ${f.id})` : `editCapitalFlow(${f.id})`;
+
           const item = document.createElement('div');
-          item.className = "p-2.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/60 flex items-center justify-between text-xs";
+          item.className = "p-2.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/60 flex items-center justify-between text-xs hover:border-blue-400 transition";
           item.innerHTML = `
-            <div>
-              <span class="font-bold text-slate-800 dark:text-slate-200">${f.note}</span>
-              <span class="text-[10px] text-blue-500 block">${f.date}</span>
+            <div class="flex items-center space-x-2.5 cursor-pointer" onclick="${editCall}">
+              <div class="w-7 h-7 rounded-lg flex items-center justify-center ${iconColor}">
+                <i data-lucide="${icon}" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-1.5">
+                  <span class="font-bold text-slate-800 dark:text-slate-200">${title}</span>
+                  ${isTransfer ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300">Traspaso</span>` : ''}
+                </div>
+                <span class="text-[10px] text-blue-500 font-semibold block">${f.date} &bull; ${f.note}</span>
+              </div>
             </div>
-            <span class="font-bold ${f.type === 'deposit' ? 'text-emerald-500' : 'text-rose-500'}">${f.type === 'deposit' ? '+' : '-'}${formatExactCurrency(f.amount)}</span>
+            <div class="flex items-center space-x-2">
+              <span class="font-black text-xs ${isDep ? 'text-emerald-500' : 'text-rose-500'}">
+                ${isDep ? '+' : '-'}${formatExactCurrency(f.amount)}
+              </span>
+              <button onclick="${editCall}" type="button" class="p-1.5 text-slate-400 hover:text-blue-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Editar">
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="removeCapitalFlow(${f.id})" type="button" class="p-1.5 text-slate-400 hover:text-rose-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Eliminar">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
           `;
           list.appendChild(item);
         });
+        safeIcons();
       }
 
-      // FORMULARIO MANUAL CAPITAL EXTERNO
+      window.editCapitalFlow = function(id) {
+        const active = getActiveAccount();
+        const flow = (active.capitalFlows || []).find(f => f.id === id);
+        if (!flow) return;
+
+        if (flow.transferId || flow.category === 'transfer') {
+          openEditTransferModal(flow.transferId, flow.id);
+          return;
+        }
+
+        document.getElementById('capitalEditId').value = flow.id;
+        document.getElementById('capitalFlowType').value = flow.type;
+        document.getElementById('capitalFlowDate').value = flow.date;
+        document.getElementById('capitalFlowAmount').value = flow.amount;
+        document.getElementById('capitalFlowNote').value = flow.note || '';
+
+        document.getElementById('capitalFormActionLabel').textContent = 'Editar Movimiento Externo';
+        document.getElementById('capitalSubmitText').textContent = 'Guardar Cambios';
+        document.getElementById('cancelCapitalEditBtn')?.classList.remove('hidden');
+
+        document.getElementById('capitalFlowForm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      };
+
+      document.getElementById('cancelCapitalEditBtn')?.addEventListener('click', () => {
+        document.getElementById('capitalEditId').value = '';
+        document.getElementById('capitalFlowType').value = 'deposit';
+        document.getElementById('capitalFlowDate').value = getSystemTodayKey();
+        document.getElementById('capitalFlowAmount').value = '';
+        document.getElementById('capitalFlowNote').value = '';
+        document.getElementById('capitalFormActionLabel').textContent = 'Registrar Movimiento Externo (Banco / Fondeo)';
+        document.getElementById('capitalSubmitText').textContent = 'Agregar Movimiento Externo';
+        document.getElementById('cancelCapitalEditBtn')?.classList.add('hidden');
+      });
+
+      window.removeCapitalFlow = function(id) {
+        const active = getActiveAccount();
+        const flow = (active.capitalFlows || []).find(f => f.id === id);
+        if (!flow) return;
+
+        if (flow.transferId || flow.category === 'transfer') {
+          if (confirm("Esta es una transferencia entre cuentas. ¿Deseas anularla en ambas cuentas?")) {
+            accounts.forEach(acc => {
+              acc.capitalFlows = (acc.capitalFlows || []).filter(f => String(f.transferId) !== String(flow.transferId));
+            });
+            saveAccountsData();
+            renderCapitalView();
+          }
+          return;
+        }
+
+        if (confirm("¿Deseas eliminar este movimiento de capital?")) {
+          active.capitalFlows = active.capitalFlows.filter(f => f.id !== id);
+          saveAccountsData();
+          renderCapitalView();
+        }
+      };
+
+      // REGISTRAR MOVIMIENTO MANUAL DE CAPITAL
       document.getElementById('capitalFlowForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const active = getActiveAccount();
+        const editId = document.getElementById('capitalEditId').value;
         const type = document.getElementById('capitalFlowType').value;
         const date = document.getElementById('capitalFlowDate').value;
         const amount = parseFloat(document.getElementById('capitalFlowAmount').value);
-        const note = document.getElementById('capitalFlowNote').value.trim() || (type === 'deposit' ? 'Depósito bancario' : 'Retiro');
+        const note = document.getElementById('capitalFlowNote').value.trim() || (type === 'deposit' ? 'Depósito' : 'Retiro');
 
         if (isNaN(amount) || amount <= 0 || !date) return;
 
         if (type === 'withdrawal') {
-          const avail = getAccountBalance(active.id);
+          const avail = getAccountBalance(active.id, editId ? Number(editId) : null, null);
           if (amount > avail + 0.0001) return alert(`Saldo insuficiente: disponible ${formatExactCurrency(avail)}`);
         }
 
         if (!active.capitalFlows) active.capitalFlows = [];
-        active.capitalFlows.push({
-          id: Date.now(),
-          type,
-          category: 'external',
-          date,
-          amount,
-          note
-        });
+
+        if (editId) {
+          const target = active.capitalFlows.find(f => f.id == editId);
+          if (target) {
+            target.type = type;
+            target.date = date;
+            target.amount = amount;
+            target.note = note;
+          }
+        } else {
+          active.capitalFlows.push({
+            id: Date.now(),
+            type,
+            category: 'external',
+            date,
+            amount,
+            note
+          });
+        }
 
         saveAccountsData();
-        document.getElementById('capitalFlowAmount').value = '';
-        document.getElementById('capitalFlowNote').value = '';
+        document.getElementById('cancelCapitalEditBtn')?.click();
         renderCapitalView();
       });
 
@@ -1509,7 +1533,13 @@
         const active = getActiveAccount();
         const trades = active.appData?.[selectedDateKey] || [];
 
-        trades.forEach(t => {
+        let dailyTotal = 0;
+        let dailyInvested = 0;
+
+        trades.forEach((t, idx) => {
+          dailyTotal += Number(t.pnl || 0);
+          dailyInvested += Number(t.costBasis || 0);
+
           const item = document.createElement('div');
           item.className = "p-2.5 rounded-xl border border-slate-200 dark:border-darkBorder flex items-center justify-between text-xs";
           item.innerHTML = `
@@ -1518,13 +1548,36 @@
               <span class="text-slate-400 text-[10px] ml-1">(${t.qty} ${t.type})</span>
               ${t.commission ? `<span class="text-rose-400 text-[9px] block">Comisión real: -$${t.commission.toFixed(2)}</span>` : ''}
             </div>
-            <div class="font-black ${t.pnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(t.pnl)}</div>
+            <div class="flex items-center gap-2">
+              <span class="font-black ${t.pnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(t.pnl)}</span>
+              <button onclick="removeTrade(${idx})" class="p-1 text-slate-400 hover:text-rose-500"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
           `;
           container.appendChild(item);
         });
+
+        document.getElementById('modalDailyTotal').textContent = `P&L Neto: ${formatExactCurrency(dailyTotal)}`;
+        document.getElementById('modalDailyInvested').textContent = `Inversión: ${formatExactCurrency(dailyInvested)}`;
+        safeIcons();
       }
 
-      // MODAL CSV
+      window.removeTrade = function(idx) {
+        const active = getActiveAccount();
+        if (active.appData?.[selectedDateKey]) {
+          active.appData[selectedDateKey].splice(idx, 1);
+          if (active.appData[selectedDateKey].length === 0) delete active.appData[selectedDateKey];
+          saveAccountsData();
+          renderDayTradesList();
+          refreshActiveView();
+        }
+      };
+
+      document.getElementById('closeModalBtn')?.addEventListener('click', () => {
+        document.getElementById('dayModal').classList.add('hidden');
+        document.getElementById('dayModal').classList.remove('flex');
+      });
+
+      // MODAL CSV (COMPATIBLE CON SCHWAB E IBKR)
       const csvModal = document.getElementById('csvModal');
       document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
         csvModal.classList.remove('hidden');
@@ -1570,7 +1623,7 @@
           skipEmptyLines: true,
           complete: function(results) {
             const rows = results.data;
-            if (!rows || rows.length === 0) return alert("Archivo vacío");
+            if (!rows || rows.length === 0) return alert("Archivo vacío.");
 
             let headerRowIndex = -1;
             let isTransactionsFile = false;
@@ -1615,7 +1668,6 @@
 
             const headers = rows[headerRowIndex].map(h => String(h).trim());
 
-            // CASO A: FLUJOS DE EFECTIVO
             if (isTransactionsFile) {
               csvFileType = 'transactions';
               const flows = [];
@@ -1664,7 +1716,7 @@
               return;
             }
 
-            // CASO B: TRADES (OPCIONES Y ACCIONES)
+            // TRADES (IBKR O SCHWAB)
             csvFileType = 'trades';
             const symbolIdx = headers.findIndex(h => /^symbol$|description/i.test(h));
             const closedDateIdx = headers.findIndex(h => /closed\s*date|^tradedate$|datetime|^date$/i.test(h));
@@ -1764,7 +1816,6 @@
         });
       });
 
-      // PROCESAR DATOS CSV
       document.getElementById('processCsvBtn')?.addEventListener('click', () => {
         const mode = document.querySelector('input[name="csvImportMode"]:checked')?.value || 'merge';
         const active = getActiveAccount();
@@ -1802,7 +1853,7 @@
         }
       });
 
-      // PESTAÑAS
+      // NAVEGACIÓN Y PERÍODOS
       ['Month', 'Year', 'Tickers', 'Commissions', 'Capital'].forEach(v => {
         document.getElementById('view' + v + 'Btn')?.addEventListener('click', () => switchView(v));
       });
@@ -1846,11 +1897,6 @@
         refreshActiveView();
       });
 
-      document.getElementById('closeModalBtn')?.addEventListener('click', () => {
-        document.getElementById('dayModal').classList.add('hidden');
-        document.getElementById('dayModal').classList.remove('flex');
-      });
-
       document.getElementById('helpBtn')?.addEventListener('click', () => {
         document.getElementById('infoModal').classList.remove('hidden');
         document.getElementById('infoModal').classList.add('flex');
@@ -1871,7 +1917,6 @@
         }
       });
 
-      // INICIALIZACIÓN
       applyTheme();
       loadAccountsData();
       document.getElementById('periodYearSelect').value = String(currentYear);
