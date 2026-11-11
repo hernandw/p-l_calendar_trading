@@ -48,7 +48,20 @@ export function renderAccountSelector() {
   state.accounts.forEach(acc => {
     const opt = document.createElement('option');
     opt.value = acc.id;
-    opt.textContent = `${acc.broker} (${acc.number}) - ${acc.type}`; if (acc.id === state.activeAccountId) opt.selected = true; select.appendChild(opt); });  const active = getActiveAccount(); const badgeBroker = document.getElementById('badgeBrokerName'); const badgeType = document.getElementById('badgeAccountType'); const badgeNum = document.getElementById('badgeAccountNumber'); const csvLabel = document.getElementById('csvTargetAccountLabel');  if (badgeBroker) badgeBroker.textContent = active.broker \vert{}\vert{} 'Broker'; if (badgeType) badgeType.textContent = active.type \vert{}\vert{} 'Margin'; if (badgeNum) badgeNum.textContent = `Nro: ${active.number || '-'}`;
+    opt.textContent = `${acc.broker} (${acc.number}) - ${acc.type}`;
+    if (acc.id === state.activeAccountId) opt.selected = true;
+    select.appendChild(opt);
+  });
+
+  const active = getActiveAccount();
+  const badgeBroker = document.getElementById('badgeBrokerName');
+  const badgeType = document.getElementById('badgeAccountType');
+  const badgeNum = document.getElementById('badgeAccountNumber');
+  const csvLabel = document.getElementById('csvTargetAccountLabel');
+
+  if (badgeBroker) badgeBroker.textContent = active.broker || 'Broker';
+  if (badgeType) badgeType.textContent = active.type || 'Margin';
+  if (badgeNum) badgeNum.textContent = `Nro: ${active.number || '-'}`;
   if (csvLabel) csvLabel.textContent = `${active.broker} (${active.number})`;
 
   const transferBtnCont = document.getElementById('transferButtonContainer');
@@ -61,14 +74,80 @@ export function updateTotalTradesHeader() {
   const active = getActiveAccount();
   let count = 0;
   Object.keys(active.appData || {}).forEach(k => {
-    if (k.startsWith(`${state.currentYear}`)) { count += (active.appData[k] \vert{}\vert{} []).length; } }); const pill = document.getElementById('totalTradesPill'); if (pill) pill.textContent = `${count} trades en total`;
+    if (k.startsWith(`${state.currentYear}`)) {
+      count += (active.appData[k] || []).length;
+    }
+  });
+  const pill = document.getElementById('totalTradesPill');
+  if (pill) pill.textContent = `${count} trades en total`;
 }
 
 export function updateSchwabMetrics() {
   const active = getActiveAccount();
   let gains = 0, losses = 0, wins = 0, total = 0;
-  const prefix = `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, '0')}`;  Object.keys(active.appData \vert{}\vert{} {}).forEach(k => { if (k.startsWith(prefix)) { (active.appData[k] \vert{}\vert{} []).forEach(t => { const p = Number(t.pnl \vert{}\vert{} 0); total++; if (p > 0) { gains += p; wins++; } else if (p < 0) { losses += Math.abs(p); } }); } });  const isMonth = (state.currentView === 'Month'); const mTitle = document.getElementById('metricTotalTitle'); const mVal = document.getElementById('metricTotalVal'); const mGains = document.getElementById('metricGrossGains'); const mLosses = document.getElementById('metricGrossLosses'); const mRatio = document.getElementById('metricSchwabRatio'); const mPct = document.getElementById('metricTradesPct'); const mCount = document.getElementById('metricTradesCount');  if (mTitle) mTitle.textContent = isMonth ? "Ganancia Neta Mes" : "Ganancia Neta Año"; if (mVal) mVal.textContent = formatExactCurrency(gains - losses); if (mGains) mGains.textContent = formatExactCurrency(gains); if (mLosses) mLosses.textContent = formatExactCurrency(-losses);  const vol = gains + losses; if (mRatio) mRatio.textContent = vol > 0 ? `${((gains / vol) * 100).toFixed(1)}%` : '0.00%';
-  if (mPct) mPct.textContent = total > 0 ? `${Math.round((wins / total) * 100)}\%` : '0\%'; if (mCount) mCount.textContent = `(${wins} / ${total} ops)`; }  export function renderMonthView() { const grid = document.getElementById('calendarGrid'); if (!grid) return; grid.innerHTML = '';  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]; const subTitle = document.getElementById('sectionSubTitle'); if (subTitle) subTitle.textContent = `Mes: ${monthNames[state.currentMonth]} ${state.currentYear}`;  const firstOfMonth = new Date(state.currentYear, state.currentMonth, 1); const startDay = new Date(firstOfMonth); let dow = startDay.getDay(); let diff = (dow === 0 ? 1 : (dow === 6 ? 2 : 1 - dow)); startDay.setDate(startDay.getDate() + diff);  const days = []; const cursor = new Date(startDay); while (days.length < 25) { if (cursor.getDay() >= 1 && cursor.getDay() <= 5) days.push(new Date(cursor)); cursor.setDate(cursor.getDate() + 1); }  const todayStr = getSystemTodayKey(); const active = getActiveAccount();  days.forEach(dObj => { const y = dObj.getFullYear(); const m = String(dObj.getMonth() + 1).padStart(2, '0'); const d = String(dObj.getDate()).padStart(2, '0'); const dateKey = `${y}-${m}-${d}`;
+  const prefix = `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, '0')}`;
+
+  Object.keys(active.appData || {}).forEach(k => {
+    if (k.startsWith(prefix)) {
+      (active.appData[k] || []).forEach(t => {
+        const p = Number(t.pnl || 0);
+        total++;
+        if (p > 0) { gains += p; wins++; }
+        else if (p < 0) { losses += Math.abs(p); }
+      });
+    }
+  });
+
+  const isMonth = (state.currentView === 'Month');
+  const mTitle = document.getElementById('metricTotalTitle');
+  const mVal = document.getElementById('metricTotalVal');
+  const mGains = document.getElementById('metricGrossGains');
+  const mLosses = document.getElementById('metricGrossLosses');
+  const mRatio = document.getElementById('metricSchwabRatio');
+  const mPct = document.getElementById('metricTradesPct');
+  const mCount = document.getElementById('metricTradesCount');
+
+  if (mTitle) mTitle.textContent = isMonth ? "Ganancia Neta Mes" : "Ganancia Neta Año";
+  if (mVal) mVal.textContent = formatExactCurrency(gains - losses);
+  if (mGains) mGains.textContent = formatExactCurrency(gains);
+  if (mLosses) mLosses.textContent = formatExactCurrency(-losses);
+  
+  const vol = gains + losses;
+  if (mRatio) mRatio.textContent = vol > 0 ? `${((gains / vol) * 100).toFixed(1)}%` : '0.00%';
+  if (mPct) mPct.textContent = total > 0 ? `${Math.round((wins / total) * 100)}%` : '0%';
+  if (mCount) mCount.textContent = `(${wins} / ${total} ops)`;
+}
+
+export function renderMonthView() {
+  const grid = document.getElementById('calendarGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const subTitle = document.getElementById('sectionSubTitle');
+  if (subTitle) subTitle.textContent = `Mes: ${monthNames[state.currentMonth]} ${state.currentYear}`;
+
+  const firstOfMonth = new Date(state.currentYear, state.currentMonth, 1);
+  const startDay = new Date(firstOfMonth);
+  let dow = startDay.getDay();
+  let diff = (dow === 0 ? 1 : (dow === 6 ? 2 : 1 - dow));
+  startDay.setDate(startDay.getDate() + diff);
+
+  const days = [];
+  const cursor = new Date(startDay);
+  while (days.length < 25) {
+    if (cursor.getDay() >= 1 && cursor.getDay() <= 5) days.push(new Date(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+
+  const todayStr = getSystemTodayKey();
+  const active = getActiveAccount();
+
+  days.forEach(dObj => {
+    const y = dObj.getFullYear();
+    const m = String(dObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dObj.getDate()).padStart(2, '0');
+    const dateKey = `${y}-${m}-${d}`;
     const pnl = getDayPnL(dateKey);
     const trades = active.appData?.[dateKey] || [];
     const isToday = (dateKey === todayStr);
@@ -244,8 +323,44 @@ export function renderCommissionsView() {
   let totalComms = 0, totalContracts = 0, totalNet = 0;
 
   Object.keys(active.appData || {}).forEach(dKey => {
-    if (dKey.startsWith(`${state.currentYear}`)) { (active.appData[dKey] \vert{}\vert{} []).forEach(t => { const sym = (t.ticker \vert{}\vert{} 'OTHER').split(' ')[0].toUpperCase().trim(); const qty = parseInt(t.qty, 10) \vert{}\vert{} 1; const pnl = Number(t.pnl \vert{}\vert{} 0);  let comm = 0; if (t.commission !== undefined && t.commission > 0) { comm = t.commission; } else if (t.type === 'STK') { comm = 0; } else { comm = qty * fallbackRate; }  if (!tickerStats[sym]) { tickerStats[sym] = { ticker: sym, contracts: 0, netPnl: 0, commission: 0 }; } tickerStats[sym].contracts += qty; tickerStats[sym].netPnl += pnl; tickerStats[sym].commission += comm;  totalContracts += qty; totalNet += pnl; totalComms += comm; }); } });  const cCtos = document.getElementById('commTotalContracts'); const cFees = document.getElementById('commTotalFees'); const cImp = document.getElementById('commTotalImpact');  if (cCtos) cCtos.textContent = `${totalContracts} ops`;
-  if (cFees) cFees.textContent = `-${formatExactCurrency(totalComms).replace('-', '').replace('+', '')}`; const gross = totalNet + totalComms; const impact = gross > 0 ? ((totalComms / gross) * 100).toFixed(1) : 0; if (cImp) cImp.textContent = `${impact}% de ganancia bruta`;
+    if (dKey.startsWith(`${state.currentYear}`)) {
+      (active.appData[dKey] || []).forEach(t => {
+        const sym = (t.ticker || 'OTHER').split(' ')[0].toUpperCase().trim();
+        const qty = parseInt(t.qty, 10) || 1;
+        const pnl = Number(t.pnl || 0);
+
+        let comm = 0;
+        if (t.commission !== undefined && t.commission > 0) {
+          comm = t.commission;
+        } else if (t.type === 'STK') {
+          comm = 0;
+        } else {
+          comm = qty * fallbackRate;
+        }
+
+        if (!tickerStats[sym]) {
+          tickerStats[sym] = { ticker: sym, contracts: 0, netPnl: 0, commission: 0 };
+        }
+        tickerStats[sym].contracts += qty;
+        tickerStats[sym].netPnl += pnl;
+        tickerStats[sym].commission += comm;
+
+        totalContracts += qty;
+        totalNet += pnl;
+        totalComms += comm;
+      });
+    }
+  });
+
+  const cCtos = document.getElementById('commTotalContracts');
+  const cFees = document.getElementById('commTotalFees');
+  const cImp = document.getElementById('commTotalImpact');
+
+  if (cCtos) cCtos.textContent = `${totalContracts} ops`;
+  if (cFees) cFees.textContent = `-${formatExactCurrency(totalComms).replace('-', '').replace('+', '')}`;
+  const gross = totalNet + totalComms;
+  const impact = gross > 0 ? ((totalComms / gross) * 100).toFixed(1) : 0;
+  if (cImp) cImp.textContent = `${impact}% de ganancia bruta`;
 
   Object.values(tickerStats).forEach(s => {
     const tr = document.createElement('tr');
@@ -302,7 +417,16 @@ export function renderCapitalView() {
   const roi = netInflow > 0 ? ((cumulativePnl / netInflow) * 100).toFixed(1) : 0;
   if (roiBadge) {
     roiBadge.textContent = `${cumulativePnl >= 0 ? '+' : ''}${roi}% ROI`;
-    roiBadge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-black ${cumulativePnl >= 0 ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40' : 'bg-rose-950/80 text-rose-400 border border-rose-500/40'}`; }  const list = document.getElementById('capitalFlowsList'); if (!list) return; list.innerHTML = '';  const flows = active.capitalFlows \vert{}\vert{} []; const cCountLabel = document.getElementById('capitalCountLabel'); if (cCountLabel) cCountLabel.textContent = `${flows.length} movimientos`;
+    roiBadge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-black ${cumulativePnl >= 0 ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40' : 'bg-rose-950/80 text-rose-400 border border-rose-500/40'}`;
+  }
+
+  const list = document.getElementById('capitalFlowsList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const flows = active.capitalFlows || [];
+  const cCountLabel = document.getElementById('capitalCountLabel');
+  if (cCountLabel) cCountLabel.textContent = `${flows.length} movimientos`;
 
   if (flows.length === 0) {
     list.innerHTML = `<div class="text-center py-6 text-slate-500 text-xs">No hay movimientos registrados.</div>`;
@@ -330,7 +454,8 @@ export function renderCapitalView() {
         </div>
         <div>
           <div class="flex items-center gap-1.5">
-            <span class="font-bold text-slate-100">${title}</span>${isTransfer ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-cyan-950 text-cyan-300">Traspaso</span>` : ''}
+            <span class="font-bold text-slate-100">${title}</span>
+            ${isTransfer ? `<span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-cyan-950 text-cyan-300">Traspaso</span>` : ''}
           </div>
           <span class="text-[10px] text-blue-400 font-semibold block">${f.date} &bull; ${f.note}</span>
         </div>
