@@ -1,5 +1,5 @@
 {
-  "activeAccountId": "acc_schwab_main",
+  "activeAccountId": "acc_1794419032725",
   "isDarkMode": true,
   "accounts": [
     {
@@ -10,6 +10,24 @@
       "currency": "USD",
       "appData": {},
       "capitalFlows": []
+    },
+    {
+      "id": "acc_1794419032725",
+      "broker": "Interactive Brokers",
+      "number": "XXX9702",
+      "type": "Cash",
+      "currency": "USD",
+      "appData": {},
+      "capitalFlows": [
+        {
+          "id": 1794419093884.604,
+          "type": "deposit",
+          "category": "external",
+          "date": "2026-11-10",
+          "amount": 247.34,
+          "note": "Fondeo de Efectivo IBKR (Starting/Deposited Cash)"
+        }
+      ]
     }
   ]
 }

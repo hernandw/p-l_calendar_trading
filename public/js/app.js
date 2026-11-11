@@ -15,7 +15,7 @@ let parsedCsvTrades = null;
 let parsedCsvFlows = null;
 let csvFileType = 'trades';
 
-// 1. UTILIDADES Y TEMA (Declaradas con function para hoisting seguro)
+// 1. UTILIDADES Y TEMA
 function safeIcons() {
   try {
     if (window.lucide && typeof lucide.createIcons === 'function') {
@@ -279,8 +279,8 @@ function updateSchwabMetrics() {
 
   if (mTitle) mTitle.textContent = isMonth ? "Ganancia Neta Mes" : "Ganancia Neta Año";
   if (mVal) mVal.textContent = formatExactCurrency(gains - losses);
-  if (mGains) mGains.textContent = `+${formatExactCurrency(gains)}`;
-  if (mLosses) mLosses.textContent = `-${formatExactCurrency(losses)}`;
+  if (mGains) mGains.textContent = formatExactCurrency(gains);
+  if (mLosses) mLosses.textContent = formatExactCurrency(-losses);
   
   const vol = gains + losses;
   if (mRatio) mRatio.textContent = vol > 0 ? `${((gains / vol) * 100).toFixed(1)}%` : '0.00%';
@@ -472,7 +472,7 @@ function renderTickersView() {
         </div>
         <div class="text-right">
           <span class="text-slate-400 block text-[10px]">Inversión Total:</span>
-          <span class="font-bold text-slate-100 block">+${formatExactCurrency(data.cost).replace('$', '$')}</span>
+          <span class="font-bold text-slate-100 block">${formatExactCurrency(data.cost)}</span>
           <span class="font-bold text-[10px] ${isNetWin ? 'text-emerald-400' : 'text-rose-400'}">${isNetWin ? '+' : ''}${roi}% ROI</span>
         </div>
       </div>
@@ -557,7 +557,7 @@ function renderCommissionsView() {
   const cImp = document.getElementById('commTotalImpact');
 
   if (cCtos) cCtos.textContent = `${totalContracts} ctos`;
-  if (cFees) cFees.textContent = `-${formatExactCurrency(totalComms)}`;
+  if (cFees) cFees.textContent = `-${formatExactCurrency(totalComms).replace('-', '').replace('+', '')}`;
   const gross = totalNet + totalComms;
   const impact = gross > 0 ? ((totalComms / gross) * 100).toFixed(1) : 0;
   if (cImp) cImp.textContent = `${impact}% de ganancia bruta`;
@@ -570,9 +570,9 @@ function renderCommissionsView() {
         <span class="px-2 py-0.5 rounded-lg font-black ${getTickerBadgeClass(s.ticker)}">${s.ticker}</span>
       </td>
       <td class="py-2.5 px-2 text-center font-bold text-slate-300">${s.contracts} ctos</td>
-      <td class="py-2.5 px-2 text-right font-bold text-rose-400">-${formatExactCurrency(s.commission)}</td>
-      <td class="py-2.5 px-2 text-right font-bold text-slate-200">+${formatExactCurrency(s.netPnl + s.commission).replace('$', '$')}</td>
-      <td class="py-2.5 px-3 text-right font-black ${s.netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">+${formatExactCurrency(s.netPnl).replace('$', '$')}</td>
+      <td class="py-2.5 px-2 text-right font-bold text-rose-400">-${formatExactCurrency(s.commission).replace('-', '').replace('+', '')}</td>
+      <td class="py-2.5 px-2 text-right font-bold text-slate-200">${formatExactCurrency(s.netPnl + s.commission)}</td>
+      <td class="py-2.5 px-3 text-right font-black ${s.netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatExactCurrency(s.netPnl)}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -603,17 +603,17 @@ function renderCapitalView() {
   const peakEl = document.getElementById('accountPeakBalance');
   const roiBadge = document.getElementById('accountRoiBadge');
 
-  if (curBalEl) curBalEl.textContent = `+${formatExactCurrency(currentBal).replace('$', '$')}`;
-  if (depEl) depEl.textContent = `+${formatExactCurrency(dep).replace('$', '$')}`;
-  if (wthEl) wthEl.textContent = `-${formatExactCurrency(wth).replace('$', '$')}`;
-  if (netInfEl) netInfEl.textContent = `+${formatExactCurrency(netInflow).replace('$', '$')}`;
+  if (curBalEl) curBalEl.textContent = formatExactCurrency(currentBal);
+  if (depEl) depEl.textContent = formatExactCurrency(dep);
+  if (wthEl) wthEl.textContent = `-${formatExactCurrency(wth).replace('-', '').replace('+', '')}`;
+  if (netInfEl) netInfEl.textContent = formatExactCurrency(netInflow);
 
   if (pnlEl) {
-    pnlEl.textContent = `${cumulativePnl >= 0 ? '+' : '-'}${formatExactCurrency(Math.abs(cumulativePnl)).replace('$', '$')}`;
+    pnlEl.textContent = formatExactCurrency(cumulativePnl);
     pnlEl.className = `font-extrabold text-sm ${cumulativePnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
   }
 
-  if (peakEl) peakEl.textContent = `+${formatExactCurrency(peakBalance).replace('$', '$')}`;
+  if (peakEl) peakEl.textContent = formatExactCurrency(peakBalance);
 
   const roi = netInflow > 0 ? ((cumulativePnl / netInflow) * 100).toFixed(1) : 0;
   if (roiBadge) {
@@ -663,7 +663,7 @@ function renderCapitalView() {
       </div>
       <div class="flex items-center space-x-2">
         <span class="font-black text-xs ${isDep ? 'text-emerald-400' : 'text-rose-400'}">
-          ${isDep ? '+' : '-'}${formatExactCurrency(f.amount)}
+          ${isDep ? '+' : '-'}${formatExactCurrency(f.amount).replace('-', '').replace('+', '')}
         </span>
         <button onclick="${editCall}" type="button" class="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800" title="Editar">
           <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
@@ -1043,7 +1043,7 @@ function setupEventListeners() {
     refreshActiveView();
   });
 
-  // Modal CSV
+  // Modal CSV (con reseteo de selector y confirmaciones)
   const csvModal = document.getElementById('csvModal');
   document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
     if (csvModal) {
@@ -1070,15 +1070,25 @@ function setupEventListeners() {
     }
   });
 
-  document.getElementById('csvFileInput')?.addEventListener('change', (e) => {
+  const csvInput = document.getElementById('csvFileInput');
+  csvInput?.addEventListener('click', (e) => {
+    e.target.value = '';
+  });
+
+  csvInput?.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     parseCsvFile(file, {
       onSuccess: (data) => {
         csvFileType = data.type;
-        if (data.type === 'transactions') parsedCsvFlows = data.flows;
-        else parsedCsvTrades = data.trades;
+        if (data.type === 'transactions') {
+          parsedCsvFlows = data.flows;
+          parsedCsvTrades = null;
+        } else {
+          parsedCsvTrades = data.trades;
+          parsedCsvFlows = null;
+        }
 
         const fName = document.getElementById('csvFileName');
         const fFound = document.getElementById('csvTradesFound');
@@ -1086,13 +1096,20 @@ function setupEventListeners() {
         const pBtn = document.getElementById('processCsvBtn');
 
         if (fName) fName.textContent = file.name;
-        if (fFound) fFound.textContent = `${data.type === 'transactions' ? data.flows.length : data.trades.length} registros (${data.broker})`;
-        if (sText) sText.textContent = `Período: ${data.minDate || '-'} al ${data.maxDate || '-'}`;
+        if (fFound) {
+          fFound.textContent = data.type === 'transactions' 
+            ? `${data.flows.length} movimiento(s) de capital (${data.broker})` 
+            : `${data.trades.length} operaciones (${data.broker})`;
+        }
+        if (sText) {
+          sText.textContent = `Rango: ${data.minDate || '-'} al ${data.maxDate || '-'}`;
+        }
+
         document.getElementById('csvPreviewBox')?.classList.remove('hidden');
         document.getElementById('csvModeSelection')?.classList.remove('hidden');
         if (pBtn) pBtn.disabled = false;
       },
-      onError: (msg) => alert(msg)
+      onError: (msg) => alert("Error CSV: " + msg)
     });
   });
 
@@ -1104,9 +1121,17 @@ function setupEventListeners() {
       if (mode === 'replace') active.capitalFlows = [];
       if (!active.capitalFlows) active.capitalFlows = [];
 
+      let agregados = 0;
       parsedCsvFlows.forEach(f => {
-        const isDup = active.capitalFlows.some(cf => cf.date === f.date && Math.abs(cf.amount - f.amount) < 0.05 && cf.type === f.type);
-        if (!isDup) active.capitalFlows.push(f);
+        const isDup = active.capitalFlows.some(cf => 
+          cf.date === f.date && 
+          Math.abs(cf.amount - f.amount) < 0.05 && 
+          cf.type === f.type
+        );
+        if (!isDup) {
+          active.capitalFlows.push(f);
+          agregados++;
+        }
       });
 
       await saveAccountsData();
@@ -1115,6 +1140,7 @@ function setupEventListeners() {
         csvModal.classList.remove('flex');
       }
       switchView('Capital');
+      alert(`¡Éxito! Se sincronizaron ${agregados} movimientos de capital en "${active.broker}".`);
       return;
     }
 
@@ -1122,6 +1148,7 @@ function setupEventListeners() {
       if (mode === 'replace') active.appData = {};
       if (!active.appData) active.appData = {};
 
+      let agregados = 0;
       parsedCsvTrades.forEach(item => {
         if (!active.appData[item.dateKey]) active.appData[item.dateKey] = [];
 
@@ -1136,6 +1163,7 @@ function setupEventListeners() {
 
         if (!isDup) {
           active.appData[item.dateKey].push(item.trade);
+          agregados++;
         } else {
           const existing = active.appData[item.dateKey].find(ex =>
             (ex.ticker || '').split(' ')[0].toUpperCase().trim() === (item.trade.ticker || '').split(' ')[0].toUpperCase().trim() &&
@@ -1165,7 +1193,8 @@ function setupEventListeners() {
         if (pYear) pYear.value = String(currentYear);
       }
 
-      refreshActiveView();
+      switchView('Month');
+      alert(`¡Carga completada! Se registraron ${agregados} operaciones nuevas para ${active.broker}.`);
     }
   });
 
