@@ -1,5 +1,5 @@
 /**
- * public/js/state.js - Estado Global y Persistencia en Disco vía Express
+ * public/js/state.js - Estado Global, Cálculos y Persistencia en Disco
  */
 
 export const state = {
@@ -44,6 +44,14 @@ export function getSystemTodayKey() {
   const m = String(now.getMonth() + 1).padStart(2, '0');
   const d = String(now.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
+}
+
+// ESTA FUNCIÓN FALTABA EXPORTAR
+export function getDayPnL(dateKey) {
+  const active = getActiveAccount();
+  const trades = active.appData?.[dateKey] || [];
+  if (trades.length === 0) return null;
+  return trades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
 }
 
 export function deduplicateAccountData(acc) {
