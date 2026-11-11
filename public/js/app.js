@@ -36,6 +36,7 @@ window.switchView = function(view) {
   safeIcons();
 };
 
+// GESTIÓN DEL MODAL DEL DÍA Y TRADES MANUALES
 window.openDayModal = function(dateKey) {
   state.selectedDateKey = dateKey;
   const title = document.getElementById('modalDateTitle');
@@ -45,9 +46,32 @@ window.openDayModal = function(dateKey) {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
   }
+  resetTradeForm();
   renderDayTradesList();
   safeIcons();
 };
+
+function resetTradeForm() {
+  const eIdx = document.getElementById('editTradeIndex');
+  const ticker = document.getElementById('tradeTicker');
+  const qty = document.getElementById('tradeQty');
+  const strike = document.getElementById('tradeStrike');
+  const type = document.getElementById('tradeType');
+  const dte = document.getElementById('tradeDteInput');
+  const uCost = document.getElementById('tradeUnitCost');
+  const uProceeds = document.getElementById('tradeUnitProceeds');
+  const sText = document.getElementById('tradeSubmitText');
+
+  if (eIdx) eIdx.value = '';
+  if (ticker) ticker.value = '';
+  if (qty) qty.value = '10';
+  if (strike) strike.value = '340.00';
+  if (type) type.value = 'PUT';
+  if (dte) dte.value = '0DTE';
+  if (uCost) uCost.value = '';
+  if (uProceeds) uProceeds.value = '';
+  if (sText) sText.textContent = 'Agregar Trade';
+}
 
 function renderDayTradesList() {
   const container = document.getElementById('tradesListContainer');
@@ -89,12 +113,14 @@ function renderDayTradesList() {
           <span class="text-[10px]">Total: <span class="text-slate-300">${formatExactCurrency(cost)}</span> &rarr; <span class="text-slate-300">${formatExactCurrency(proceeds)}</span></span>
         </div>
       </div>
+      <!-- BOTONES DE EDITAR Y ELIMINAR TRADES RESTAURADOS -->
       <div class="flex items-center space-x-2 text-right">
         <div>
           <span class="font-extrabold text-sm block ${isWin ? 'text-emerald-400' : 'text-rose-400'}">${formatExactCurrency(pnl)}</span>
           <span class="text-[10px] font-bold ${isWin ? 'text-emerald-400' : 'text-rose-400'}">${isWin ? '+' : ''}${roi}%</span>
         </div>
-        <button onclick="window.removeTrade(${idx})" class="p-1 text-slate-400 hover:text-rose-400 cursor-pointer"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+        <button onclick="window.editTrade(${idx})" class="p-1 text-slate-400 hover:text-blue-400 cursor-pointer" title="Editar trade"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+        <button onclick="window.removeTrade(${idx})" class="p-1 text-slate-400 hover:text-rose-400 cursor-pointer" title="Eliminar trade"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
       </div>
     `;
     container.appendChild(item);
@@ -107,6 +133,25 @@ function renderDayTradesList() {
   safeIcons();
 }
 
+window.editTrade = function(idx) {
+  const active = getActiveAccount();
+  const t = active.appData?.[state.selectedDateKey]?.[idx];
+  if (!t) return;
+  const qty = t.qty || 1;
+  const cost = Number(t.costBasis || 0);
+  const proceeds = Number(t.proceeds || (cost + Number(t.pnl || 0)));
+
+  const eIdx = document.getElementById('editTradeIndex'); if (eIdx) eIdx.value = String(idx);
+  const ticker = document.getElementById('tradeTicker'); if (ticker) ticker.value = t.ticker;
+  const qEl = document.getElementById('tradeQty'); if (qEl) qEl.value = qty;
+  const sEl = document.getElementById('tradeStrike'); if (sEl) sEl.value = cleanStrike(t.strike);
+  const typEl = document.getElementById('tradeType'); if (typEl) typEl.value = t.type;
+  const dteEl = document.getElementById('tradeDteInput'); if (dteEl) dteEl.value = t.dte || '0DTE';
+  const cEl = document.getElementById('tradeUnitCost'); if (cEl) cEl.value = (cost / qty).toFixed(2);
+  const pEl = document.getElementById('tradeUnitProceeds'); if (pEl) pEl.value = (proceeds / qty).toFixed(2);
+  const sText = document.getElementById('tradeSubmitText'); if (sText) sText.textContent = 'Guardar Cambios';
+};
+
 window.removeTrade = async function(idx) {
   const active = getActiveAccount();
   if (active.appData?.[state.selectedDateKey]) {
@@ -115,6 +160,55 @@ window.removeTrade = async function(idx) {
     await saveAccountsData();
     renderDayTradesList();
     refreshActiveView();
+  }
+};
+
+// GESTIÓN DE CAPITAL (EDITAR Y ELIMINAR)
+window.editCapitalFlow = function(id) {
+  const active = getActiveAccount();
+  const flow = (active.capitalFlows || []).find(f => f.id === id);
+  if (!flow) return;
+
+  const editId = document.getElementById('capitalEditId');
+  const type = document.getElementById('capitalFlowType');
+  const date = document.getElementById('capitalFlowDate');
+  const amount = document.getElementById('capitalFlowAmount');
+  const note = document.getElementById('capitalFlowNote');
+  const label = document.getElementById('capitalFormActionLabel');
+  const submitText = document.getElementById('capitalSubmitText');
+
+  if (editId) editId.value = flow.id;
+  if (type) type.value = flow.type;
+  if (date) date.value = flow.date;
+  if (amount) amount.value = flow.amount;
+  if (note) note.value = flow.note || '';
+
+  if (label) label.textContent = 'Editar Movimiento Externo';
+  if (submitText) submitText.textContent = 'Guardar Cambios';
+  document.getElementById('cancelCapitalEditBtn')?.classList.remove('hidden');
+  document.getElementById('capitalFlowForm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+window.removeCapitalFlow = async function(id) {
+  const active = getActiveAccount();
+  const flow = (active.capitalFlows || []).find(f => f.id === id);
+  if (!flow) return;
+
+  if (flow.transferId || flow.category === 'transfer') {
+    if (confirm("Esta es una transferencia entre cuentas. ¿Deseas anularla en ambas cuentas?")) {
+      state.accounts.forEach(acc => {
+        acc.capitalFlows = (acc.capitalFlows || []).filter(f => String(f.transferId) !== String(flow.transferId));
+      });
+      await saveAccountsData();
+      renderCapitalView();
+    }
+    return;
+  }
+
+  if (confirm("¿Deseas eliminar este movimiento de capital?")) {
+    active.capitalFlows = active.capitalFlows.filter(f => f.id !== id);
+    await saveAccountsData();
+    renderCapitalView();
   }
 };
 
@@ -178,6 +272,118 @@ function setupEventListeners() {
     refreshActiveView();
   });
 
+  // GESTIÓN DE CUENTAS: BOTÓN NUEVA Y CONFIGURAR RESTAURADOS
+  const accountModal = document.getElementById('accountModal');
+  const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+
+  document.getElementById('openNewAccountBtn')?.addEventListener('click', () => {
+    document.getElementById('editAccountId').value = '';
+    document.getElementById('accountModalTitle').textContent = 'Nueva Cuenta de Broker';
+    document.getElementById('accBrokerInput').value = '';
+    document.getElementById('accNumberInput').value = '';
+    document.getElementById('accTypeInput').value = 'Margin';
+    deleteAccountBtn?.classList.add('hidden');
+    if (accountModal) accountModal.style.display = 'flex';
+    safeIcons();
+  });
+
+  document.getElementById('editActiveAccountBtn')?.addEventListener('click', () => {
+    const active = getActiveAccount();
+    document.getElementById('editAccountId').value = active.id;
+    document.getElementById('accountModalTitle').textContent = 'Editar Cuenta Activa';
+    document.getElementById('accBrokerInput').value = active.broker;
+    document.getElementById('accNumberInput').value = active.number;
+    document.getElementById('accTypeInput').value = active.type;
+    deleteAccountBtn?.classList.toggle('hidden', state.accounts.length <= 1);
+    if (accountModal) accountModal.style.display = 'flex';
+    safeIcons();
+  });
+
+  document.getElementById('closeAccountModalBtn')?.addEventListener('click', () => { if (accountModal) accountModal.style.display = 'none'; });
+  document.getElementById('cancelAccountBtn')?.addEventListener('click', () => { if (accountModal) accountModal.style.display = 'none'; });
+
+  document.getElementById('accountForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const editId = document.getElementById('editAccountId').value;
+    const broker = document.getElementById('accBrokerInput').value.trim();
+    const number = document.getElementById('accNumberInput').value.trim();
+    const type = document.getElementById('accTypeInput').value;
+
+    if (!broker || !number) return;
+
+    if (editId) {
+      const acc = state.accounts.find(a => a.id === editId);
+      if (acc) {
+        acc.broker = broker;
+        acc.number = number;
+        acc.type = type;
+      }
+    } else {
+      const newAcc = {
+        id: 'acc_' + Date.now(),
+        broker,
+        number,
+        type,
+        currency: 'USD',
+        appData: {},
+        capitalFlows: []
+      };
+      state.accounts.push(newAcc);
+      state.activeAccountId = newAcc.id;
+    }
+
+    await saveAccountsData();
+    if (accountModal) accountModal.style.display = 'none';
+    renderAccountSelector();
+    refreshActiveView();
+  });
+
+  deleteAccountBtn?.addEventListener('click', async () => {
+    const active = getActiveAccount();
+    if (confirm(`¿Eliminar la cuenta "${active.broker} (${active.number})"?`)) {
+      state.accounts = state.accounts.filter(a => a.id !== active.id);
+      state.activeAccountId = state.accounts[0].id;
+      await saveAccountsData();
+      if (accountModal) accountModal.style.display = 'none';
+      renderAccountSelector();
+      refreshActiveView();
+    }
+  });
+
+  // REGISTRO Y EDICIÓN MANUAL DE TRADES
+  document.getElementById('tradeForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const active = getActiveAccount();
+    if (!active.appData) active.appData = {};
+    if (!active.appData[state.selectedDateKey]) active.appData[state.selectedDateKey] = [];
+
+    const idxStr = document.getElementById('editTradeIndex').value;
+    const ticker = (document.getElementById('tradeTicker').value || '').split(' ')[0].toUpperCase().trim();
+    const qty = parseInt(document.getElementById('tradeQty').value, 10) || 1;
+    const strike = cleanStrike(document.getElementById('tradeStrike').value.trim());
+    const type = document.getElementById('tradeType').value;
+    const dte = document.getElementById('tradeDteInput').value.trim().toUpperCase() || '0DTE';
+    const uCost = parseFloat(document.getElementById('tradeUnitCost').value) || 0;
+    const uProceeds = parseFloat(document.getElementById('tradeUnitProceeds').value) || 0;
+
+    const costBasis = uCost * qty;
+    const proceeds = uProceeds * qty;
+    const pnl = proceeds - costBasis;
+
+    const tradeObj = { ticker, qty, strike, type, dte, costBasis, proceeds, pnl };
+
+    if (idxStr !== '') {
+      active.appData[state.selectedDateKey][parseInt(idxStr, 10)] = tradeObj;
+    } else {
+      active.appData[state.selectedDateKey].push(tradeObj);
+    }
+
+    await saveAccountsData();
+    resetTradeForm();
+    renderDayTradesList();
+    refreshActiveView();
+  });
+
   // RESTAURACIÓN DE BACKUP DESDE ARCHIVO
   const restoreInput = document.getElementById('restoreBackupInput');
   restoreInput?.addEventListener('click', (e) => { e.target.value = ''; });
@@ -208,7 +414,58 @@ function setupEventListeners() {
     reader.readAsText(file);
   });
 
-  // MODAL CSV (COMPATIBLE IBKR Y SCHWAB)
+  // FORMULARIO DE CAPITAL (DEPÓSITOS Y RETIROS)
+  document.getElementById('capitalFlowForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const active = getActiveAccount();
+    const editId = document.getElementById('capitalEditId').value;
+    const type = document.getElementById('capitalFlowType').value;
+    const date = document.getElementById('capitalFlowDate').value;
+    const amount = parseFloat(document.getElementById('capitalFlowAmount').value);
+    const note = document.getElementById('capitalFlowNote').value.trim() || (type === 'deposit' ? 'Depósito' : 'Retiro');
+
+    if (isNaN(amount) || amount <= 0 || !date) return;
+    if (!active.capitalFlows) active.capitalFlows = [];
+
+    if (editId) {
+      const target = active.capitalFlows.find(f => f.id == editId);
+      if (target) {
+        target.type = type;
+        target.date = date;
+        target.amount = amount;
+        target.note = note;
+      }
+    } else {
+      active.capitalFlows.push({
+        id: Date.now(),
+        type,
+        category: 'external',
+        date,
+        amount,
+        note
+      });
+    }
+
+    await saveAccountsData();
+    document.getElementById('capitalEditId').value = '';
+    document.getElementById('capitalFlowAmount').value = '';
+    document.getElementById('capitalFlowNote').value = '';
+    document.getElementById('cancelCapitalEditBtn')?.classList.add('hidden');
+    document.getElementById('capitalFormActionLabel').textContent = 'Registrar Movimiento Externo (Banco / Fondeo)';
+    document.getElementById('capitalSubmitText').textContent = 'Agregar Movimiento Externo';
+    renderCapitalView();
+  });
+
+  document.getElementById('cancelCapitalEditBtn')?.addEventListener('click', () => {
+    document.getElementById('capitalEditId').value = '';
+    document.getElementById('capitalFlowAmount').value = '';
+    document.getElementById('capitalFlowNote').value = '';
+    document.getElementById('cancelCapitalEditBtn')?.classList.add('hidden');
+    document.getElementById('capitalFormActionLabel').textContent = 'Registrar Movimiento Externo (Banco / Fondeo)';
+    document.getElementById('capitalSubmitText').textContent = 'Agregar Movimiento Externo';
+  });
+
+  // MODAL CSV
   const csvModal = document.getElementById('csvModal');
   document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
     if (csvModal) { csvModal.classList.remove('hidden'); csvModal.classList.add('flex'); }
@@ -296,7 +553,6 @@ function setupEventListeners() {
           active.appData[item.dateKey].push(item.trade);
           agregados++;
         } else {
-          // Actualización de comisiones de IBKR
           const existing = active.appData[item.dateKey].find(ex =>
             (ex.ticker || '').split(' ')[0].toUpperCase().trim() === (item.trade.ticker || '').split(' ')[0].toUpperCase().trim() &&
             Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.20

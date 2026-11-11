@@ -4,11 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>P&amp;L Calendar &amp; Trading Journal Multicuenta</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- PapaParse CDN para CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <script>
@@ -79,31 +76,26 @@
     </div>
     
     <div class="flex items-center gap-1.5">
-      <!-- Botón Tema Dark/Light -->
       <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95 cursor-pointer">
         <i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i>
       </button>
 
-      <!-- Botón Descargar Backup -->
       <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad en servidor (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span>Backup</span>
       </button>
 
-      <!-- Botón Restaurar Backup -->
       <label title="Restaurar copia de seguridad desde un archivo JSON" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
         <span>Restaurar</span>
         <input type="file" id="restoreBackupInput" accept=".json" class="hidden">
       </label>
 
-      <!-- Botón Importar CSV -->
       <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
         <span>CSV</span>
       </button>
       
-      <!-- Botón Vaciar Cuenta Activa -->
       <button id="clearAllBtn" type="button" title="Vaciar datos de la cuenta activa" class="p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60 rounded-xl transition active:scale-95 cursor-pointer">
         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
       </button>
@@ -113,7 +105,7 @@
   <!-- TARJETA PRINCIPAL DEL CALENDARIO -->
   <main class="w-full max-w-xl bg-white dark:bg-darkCard rounded-3xl shadow-xl shadow-slate-200/60 dark:shadow-black/40 border border-slate-100 dark:border-darkBorder p-6 md:p-8 flex flex-col transition-all">
     
-    <!-- BARRA DE SELECCIÓN Y GESTIÓN DE CUENTAS (CON BOTONES RESTAURADOS) -->
+    <!-- BARRA DE SELECCIÓN Y GESTIÓN DE CUENTAS -->
     <div class="mb-4 pb-3.5 border-b border-slate-100 dark:border-darkBorder">
       <div class="flex items-center justify-between gap-2">
         <div class="flex-1">
@@ -123,13 +115,11 @@
           </label>
           <div class="relative">
             <select id="accountSelect" class="w-full appearance-none text-xs font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-darkSubtle hover:bg-slate-100 dark:hover:bg-slate-800/60 px-3 py-2 pr-8 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none cursor-pointer">
-              <!-- Cuentas dinámicas -->
             </select>
             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
           </div>
         </div>
 
-        <!-- Botones de Acción de Cuenta (+ Nueva y Engranaje) -->
         <div class="flex items-end gap-1.5 pt-4">
           <button id="openNewAccountBtn" type="button" class="px-2.5 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-sm active:scale-95 flex items-center gap-1 cursor-pointer" title="Crear nueva cuenta">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
@@ -331,7 +321,6 @@
         </div>
       </div>
 
-      <!-- Botón Transferencia entre Cuentas (se activa si hay >= 2 cuentas) -->
       <div id="transferButtonContainer" class="hidden">
         <button id="openTransferModalBtn" type="button" class="w-full py-2.5 px-3 bg-emerald-950/40 hover:bg-emerald-900/40 text-emerald-300 border border-emerald-800/60 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
           <i data-lucide="arrow-left-right" class="w-4 h-4 text-emerald-400"></i>
@@ -424,7 +413,7 @@
     </footer>
   </main>
 
-  <!-- MODAL: DETALLE DEL DÍA -->
+  <!-- MODAL: DETALLE DEL DÍA (CON FORMULARIO DE TRADES MANUALES RESTAURADO) -->
   <div id="dayModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-[#090d16] text-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-800 max-h-[90vh] flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
@@ -440,10 +429,113 @@
         </button>
       </div>
 
+      <!-- Formulario para agregar / editar trade manual -->
+      <form id="tradeForm" class="mt-4 bg-[#0d1424] p-3.5 rounded-2xl border border-slate-800 space-y-3">
+        <input type="hidden" id="editTradeIndex" value="">
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[10px] uppercase font-bold text-slate-400">
+          <div>
+            <label class="block mb-0.5">Ticker</label>
+            <input type="text" id="tradeTicker" placeholder="TSLA / SPY" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white uppercase focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block mb-0.5">Cantidad</label>
+            <input type="number" min="1" id="tradeQty" value="10" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block mb-0.5">Strike</label>
+            <input type="text" id="tradeStrike" placeholder="340.00" value="-" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
+          </div>
+          <div>
+            <label class="block mb-0.5">Tipo</label>
+            <select id="tradeType" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
+              <option value="CALL">CALL</option>
+              <option value="PUT" selected>PUT</option>
+              <option value="STK">STK</option>
+            </select>
+          </div>
+          <div>
+            <label class="block mb-0.5">Expiración</label>
+            <input type="text" id="tradeDteInput" placeholder="0DTE" value="0DTE" class="w-full text-xs font-bold px-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white uppercase focus:outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Compra unitaria</label>
+            <div class="relative flex items-center">
+              <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
+              <input type="number" step="0.01" min="0" id="tradeUnitCost" placeholder="33.66" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-0.5">Venta unitaria</label>
+            <div class="relative flex items-center">
+              <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
+              <input type="number" step="0.01" min="0" id="tradeUnitProceeds" placeholder="41.33" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-white focus:outline-none">
+            </div>
+          </div>
+          <div class="flex items-end">
+            <button type="submit" id="tradeSubmitBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+              <i data-lucide="plus" id="tradeSubmitIcon" class="w-3.5 h-3.5"></i>
+              <span id="tradeSubmitText">Agregar Trade</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
       <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
         <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Detalle de Operaciones</div>
         <div id="tradesListContainer" class="space-y-2"></div>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GESTOR DE CUENTAS (NUEVA Y CONFIGURAR) -->
+  <div id="accountModal" style="display: none;" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4">
+    <div class="bg-[#090d16] text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-800 flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <i data-lucide="building-2" class="w-5 h-5 text-blue-400"></i>
+          <h2 id="accountModalTitle" class="text-base font-black text-white">Cuenta de Broker</h2>
+        </div>
+        <button id="closeAccountModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-white cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="accountForm" class="mt-4 space-y-3 text-xs">
+        <input type="hidden" id="editAccountId" value="">
+
+        <div>
+          <label class="block font-bold text-slate-400 mb-1">Broker / Plataforma</label>
+          <input type="text" id="accBrokerInput" placeholder="Ej. Charles Schwab, Interactive Brokers" required class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-400 mb-1">Nro. de Cuenta</label>
+          <input type="text" id="accNumberInput" placeholder="Ej. XXXX7484 / U24279702" required class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-mono">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-400 mb-1">Tipo de Cuenta</label>
+          <select id="accTypeInput" class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold">
+            <option value="Margin">Margin (Apalancada / Opciones)</option>
+            <option value="Cash">Cash (Efectivo)</option>
+            <option value="IRA / Retiro">IRA / Retiro</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 gap-2">
+          <button type="button" id="deleteAccountBtn" class="hidden px-3 py-2 bg-rose-950/60 text-rose-400 font-bold rounded-xl hover:bg-rose-900 transition cursor-pointer">
+            Eliminar
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" id="cancelAccountBtn" class="px-3 py-2 border border-slate-700 rounded-xl text-slate-400 cursor-pointer">Cancelar</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition cursor-pointer">Guardar</button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -528,54 +620,6 @@
     </div>
   </div>
 
-  <!-- MODAL: GESTOR DE CUENTAS (NUEVA Y CONFIGURAR) -->
-  <div id="accountModal" style="display: none;" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4">
-    <div class="bg-[#090d16] text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-800 flex flex-col">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <i data-lucide="building-2" class="w-5 h-5 text-blue-400"></i>
-          <h2 id="accountModalTitle" class="text-base font-black text-white">Cuenta de Broker</h2>
-        </div>
-        <button id="closeAccountModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-white cursor-pointer">
-          <i data-lucide="x" class="w-4 h-4"></i>
-        </button>
-      </div>
-
-      <form id="accountForm" class="mt-4 space-y-3 text-xs">
-        <input type="hidden" id="editAccountId" value="">
-
-        <div>
-          <label class="block font-bold text-slate-400 mb-1">Broker / Plataforma</label>
-          <input type="text" id="accBrokerInput" placeholder="Ej. Charles Schwab, Interactive Brokers" required class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold">
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-400 mb-1">Nro. de Cuenta</label>
-          <input type="text" id="accNumberInput" placeholder="Ej. XXXX7484 / U24279702" required class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-mono">
-        </div>
-
-        <div>
-          <label class="block font-bold text-slate-400 mb-1">Tipo de Cuenta</label>
-          <select id="accTypeInput" class="w-full px-3 py-2 rounded-xl border border-slate-700 bg-slate-800 text-white font-semibold">
-            <option value="Margin">Margin (Apalancada / Opciones)</option>
-            <option value="Cash">Cash (Efectivo)</option>
-            <option value="IRA / Retiro">IRA / Retiro</option>
-          </select>
-        </div>
-
-        <div class="flex items-center justify-between pt-3 gap-2">
-          <button type="button" id="deleteAccountBtn" class="hidden px-3 py-2 bg-rose-950/60 text-rose-400 font-bold rounded-xl hover:bg-rose-900 transition cursor-pointer">
-            Eliminar
-          </button>
-          <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="cancelAccountBtn" class="px-3 py-2 border border-slate-700 rounded-xl text-slate-400 cursor-pointer">Cancelar</button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition cursor-pointer">Guardar</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- MODAL: INFORMACIÓN -->
   <div id="infoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-[#090d16] text-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-800 flex flex-col items-center text-center">
@@ -643,7 +687,6 @@
     </div>
   </div>
 
-  <!-- ARRANQUE MODULAR DE LA APLICACIÓN -->
   <script type="module">
     import { initApp } from './js/app.js';
     initApp();
