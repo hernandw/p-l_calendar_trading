@@ -75,35 +75,30 @@
   <div class="w-full max-w-xl flex items-center justify-between mb-3 px-1">
     <div class="flex items-center space-x-1.5 text-slate-400 dark:text-slate-500 text-xs font-bold tracking-wider uppercase">
       <i data-lucide="trending-up" class="w-4 h-4 text-blue-500"></i>
-      <span>Options Trading Journal</span>
+      <span>Options &amp; Stocks Trading Journal</span>
     </div>
     
     <div class="flex items-center gap-1.5">
-      <!-- Conmutador Dark/Light -->
       <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95">
         <i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i>
       </button>
 
-      <!-- Botón Descargar Backup -->
       <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad completa (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span>Backup</span>
       </button>
 
-      <!-- Botón Restaurar Backup -->
       <label title="Restaurar copia de seguridad desde un archivo JSON" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
         <span>Restaurar</span>
         <input type="file" id="restoreBackupInput" accept=".json" class="hidden">
       </label>
 
-      <!-- Botón Importar CSV -->
       <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
         <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
         <span>CSV</span>
       </button>
       
-      <!-- Botón Vaciar Cuenta Activa -->
       <button id="clearAllBtn" type="button" title="Vaciar datos de la cuenta activa" class="p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60 rounded-xl transition active:scale-95">
         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
       </button>
@@ -141,9 +136,9 @@
       </div>
 
       <div class="flex items-center gap-2 mt-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-        <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-900/40" id="badgeBrokerName">Charles Schwab</span>
+        <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-900/40" id="badgeBrokerName">Interactive Brokers</span>
         <span class="px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-900/40" id="badgeAccountType">Margin</span>
-        <span class="font-mono text-[10px]" id="badgeAccountNumber">Nro: ...7484</span>
+        <span class="font-mono text-[10px]" id="badgeAccountNumber">Nro: ...</span>
       </div>
     </div>
 
@@ -211,7 +206,6 @@
       </div>
     </div>
 
-    <!-- Barra de Subtítulo -->
     <div class="flex items-center justify-between text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase pb-2">
       <span id="sectionSubTitle">Mes Actual</span>
       <span id="sectionHint" class="text-[11px] font-normal text-slate-400 dark:text-slate-500 lowercase first-letter:uppercase">Haz clic en un día para registrar o modificar trades</span>
@@ -256,19 +250,18 @@
       <div class="p-3 bg-slate-50 dark:bg-darkSubtle rounded-2xl border border-slate-200/80 dark:border-darkBorder flex flex-wrap items-center justify-between gap-2 text-xs">
         <div class="flex items-center space-x-2">
           <i data-lucide="receipt" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
-          <span class="font-bold text-slate-700 dark:text-slate-300">Comisión estimada por contrato (Round-trip):</span>
+          <span class="font-bold text-slate-700 dark:text-slate-300">Comisión estimada por contrato/trade:</span>
         </div>
         <div class="flex items-center space-x-1.5">
           <span class="text-xs font-bold text-slate-400">$</span>
           <input type="number" id="feePerContractInput" step="0.05" min="0" value="1.30" class="w-16 px-2 py-1 text-xs font-bold rounded-lg border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-800 text-slate-800 dark:text-white text-center focus:ring-2 focus:ring-blue-500 focus:outline-none">
-          <span class="text-[10px] text-slate-400 font-semibold">(ej. $0.65 x 2)</span>
         </div>
       </div>
 
       <div class="grid grid-cols-3 gap-2 text-center">
         <div class="p-2.5 bg-slate-50 dark:bg-darkSubtle rounded-xl border border-slate-100 dark:border-darkBorder">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Contratos</span>
-          <span id="commTotalContracts" class="text-sm font-extrabold text-slate-800 dark:text-slate-100">0 ctos</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Operaciones</span>
+          <span id="commTotalContracts" class="text-sm font-extrabold text-slate-800 dark:text-slate-100">0 ops</span>
         </div>
         <div class="p-2.5 bg-slate-50 dark:bg-darkSubtle rounded-xl border border-slate-100 dark:border-darkBorder">
           <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Comisiones</span>
@@ -286,7 +279,7 @@
             <thead>
               <tr class="bg-slate-50 dark:bg-darkSubtle border-b border-slate-200/80 dark:border-darkBorder text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                 <th class="py-2.5 px-3">Ticker</th>
-                <th class="py-2.5 px-2 text-center">Contratos</th>
+                <th class="py-2.5 px-2 text-center">Operaciones</th>
                 <th class="py-2.5 px-2 text-right">Comisión Est.</th>
                 <th class="py-2.5 px-2 text-right">P&amp;L Bruto</th>
                 <th class="py-2.5 px-3 text-right">P&amp;L Neto</th>
@@ -300,8 +293,6 @@
 
     <!-- 5. PESTAÑA CAPITAL REAL -->
     <section id="capitalView" class="hidden w-full space-y-4">
-      
-      <!-- Balance de Cuenta -->
       <div class="p-5 bg-gradient-to-br from-slate-900 to-slate-800 dark:from-darkSubtle dark:to-darkCard text-white rounded-3xl border border-slate-700/60 shadow-lg flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs text-slate-300 font-bold uppercase tracking-wider">
           <span class="flex items-center gap-1.5">
@@ -314,7 +305,7 @@
         </div>
 
         <div class="my-3">
-          <div id="accountCurrentBalance" class="text-3xl font-black tracking-tight text-white">$1,352.51</div>
+          <div id="accountCurrentBalance" class="text-3xl font-black tracking-tight text-white">$0.00</div>
           <div class="text-[11px] text-slate-400 font-medium mt-1 flex flex-wrap items-center gap-2">
             <span>Depósitos: <strong id="accountTotalDeposits" class="text-emerald-400 font-bold">$0.00</strong></span>
             <span>&bull;</span>
@@ -336,7 +327,6 @@
         </div>
       </div>
 
-      <!-- Barra de Acción: Botón para Transferencia entre Cuentas -->
       <div id="transferButtonContainer" class="hidden">
         <button id="openTransferModalBtn" type="button" class="w-full py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-95">
           <i data-lucide="arrow-left-right" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
@@ -344,7 +334,6 @@
         </button>
       </div>
 
-      <!-- Formulario para Registrar/Editar Depósito o Retiro Externo -->
       <form id="capitalFlowForm" class="p-3.5 bg-slate-50 dark:bg-darkSubtle rounded-2xl border border-slate-200/80 dark:border-darkBorder space-y-2.5 text-xs transition duration-200">
         <div class="flex items-center justify-between font-bold text-slate-700 dark:text-slate-200">
           <span class="flex items-center gap-1.5">
@@ -397,7 +386,6 @@
         </button>
       </form>
 
-      <!-- Historial de Movimientos de Capital -->
       <div class="space-y-1.5">
         <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
           <span>Movimientos Registrados (Depósitos, Retiros y Transferencias)</span>
@@ -407,7 +395,7 @@
       </div>
     </section>
 
-    <!-- TARJETAS DE MÉTRICAS SCHWAB -->
+    <!-- TARJETAS DE MÉTRICAS -->
     <footer class="mt-6 pt-5 border-t border-slate-100 dark:border-darkBorder grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder flex flex-col justify-between">
         <div id="metricTotalTitle" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ganancia Neta</div>
@@ -453,7 +441,6 @@
         </button>
       </div>
 
-      <!-- Formulario para Agregar o Modificar Trade -->
       <form id="tradeForm" class="mt-4 bg-slate-50/80 dark:bg-darkSubtle p-3.5 rounded-2xl border border-slate-200/70 dark:border-darkBorder space-y-3 transition">
         <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
           <span class="flex items-center gap-1.5">
@@ -470,48 +457,43 @@
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ticker</label>
-            <input type="text" id="tradeTicker" placeholder="TSLA" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
+            <input type="text" id="tradeTicker" placeholder="PXLW / SPY" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Contratos</label>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Cantidad</label>
             <input type="number" min="1" id="tradeQty" value="10" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Strike</label>
-            <input type="text" id="tradeStrike" placeholder="340.00" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Strike (o -)</label>
+            <input type="text" id="tradeStrike" placeholder="340.00" value="-" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Tipo</label>
-            <select id="tradeType" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+            <select id="tradeType" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
               <option value="CALL">CALL</option>
-              <option value="PUT" selected>PUT</option>
+              <option value="PUT">PUT</option>
+              <option value="STK" selected>STK (Acciones)</option>
             </select>
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Expiración (DTE)</label>
-            <input type="text" id="tradeDteInput" placeholder="0DTE ó 1DTE" value="0DTE" required class="w-full text-xs font-bold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">DTE / Plazo</label>
+            <input type="text" id="tradeDteInput" placeholder="0DTE / -" value="-" class="w-full text-xs font-bold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Valor Cto (Compra unit.)</label>
-            <div class="relative flex items-center">
-              <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
-              <input type="number" step="0.01" min="0" id="tradeUnitCost" placeholder="33.66" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-            </div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Precio Compra ($)</label>
+            <input type="number" step="0.01" min="0" id="tradeUnitCost" placeholder="6.22" required class="w-full text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Valor Venta (Venta unit.)</label>
-            <div class="relative flex items-center">
-              <span class="absolute left-2.5 text-xs font-bold text-slate-400">$</span>
-              <input type="number" step="0.01" min="0" id="tradeUnitProceeds" placeholder="41.33" required class="w-full text-xs font-bold pl-6 pr-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
-            </div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Precio Venta ($)</label>
+            <input type="number" step="0.01" min="0" id="tradeUnitProceeds" placeholder="6.80" required class="w-full text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
           </div>
           <div class="flex items-end">
             <button type="submit" id="tradeSubmitBtn" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1">
               <i data-lucide="plus" id="tradeSubmitIcon" class="w-3.5 h-3.5"></i>
-              <span id="tradeSubmitText">Agregar Trade</span>
+              <span id="tradeSubmitText">Guardar Trade</span>
             </button>
           </div>
         </div>
@@ -622,12 +604,12 @@
 
         <div>
           <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Broker / Plataforma</label>
-          <input type="text" id="accBrokerInput" placeholder="Ej. Charles Schwab, Webull, IBKR" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="accBrokerInput" placeholder="Ej. Interactive Brokers, Charles Schwab, Webull" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div>
           <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nro. o Identificador de Cuenta</label>
-          <input type="text" id="accNumberInput" placeholder="Ej. XXXX7484" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="accNumberInput" placeholder="Ej. U1234567 / XXXX7484" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div>
@@ -734,11 +716,11 @@
           <div class="space-y-1.5">
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
               <input type="radio" name="csvImportMode" value="merge" checked class="text-blue-600 focus:ring-blue-500">
-              <span><strong>Combinar (Solo nuevos)</strong> - Omite transacciones y trades idénticos ya existentes.</span>
+              <span><strong>Combinar (Solo nuevos)</strong> - Omite operaciones ya registradas.</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
               <input type="radio" name="csvImportMode" value="replace_range" class="text-amber-600 focus:ring-amber-500">
-              <span class="text-amber-700 dark:text-amber-300"><strong>Sustituir período del archivo</strong> - Reemplaza los días que vienen en este CSV y conserva los demás.</span>
+              <span class="text-amber-700 dark:text-amber-300"><strong>Sustituir período del archivo</strong> - Reemplaza los días de este CSV y conserva los demás.</span>
             </label>
             <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
               <input type="radio" name="csvImportMode" value="replace" class="text-rose-600 focus:ring-rose-500">
@@ -755,14 +737,13 @@
     </div>
   </div>
 
-  <!-- SCRIPT DEFINITIVO ROBUSTO Y BLINDADO CON SOPORTE IBKR -->
+  <!-- SCRIPT DEFINITIVO ROBUSTO Y BLINDADO CON SOPORTE COMPLETO IBKR -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V17';
-      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V17';
-      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V17';
+      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V18';
+      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V18';
+      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V18';
 
-      // 1. TEMA DARK / LIGHT
       let isDarkMode = localStorage.getItem(THEME_KEY) === 'dark';
       function applyTheme() {
         const htmlEl = document.documentElement;
@@ -794,35 +775,21 @@
         refreshActiveView();
       });
 
-      // 2. PALETA VISUAL POR TICKER
       function getTickerBadgeClass(ticker) {
         const sym = (ticker || '').toUpperCase().trim();
         switch(sym) {
-          case 'SPY':
-            return 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30';
-          case 'QQQ':
-            return 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30';
-          case 'TSLA':
-            return 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/30';
-          case 'NVDA':
-            return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
-          case 'AMD':
-            return 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30';
-          case 'AAPL':
-            return 'bg-slate-500/15 text-slate-800 dark:text-slate-200 border border-slate-500/30';
-          case 'GOOGL':
-          case 'GOOG':
-            return 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30';
-          case 'HOOD':
-            return 'bg-lime-500/15 text-lime-800 dark:text-lime-300 border border-lime-500/30';
-          case 'MARA':
-            return 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30';
-          default:
-            return 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-400/20';
+          case 'SPY': return 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30';
+          case 'QQQ': return 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30';
+          case 'TSLA': return 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/30';
+          case 'NVDA': return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
+          case 'AMD': return 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30';
+          case 'AAPL': return 'bg-slate-500/15 text-slate-800 dark:text-slate-200 border border-slate-500/30';
+          case 'PXLW': return 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30';
+          case 'SMX': return 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30';
+          default: return 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-400/20';
         }
       }
 
-      // 3. ESTADO GLOBAL MULTICUENTA
       let accounts = [];
       let activeAccountId = null;
       let currentView = 'Month';
@@ -839,27 +806,17 @@
       function getDefaultAccounts() {
         return [
           {
-            id: 'acc_schwab_7484',
-            broker: 'Charles Schwab',
-            number: 'XXXX7484',
+            id: 'acc_ibkr_demo',
+            broker: 'Interactive Brokers',
+            number: 'U1234567',
             type: 'Margin',
             currency: 'USD',
-            appData: {
-              "2026-10-16": [
-                { ticker: "SPY", strike: "770.00", type: "PUT", dte: "0DTE", qty: 2, costBasis: 279.32, proceeds: 346.67, pnl: 67.35 },
-                { ticker: "SPY", strike: "771.00", type: "PUT", dte: "0DTE", qty: 2, costBasis: 275.32, proceeds: 222.68, pnl: -52.64 },
-                { ticker: "SPY", strike: "771.00", type: "PUT", dte: "0DTE", qty: 2, costBasis: 263.32, proceeds: 318.67, pnl: 55.35 }
-              ]
-            },
-            capitalFlows: [
-              { id: 1, type: 'deposit', category: 'external', date: '2026-04-01', amount: 3833.79, note: 'Depósito Inicial Banco' },
-              { id: 2, type: 'withdrawal', category: 'external', date: '2026-08-20', amount: 1139.00, note: 'Retiro a Cuenta Bancaria' }
-            ]
+            appData: {},
+            capitalFlows: []
           }
         ];
       }
 
-      // 4. FUNCIONES DE CÁLCULO Y VALIDACIÓN DE SALDO
       function getAccountBalance(accountId, excludeFlowId = null, excludeTransferId = null) {
         const acc = accounts.find(a => a.id === accountId);
         if (!acc) return 0;
@@ -931,7 +888,7 @@
       }
 
       function formatDteBadge(dteVal) {
-        if (!dteVal) return '0DTE';
+        if (!dteVal || dteVal === '-') return '-';
         const clean = String(dteVal).trim().toUpperCase();
         if (clean.endsWith('DTE')) return clean;
         if (!isNaN(parseInt(clean, 10))) return `${parseInt(clean, 10)}DTE`;
@@ -975,7 +932,7 @@
       }
 
       function cleanStrike(val) {
-        if (!val) return '-';
+        if (!val || val === '-') return '-';
         return String(val).replace(/\$/g, '').trim();
       }
 
@@ -1104,7 +1061,7 @@
         safeIcons();
       }
 
-      // 5. BACKUP Y RESTAURACIÓN (JSON)
+      // BACKUP Y RESTAURACIÓN
       document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
         const backupData = {
           version: '1.0',
@@ -1164,7 +1121,7 @@
         e.target.value = '';
       });
 
-      // 6. MODAL DE CUENTAS
+      // MODAL DE CUENTAS
       const accountModal = document.getElementById('accountModal');
       const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 
@@ -1258,7 +1215,7 @@
         }
       });
 
-      // 7. GESTIÓN DE TRANSFERENCIAS ENTRE CUENTAS CON VALIDACIÓN DE SALDO
+      // TRANSFERENCIAS ENTRE CUENTAS
       const transferModal = document.getElementById('transferModal');
       const deleteTransferBtn = document.getElementById('deleteTransferBtn');
 
@@ -1472,7 +1429,6 @@
         }
       });
 
-      // VALIDACIÓN ESTRICTA DE SALDO AL TRANSFERIR ENTRE CUENTAS
       document.getElementById('transferForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const editTransferId = document.getElementById('editTransferId').value;
@@ -1493,10 +1449,9 @@
 
         if (!accFrom || !accTo) return;
 
-        // VERIFICACIÓN DE FONDOS DISPONIBLES EN CUENTA ORIGEN
         const availableBalance = getAccountBalance(fromId, null, editTransferId || null);
         if (amount > availableBalance + 0.0001) {
-          alert(`Operación rechazada por Saldo Insuficiente:\n\nLa cuenta de origen "${accFrom.broker} (${accFrom.number})" solo tiene disponible: ${formatExactCurrency(availableBalance)}.\n\nNo es posible transferir ${formatExactCurrency(amount)}.`);
+          alert(`Operación rechazada por Saldo Insuficiente:\n\nLa cuenta "${accFrom.broker} (${accFrom.number})" solo tiene disponible: ${formatExactCurrency(availableBalance)}.\n\nNo es posible transferir ${formatExactCurrency(amount)}.`);
           return;
         }
 
@@ -1543,7 +1498,7 @@
         refreshActiveView();
       });
 
-      // 8. RENDERIZADO MENSUAL
+      // RENDERIZADO MENSUAL
       function renderMonthView() {
         const grid = document.getElementById('calendarGrid');
         if (!grid) return;
@@ -1650,7 +1605,7 @@
         updateSchwabMetrics();
       }
 
-      // 9. RENDERIZADO ANUAL
+      // RENDERIZADO ANUAL
       function renderYearView() {
         const grid = document.getElementById('yearMonthsGrid');
         if (!grid) return;
@@ -1734,7 +1689,7 @@
         updateSchwabMetrics();
       }
 
-      // 10. RENDERIZADO TICKERS
+      // RENDERIZADO TICKERS
       function renderTickersView() {
         const grid = document.getElementById('tickersGrid');
         if (!grid) return;
@@ -1860,7 +1815,7 @@
         });
       }
 
-      // 11. RENDERIZADO COMISIONES
+      // RENDERIZADO COMISIONES
       function renderCommissionsView() {
         const tbody = document.getElementById('commissionsTableBody');
         if (!tbody) return;
@@ -1869,7 +1824,7 @@
         const subT = document.getElementById('sectionSubTitle');
         const sHint = document.getElementById('sectionHint');
         if (subT) subT.textContent = `Comisiones y Rendimiento Neto (${currentYear})`;
-        if (sHint) sHint.textContent = "Calculado según contratos operados en esta cuenta";
+        if (sHint) sHint.textContent = "Calculado según contratos y acciones operadas";
 
         const feeInput = document.getElementById('feePerContractInput');
         const feeRate = parseFloat(feeInput?.value) || 1.30;
@@ -1913,7 +1868,7 @@
         const cCtos = document.getElementById('commTotalContracts');
         const cFees = document.getElementById('commTotalFees');
         const cImp = document.getElementById('commTotalImpact');
-        if (cCtos) cCtos.textContent = `${totalAllContracts.toLocaleString()} ctos`;
+        if (cCtos) cCtos.textContent = `${totalAllContracts.toLocaleString()} ops`;
         if (cFees) cFees.textContent = `-${formatExactCurrency(totalAllFees)}`;
 
         const grossPnl = totalAllNetPnl + totalAllFees;
@@ -1923,7 +1878,7 @@
         const commArray = Object.values(tickerComms).sort((a, b) => b.contracts - a.contracts);
 
         if (commArray.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400 text-xs">No hay contratos registrados en esta cuenta.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-400 text-xs">No hay operaciones registradas en esta cuenta.</td></tr>`;
           return;
         }
 
@@ -1941,7 +1896,7 @@
             <td class="py-2.5 px-3">
               <span class="text-xs font-black px-2 py-0.5 rounded-lg ${tickerBadgeStyle}">${item.ticker}</span>
             </td>
-            <td class="py-2.5 px-2 text-center font-bold text-slate-700 dark:text-slate-300">${item.contracts} ctos</td>
+            <td class="py-2.5 px-2 text-center font-bold text-slate-700 dark:text-slate-300">${item.contracts} ops</td>
             <td class="py-2.5 px-2 text-right font-bold text-rose-600 dark:text-rose-400">-${formatExactCurrency(estFee)}</td>
             <td class="py-2.5 px-2 text-right font-bold ${isGrossWin ? 'text-slate-700 dark:text-slate-300' : 'text-slate-400'}">${formatExactCurrency(gross)}</td>
             <td class="py-2.5 px-3 text-right font-black ${isNetWin ? 'text-pnlGreen-text dark:text-pnlGreen-darkText' : 'text-pnlRed-text dark:text-pnlRed-darkText'}">${formatExactCurrency(net)}</td>
@@ -1952,7 +1907,6 @@
 
       document.getElementById('feePerContractInput')?.addEventListener('input', renderCommissionsView);
 
-      // Validación visual en tiempo real en retiros bancarios
       function checkWithdrawalAmountLive() {
         const type = document.getElementById('capitalFlowType')?.value;
         const amountInput = document.getElementById('capitalFlowAmount');
@@ -1993,7 +1947,7 @@
       document.getElementById('capitalFlowType')?.addEventListener('change', checkWithdrawalAmountLive);
       document.getElementById('capitalFlowAmount')?.addEventListener('input', checkWithdrawalAmountLive);
 
-      // 12. RENDERIZADO CAPITAL REAL
+      // RENDERIZADO CAPITAL REAL
       function renderCapitalView() {
         const subT = document.getElementById('sectionSubTitle');
         const sHint = document.getElementById('sectionHint');
@@ -2130,7 +2084,7 @@
               <span class="font-black text-xs sm:text-sm mr-1 ${amountColor}">
                 ${amountSign}${formatExactCurrency(flow.amount)}
               </span>
-              <button onclick="${editCall}" type="button" class="p-1.5 text-slate-400 hover:text-blue-500 transition rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="${isTransfer ? 'Modificar transferencia (muestra cuenta origen y destino)' : 'Editar movimiento'}">
+              <button onclick="${editCall}" type="button" class="p-1.5 text-slate-400 hover:text-blue-500 transition rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Editar">
                 <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
               </button>
               <button onclick="removeCapitalFlow(${flow.id})" type="button" class="p-1.5 text-slate-400 hover:text-rose-500 transition rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" title="Eliminar">
@@ -2199,7 +2153,6 @@
         safeIcons();
       }
 
-      // VALIDACIÓN ESTRICTA DE SALDO EN RETIROS EXTERNOS
       document.getElementById('capitalFlowForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const active = getActiveAccount();
@@ -2213,7 +2166,6 @@
 
         if (isNaN(amount) || amount <= 0 || !date) return;
 
-        // VALIDAR SALDO DISPONIBLE SI ES RETIRO EXTERNO
         if (type === 'withdrawal') {
           const availableBalance = getAccountBalance(active.id, editId ? Number(editId) : null, null);
           if (amount > availableBalance + 0.0001) {
@@ -2248,7 +2200,6 @@
         renderCapitalView();
       });
 
-      // Eliminación sincronizada de transferencias entre cuentas
       window.removeCapitalFlow = function(id) {
         const active = getActiveAccount();
         const flow = (active.capitalFlows || []).find(f => f.id === id);
@@ -2280,7 +2231,7 @@
         renderCapitalView();
       };
 
-      // 13. DETALLE DE TICKER
+      // DETALLE DE TICKER
       const tickerModal = document.getElementById('tickerModal');
       function openTickerDetailsModal(data) {
         document.getElementById('tickerModalTitle').textContent = `Trades de ${data.ticker} (${currentYear})`;
@@ -2299,10 +2250,10 @@
             <div>
               <div class="flex items-center space-x-1.5 flex-wrap">
                 <span class="text-[11px] font-bold text-slate-800 dark:text-slate-200">${trade.dateKey}</span>
-                <span class="px-1.5 py-0.5 bg-slate-900 dark:bg-slate-800 text-white text-[9px] font-black rounded">${trade.qty || 1} cto</span>
-                <span class="px-1 py-0.5 bg-white dark:bg-darkSubtle border border-slate-200 dark:border-darkBorder text-slate-700 dark:text-slate-300 text-[9px] font-bold rounded">Strike ${trade.strike || '-'}</span>
-                <span class="px-1 py-0.5 text-[9px] font-bold rounded ${trade.type === 'CALL' ? 'bg-emerald-200 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-rose-200 dark:bg-rose-950 text-rose-800 dark:text-rose-300'}">${trade.type || 'CALL'}</span>
-                <span class="text-[9px] font-bold text-slate-500 bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">${dteClean}</span>
+                <span class="px-1.5 py-0.5 bg-slate-900 dark:bg-slate-800 text-white text-[9px] font-black rounded">${trade.qty || 1} ${trade.type === 'STK' ? 'acc' : 'cto'}</span>
+                <span class="px-1 py-0.5 bg-white dark:bg-darkSubtle border border-slate-200 dark:border-darkBorder text-slate-700 dark:text-slate-300 text-[9px] font-bold rounded">${trade.type === 'STK' ? 'Acción' : 'Strike ' + trade.strike}</span>
+                <span class="px-1 py-0.5 text-[9px] font-bold rounded ${trade.type === 'CALL' ? 'bg-emerald-200 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : (trade.type === 'PUT' ? 'bg-rose-200 dark:bg-rose-950 text-rose-800 dark:text-rose-300' : 'bg-blue-200 dark:bg-blue-950 text-blue-800 dark:text-blue-300')}">${trade.type}</span>
+                ${dteClean !== '-' ? `<span class="text-[9px] font-bold text-slate-500 bg-slate-200 dark:bg-slate-800 px-1 py-0.5 rounded">${dteClean}</span>` : ''}
               </div>
             </div>
             <div class="text-right">
@@ -2326,7 +2277,7 @@
         }
       });
 
-      // 14. MÉTRICAS SCHWAB
+      // MÉTRICAS SCHWAB
       function updateSchwabMetrics() {
         const isMonth = (currentView === 'Month');
         const prefix = isMonth ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}` : `${currentYear}`;
@@ -2389,7 +2340,6 @@
         updateTotalTradesHeader();
       }
 
-      // 15. NAVEGACIÓN DE PESTAÑAS
       function switchView(view) {
         currentView = view;
         const monthBtn = document.getElementById('viewMonthBtn');
@@ -2458,7 +2408,7 @@
       document.getElementById('tickerSearchInput')?.addEventListener('input', renderTickersView);
       document.getElementById('tickerSortSelect')?.addEventListener('change', renderTickersView);
 
-      // 16. MODAL DE INFORMACIÓN
+      // MODAL DE INFORMACIÓN
       const infoModal = document.getElementById('infoModal');
 
       document.getElementById('helpBtn')?.addEventListener('click', () => {
@@ -2486,7 +2436,7 @@
         }
       });
 
-      // 17. MODAL DE DÍA (AGREGAR / MODIFICAR TRADES)
+      // MODAL DE DÍA (AGREGAR / MODIFICAR TRADES)
       const dayModal = document.getElementById('dayModal');
 
       function openDayModal(dateKey, dayNumber, dateObj) {
@@ -2509,14 +2459,14 @@
         document.getElementById('editTradeIndex').value = '';
         document.getElementById('tradeTicker').value = '';
         document.getElementById('tradeQty').value = '10';
-        document.getElementById('tradeStrike').value = '';
-        document.getElementById('tradeType').value = 'PUT';
-        document.getElementById('tradeDteInput').value = '0DTE';
+        document.getElementById('tradeStrike').value = '-';
+        document.getElementById('tradeType').value = 'STK';
+        document.getElementById('tradeDteInput').value = '-';
         document.getElementById('tradeUnitCost').value = '';
         document.getElementById('tradeUnitProceeds').value = '';
 
         document.getElementById('tradeFormTitle').textContent = 'Nuevo Trade Manual';
-        document.getElementById('tradeSubmitText').textContent = 'Agregar Trade';
+        document.getElementById('tradeSubmitText').textContent = 'Guardar Trade';
         const submitIcon = document.getElementById('tradeSubmitIcon');
         if (submitIcon) submitIcon.setAttribute('data-lucide', 'plus');
         const formIcon = document.getElementById('tradeFormIcon');
@@ -2545,8 +2495,8 @@
         document.getElementById('tradeTicker').value = trade.ticker || '';
         document.getElementById('tradeQty').value = qty;
         document.getElementById('tradeStrike').value = cleanStrike(trade.strike);
-        document.getElementById('tradeType').value = trade.type || 'CALL';
-        document.getElementById('tradeDteInput').value = trade.dte || '0DTE';
+        document.getElementById('tradeType').value = trade.type || 'STK';
+        document.getElementById('tradeDteInput').value = trade.dte || '-';
         document.getElementById('tradeUnitCost').value = unitCost;
         document.getElementById('tradeUnitProceeds').value = unitProceeds;
 
@@ -2612,15 +2562,6 @@
           const strikeClean = cleanStrike(trade.strike);
           const dteClean = formatDteBadge(trade.dte);
 
-          let dteBadgeBg = 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300';
-          if (dteClean === '0DTE') {
-            dteBadgeBg = 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800';
-          } else if (dteClean === '1DTE') {
-            dteBadgeBg = 'bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border border-blue-200/80 dark:border-blue-800';
-          } else {
-            dteBadgeBg = 'bg-purple-100 dark:bg-purple-950/80 text-purple-800 dark:text-purple-300 border border-purple-200/80 dark:border-purple-800';
-          }
-
           const tickerBadgeStyle = getTickerBadgeClass(trade.ticker);
 
           const item = document.createElement('div');
@@ -2628,21 +2569,21 @@
           item.innerHTML = `
             <div class="flex flex-col space-y-1.5 cursor-pointer" onclick="editTrade(${idx})">
               <div class="flex items-center space-x-1.5 flex-wrap">
-                <span class="px-1.5 py-0.5 bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-black rounded-md">${qty} ${qty === 1 ? 'cto' : 'ctos'}</span>
+                <span class="px-1.5 py-0.5 bg-slate-900 dark:bg-slate-800 text-white text-[10px] font-black rounded-md">${qty} ${trade.type === 'STK' ? 'acc' : 'ctos'}</span>
                 <span class="text-xs font-black px-2 py-0.5 rounded-lg ${tickerBadgeStyle}">${trade.ticker || 'TRADE'}</span>
-                <span class="px-1.5 py-0.5 bg-white/80 dark:bg-darkSubtle border border-slate-200 dark:border-darkBorder text-slate-700 dark:text-slate-300 text-[10px] font-bold rounded-md tracking-tight">Strike ${strikeClean}</span>
-                <span class="px-1.5 py-0.5 text-[9px] font-bold rounded ${trade.type === 'CALL' ? 'bg-emerald-200 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : 'bg-rose-200 dark:bg-rose-950 text-rose-800 dark:text-rose-300'}">${trade.type || 'CALL'}</span>
-                <span class="text-[9px] font-black px-1.5 py-0.5 rounded-md ${dteBadgeBg}">${dteClean}</span>
+                ${strikeClean !== '-' ? `<span class="px-1.5 py-0.5 bg-white/80 dark:bg-darkSubtle border border-slate-200 dark:border-darkBorder text-slate-700 dark:text-slate-300 text-[10px] font-bold rounded-md tracking-tight">Strike ${strikeClean}</span>` : ''}
+                <span class="px-1.5 py-0.5 text-[9px] font-bold rounded ${trade.type === 'CALL' ? 'bg-emerald-200 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300' : (trade.type === 'PUT' ? 'bg-rose-200 dark:bg-rose-950 text-rose-800 dark:text-rose-300' : 'bg-blue-200 dark:bg-blue-950 text-blue-800 dark:text-blue-300')}">${trade.type}</span>
+                ${dteClean !== '-' ? `<span class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">${dteClean}</span>` : ''}
               </div>
 
               <div class="flex items-center space-x-2 text-[11px] text-slate-600 dark:text-slate-400 flex-wrap">
                 <div>
-                  <span class="text-slate-400 dark:text-slate-500 font-medium">Cto Compra:</span>
+                  <span class="text-slate-400 dark:text-slate-500 font-medium">Compra:</span>
                   <span class="font-bold text-slate-800 dark:text-slate-200">$${unitCost.toFixed(2)}</span>
                 </div>
                 <span class="text-slate-300 dark:text-slate-600">&rarr;</span>
                 <div>
-                  <span class="text-slate-400 dark:text-slate-500 font-medium">Cto Venta:</span>
+                  <span class="text-slate-400 dark:text-slate-500 font-medium">Venta:</span>
                   <span class="font-bold text-slate-800 dark:text-slate-200">$${unitProceeds.toFixed(2)}</span>
                 </div>
                 <span class="text-slate-300 dark:text-slate-600">|</span>
@@ -2740,7 +2681,7 @@
         }
       });
 
-      // 18. MODAL CSV (COMPATIBLE CON CHARLES SCHWAB E INTERACTIVE BROKERS)
+      // MODAL CSV (COMPATIBLE CON CHARLES SCHWAB E INTERACTIVE BROKERS)
       const csvModal = document.getElementById('csvModal');
 
       document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
@@ -2798,7 +2739,7 @@
 
       function parseFlexibleDate(dateStr) {
         if (!dateStr) return null;
-        const clean = String(dateStr).trim().split(' ')[0].split('T')[0];
+        const clean = String(dateStr).trim().split(';')[0].split(' ')[0].split('T')[0];
         if (clean.includes('/')) {
           const parts = clean.split('/');
           if (parts.length === 3) {
@@ -2840,6 +2781,7 @@
             for (let i = 0; i < Math.min(rows.length, 30); i++) {
               const rowStr = rows[i].map(c => String(c).trim().toLowerCase());
               
+              // 1. Detección Cash Transactions
               const hasAction = rowStr.some(c => c.includes('action') || c.includes('acción') || c.includes('type') || c.includes('tipo'));
               const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto') || c.includes('importe') || c.includes('netamount'));
               const isIbkrCash = rowStr.some(c => c === 'cashtransaction' || c === 'deposits/withdrawals' || c.includes('cash transactions'));
@@ -2847,17 +2789,19 @@
               if ((hasAction && hasAmount) || isIbkrCash) {
                 headerRowIndex = i;
                 isTransactionsFile = true;
-                if (rowStr.some(c => c.includes('ibkr') || c.includes('settledate') || c.includes('fxratetobase'))) brokerDetected = 'IBKR';
+                if (rowStr.some(c => c.includes('ibkr') || c.includes('settledate') || c.includes('fxratetobase') || isIbkrCash)) brokerDetected = 'IBKR';
                 break;
               }
               
-              const hasSymbol = rowStr.some(c => c.includes('symbol') || c.includes('símbolo') || c.includes('description') || c.includes('instrument'));
+              // 2. Detección Trades
+              const hasSymbol = rowStr.some(c => c === 'symbol' || c === 'símbolo' || c === 'description' || c === 'instrument' || c.includes('symbol'));
               const hasPnl = rowStr.some(c => c.includes('gain/loss') || c.includes('fifopnlrealized') || c.includes('realized p/l') || c.includes('realizedpnl') || c.includes('p&l'));
+              const hasIbkrCols = rowStr.some(c => c.includes('fifopnlrealized') || c.includes('ibcommission') || c.includes('tradedate'));
 
-              if (hasSymbol && hasPnl) {
+              if ((hasSymbol && hasPnl) || hasIbkrCols) {
                 headerRowIndex = i;
                 isTransactionsFile = false;
-                if (rowStr.some(c => c.includes('fifopnlrealized') || c.includes('ibcommission') || c.includes('trades'))) brokerDetected = 'IBKR';
+                if (hasIbkrCols || rowStr.some(c => c === 'assetclass' || c === 'tradedate')) brokerDetected = 'IBKR';
                 break;
               }
             }
@@ -2869,10 +2813,10 @@
 
             const headers = rows[headerRowIndex].map(h => String(h).trim());
 
-            // CASO A: HISTORIAL DE EFECTIVO (DEPÓSITOS Y RETIROS)
+            // CASO A: HISTORIAL DE EFECTIVO
             if (isTransactionsFile) {
               csvFileType = 'transactions';
-              const dateIdx = headers.findIndex(h => /date|fecha|settledate/i.test(h));
+              const dateIdx = headers.findIndex(h => /date|fecha|settledate|datetime/i.test(h));
               const actionIdx = headers.findIndex(h => /action|acción|type|tipo/i.test(h));
               const descIdx = headers.findIndex(h => /description|descripción|comment/i.test(h));
               const amountIdx = headers.findIndex(h => /amount|monto|importe|netamount/i.test(h));
@@ -2935,17 +2879,23 @@
               return;
             }
 
-            // CASO B: TRADES (GAIN/LOSS SCHWAB O TRADES IBKR)
+            // CASO B: TRADES (SCHWAB O IBKR FLEX)
             csvFileType = 'trades';
-            const symbolIdx = headers.findIndex(h => /symbol|símbolo|description|instrument/i.test(h));
-            const closedDateIdx = headers.findIndex(h => /closed\s*date|fecha\s*de\s*cierre|tradedate|date\/time|datetime|date/i.test(h));
+            const symbolIdx = headers.findIndex(h => /^symbol$|^símbolo$|description|instrument/i.test(h));
+            const closedDateIdx = headers.findIndex(h => /closed\s*date|fecha\s*de\s*cierre|^tradedate$|date\/time|datetime|^date$/i.test(h));
             const openedDateIdx = headers.findIndex(h => /opened\s*date|fecha\s*de\s*apertura|opendate/i.test(h));
-            const qtyIdx = headers.findIndex(h => /quantity|cantidad|qty/i.test(h));
-            const costBasisIdx = headers.findIndex(h => /cost\s*basis|base\s*del\s*costo|cost|basis/i.test(h));
+            const qtyIdx = headers.findIndex(h => /quantity|cantidad|^qty$/i.test(h));
+            const priceIdx = headers.findIndex(h => /tradeprice|price|precio/i.test(h));
+            const costBasisIdx = headers.findIndex(h => /cost\s*basis|base\s*del\s*costo|^cost$|basis/i.test(h));
             const proceedsIdx = headers.findIndex(h => /proceeds|ingresos/i.test(h));
             const gainLossIdx = headers.findIndex(h => /gain\/loss|ganancia\/pérdida|fifopnlrealized|realized\s*p\/l|realizedpnl/i.test(h));
             const commIdx = headers.findIndex(h => /ibcommission|commission|comisión/i.test(h));
+            const assetClassIdx = headers.findIndex(h => /assetclass|asset\s*class/i.test(h));
+            const strikeIdx = headers.findIndex(h => /^strike$/i.test(h));
+            const expiryIdx = headers.findIndex(h => /expiry|expiration|expdate/i.test(h));
+            const putCallIdx = headers.findIndex(h => /put\/call|type|tipo/i.test(h));
             
+            // Flags Schwab
             const washSaleIdx = headers.findIndex(h => /wash\s*sale/i.test(h));
             const disallowedIdx = headers.findIndex(h => /disallowed\s*loss/i.test(h));
             const totalTxPnlIdx = headers.findIndex(h => /total\s*transaction\s*gain\/loss/i.test(h));
@@ -2962,6 +2912,7 @@
             let minDate = null;
             let maxDate = null;
 
+            // En IBKR, agrupar o procesar filas con FifoPnlRealized != 0
             for (let r = headerRowIndex + 1; r < rows.length; r++) {
               const row = rows[r];
               if (!row || row.length <= symbolIdx) continue;
@@ -2976,19 +2927,32 @@
               const rawPnl = parseFloat(gainLossRaw.replace(/\$/g, '').replace(/,/g, '').trim());
               if (isNaN(rawPnl)) continue;
 
+              // En IBKR Flex Query, las aperturas tienen FifoPnlRealized = 0.
+              // Solo registramos filas donde hay P&L realizado o cuando no es IBKR
+              if (brokerDetected === 'IBKR' && rawPnl === 0) {
+                continue;
+              }
+
               const qty = (qtyIdx !== -1 && row[qtyIdx]) ? Math.abs(parseInt(String(row[qtyIdx]).trim(), 10) || 1) : 1;
+              const tradePrice = (priceIdx !== -1 && row[priceIdx]) ? Math.abs(parseFloat(String(row[priceIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
+              let proceedsVal = (proceedsIdx !== -1 && row[proceedsIdx]) ? Math.abs(parseFloat(String(row[proceedsIdx]).replace(/[\$\,]/g, '').trim()) || 0) : (qty * tradePrice);
+              
               let costBasis = (costBasisIdx !== -1 && row[costBasisIdx]) ? Math.abs(parseFloat(String(row[costBasisIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
-              let proceeds = (proceedsIdx !== -1 && row[proceedsIdx]) ? Math.abs(parseFloat(String(row[proceedsIdx]).replace(/[\$\,]/g, '').trim()) || 0) : (costBasis + rawPnl);
+              if (costBasis === 0 && proceedsVal > 0) {
+                costBasis = Math.abs(proceedsVal - rawPnl);
+              }
 
               let operationalPnl = rawPnl;
 
-              if (commIdx !== -1 && row[commIdx]) {
+              // Descuento de comisiones en Schwab (si no viene descontado)
+              if (brokerDetected !== 'IBKR' && commIdx !== -1 && row[commIdx]) {
                 const commVal = Math.abs(parseFloat(String(row[commIdx]).replace(/[\$\,]/g, '').trim()) || 0);
                 if (commVal > 0 && Math.abs(rawPnl) > commVal && !gainLossRaw.includes('net')) {
                   operationalPnl = rawPnl - commVal;
                 }
               }
 
+              // Tratamiento de Wash Sale en Schwab
               const isWash = (washSaleIdx !== -1 && row[washSaleIdx]) ? String(row[washSaleIdx]).trim().toLowerCase() === 'yes' : false;
               const disallowed = (disallowedIdx !== -1 && row[disallowedIdx]) ? parseFloat(String(row[disallowedIdx]).replace(/[\$\,]/g, '').trim()) || 0 : 0;
               const totalTxPnl = (totalTxPnlIdx !== -1 && row[totalTxPnlIdx]) ? parseFloat(String(row[totalTxPnlIdx]).replace(/[\$\,]/g, '').trim()) : NaN;
@@ -2998,7 +2962,7 @@
                 operationalPnl = totalTxPnl;
                 if (!isNaN(txCostBasis)) costBasis = txCostBasis;
               } else if (isWash || disallowed > 0) {
-                operationalPnl = -Math.abs(disallowed > 0 ? disallowed : (costBasis - proceeds));
+                operationalPnl = -Math.abs(disallowed > 0 ? disallowed : (costBasis - proceedsVal));
               }
 
               const dateKey = parseFlexibleDate(closedDateRaw);
@@ -3007,36 +2971,55 @@
               let ticker = symbolRaw;
               let strike = "-";
               let type = "CALL";
-              let dte = "0DTE";
+              let dte = "-";
 
-              const schwabOptRegex = /^([A-Z0-9]+)\s+(\d{2}\/\d{2}\/\d{4})\s+([\d\.]+)\s+([CP])$/i;
-              const ibkrOptRegex1 = /^([A-Z0-9]+)\s+(\d{1,2}[A-Z]{3}\d{2})\s+([\d\.]+)\s+([CP])$/i;
-              const ibkrOptRegex2 = /^([A-Z]+)\s*(\d{2})(\d{2})(\d{2})([CP])(\d{8})$/i;
+              const assetClass = (assetClassIdx !== -1 && row[assetClassIdx]) ? String(row[assetClassIdx]).trim().toUpperCase() : '';
 
-              const matchSchwab = symbolRaw.match(schwabOptRegex);
-              const matchIbkr1 = symbolRaw.match(ibkrOptRegex1);
-              const matchIbkr2 = symbolRaw.match(ibkrOptRegex2);
+              if (assetClass === 'STK' || brokerDetected === 'IBKR' && (!row[putCallIdx] || String(row[putCallIdx]).trim() === '')) {
+                // ACCIONES (STOCKS)
+                type = 'STK';
+                strike = '-';
+                dte = '-';
+              } else {
+                // OPCIONES (OPTIONS)
+                const explicitStrike = (strikeIdx !== -1 && row[strikeIdx]) ? cleanStrike(row[strikeIdx]) : null;
+                const explicitExpiry = (expiryIdx !== -1 && row[expiryIdx]) ? parseFlexibleDate(row[expiryIdx]) : null;
+                const explicitPC = (putCallIdx !== -1 && row[putCallIdx]) ? String(row[putCallIdx]).trim().toUpperCase() : null;
 
-              if (matchSchwab) {
-                ticker = matchSchwab[1];
-                const expDate = matchSchwab[2];
-                strike = cleanStrike(matchSchwab[3]);
-                type = matchSchwab[4].toUpperCase() === 'C' ? 'CALL' : 'PUT';
-                dte = calculateExactDte(openedDateRaw, expDate);
-              } else if (matchIbkr1) {
-                ticker = matchIbkr1[1];
-                strike = cleanStrike(matchIbkr1[3]);
-                type = matchIbkr1[4].toUpperCase() === 'C' ? 'CALL' : 'PUT';
-                dte = calculateExactDte(dateKey, matchIbkr1[2]);
-              } else if (matchIbkr2) {
-                ticker = matchIbkr2[1];
-                const yy = '20' + matchIbkr2[2];
-                const mm = matchIbkr2[3];
-                const dd = matchIbkr2[4];
-                const expDateStr = `${yy}-${mm}-${dd}`;
-                type = matchIbkr2[5].toUpperCase() === 'C' ? 'CALL' : 'PUT';
-                strike = cleanStrike((parseInt(matchIbkr2[6], 10) / 1000).toFixed(2));
-                dte = calculateExactDte(dateKey, expDateStr);
+                if (explicitStrike && explicitStrike !== '') {
+                  strike = explicitStrike;
+                  type = explicitPC === 'P' || explicitPC === 'PUT' ? 'PUT' : 'CALL';
+                  if (explicitExpiry) dte = calculateExactDte(dateKey, explicitExpiry);
+                } else {
+                  // Regex Schwab e IBKR combinado
+                  const schwabOptRegex = /^([A-Z0-9]+)\s+(\d{2}\/\d{2}\/\d{4})\s+([\d\.]+)\s+([CP])$/i;
+                  const ibkrOptRegex1 = /^([A-Z0-9]+)\s+(\d{1,2}[A-Z]{3}\d{2})\s+([\d\.]+)\s+([CP])$/i;
+                  const ibkrOptRegex2 = /^([A-Z]+)\s*(\d{2})(\d{2})(\d{2})([CP])(\d{8})$/i;
+
+                  const matchSchwab = symbolRaw.match(schwabOptRegex);
+                  const matchIbkr1 = symbolRaw.match(ibkrOptRegex1);
+                  const matchIbkr2 = symbolRaw.match(ibkrOptRegex2);
+
+                  if (matchSchwab) {
+                    ticker = matchSchwab[1];
+                    strike = cleanStrike(matchSchwab[3]);
+                    type = matchSchwab[4].toUpperCase() === 'C' ? 'CALL' : 'PUT';
+                    dte = calculateExactDte(openedDateRaw, matchSchwab[2]);
+                  } else if (matchIbkr1) {
+                    ticker = matchIbkr1[1];
+                    strike = cleanStrike(matchIbkr1[3]);
+                    type = matchIbkr1[4].toUpperCase() === 'C' ? 'CALL' : 'PUT';
+                    dte = calculateExactDte(dateKey, matchIbkr1[2]);
+                  } else if (matchIbkr2) {
+                    ticker = matchIbkr2[1];
+                    const yy = '20' + matchIbkr2[2];
+                    const mm = matchIbkr2[3];
+                    const dd = matchIbkr2[4];
+                    type = matchIbkr2[5].toUpperCase() === 'C' ? 'CALL' : 'PUT';
+                    strike = cleanStrike((parseInt(matchIbkr2[6], 10) / 1000).toFixed(2));
+                    dte = calculateExactDte(dateKey, `${yy}-${mm}-${dd}`);
+                  }
+                }
               }
 
               trades.push({
@@ -3048,7 +3031,7 @@
                   type,
                   dte,
                   costBasis,
-                  proceeds,
+                  proceeds: proceedsVal,
                   pnl: operationalPnl
                 }
               });
@@ -3060,7 +3043,7 @@
             }
 
             if (trades.length === 0) {
-              alert("No se encontraron trades válidos en el archivo.");
+              alert("No se encontraron operaciones cerradas válidas en el archivo.");
               return;
             }
 
@@ -3069,7 +3052,7 @@
             csvMinDate = minDate;
             csvMaxDate = maxDate;
             const roiOverall = totalInvested > 0 ? ((totalNet / totalInvested) * 100).toFixed(1) : 0;
-            document.getElementById('csvTradesFound').textContent = `${trades.length} trades procesados (${brokerDetected})`;
+            document.getElementById('csvTradesFound').textContent = `${trades.length} operaciones cerradas (${brokerDetected})`;
             document.getElementById('csvSummaryText').textContent = `Rango: ${minDate} al ${maxDate} | Inversión: ${formatExactCurrency(totalInvested)} | Balance: ${formatExactCurrency(totalNet)} (${roiOverall}%)`;
             document.getElementById('csvPreviewBox')?.classList.remove('hidden');
             document.getElementById('csvModeSelection')?.classList.remove('hidden');
@@ -3082,27 +3065,24 @@
         });
       }
 
-      // PROCESAMIENTO INTELIGENTE SIN DUPLICADOS
+      // PROCESAMIENTO SIN DUPLICADOS
       document.getElementById('processCsvBtn')?.addEventListener('click', () => {
         const selectedMode = document.querySelector('input[name="csvImportMode"]:checked')?.value || 'merge';
         const active = getActiveAccount();
 
-        // 1. FLUJOS DE CAPITAL (TRANSACTIONS)
+        // 1. FLUJOS DE CAPITAL
         if (csvFileType === 'transactions' && parsedCsvFlows) {
           if (!active.capitalFlows) active.capitalFlows = [];
 
           if (selectedMode === 'replace') {
-            // Reemplazar cuenta completa conservando solo traspasos internos
             active.capitalFlows = active.capitalFlows.filter(f => f.category === 'transfer');
           } else if (selectedMode === 'replace_range' && csvMinDate && csvMaxDate) {
-            // Sustituir solo movimientos externos dentro de las fechas del archivo
             active.capitalFlows = active.capitalFlows.filter(f => {
               if (f.category === 'transfer') return true;
               return f.date < csvMinDate || f.date > csvMaxDate;
             });
           }
 
-          // Cargar flujos evitando duplicados por fecha, monto y tipo
           parsedCsvFlows.forEach(flow => {
             const isDup = active.capitalFlows.some(cf => 
               cf.date === flow.date && 
@@ -3127,7 +3107,6 @@
           if (selectedMode === 'replace') {
             active.appData = {};
           } else if (selectedMode === 'replace_range' && csvMinDate && csvMaxDate) {
-            // Borrar únicamente los días comprendidos en el archivo para reinsertarlos limpios
             Object.keys(active.appData).forEach(dKey => {
               if (dKey >= csvMinDate && dKey <= csvMaxDate) {
                 delete active.appData[dKey];
@@ -3135,7 +3114,6 @@
             });
           }
 
-          // Inserción normalizada evitando duplicados
           parsedCsvTrades.forEach(item => {
             if (!active.appData[item.dateKey]) {
               active.appData[item.dateKey] = [];
@@ -3148,12 +3126,11 @@
               
               const strikeExist = parseFloat(String(existing.strike).replace(/[^\d\.]/g, '')) || 0;
               const strikeNew = parseFloat(String(item.trade.strike).replace(/[^\d\.]/g, '')) || 0;
-              const sameStrike = Math.abs(strikeExist - strikeNew) < 0.01;
+              const sameStrike = (existing.strike === '-' && item.trade.strike === '-') || Math.abs(strikeExist - strikeNew) < 0.01;
 
               const samePnl = Math.abs(Number(existing.pnl || 0) - Number(item.trade.pnl || 0)) < 0.05;
-              const sameCost = Math.abs(Number(existing.costBasis || 0) - Number(item.trade.costBasis || 0)) < 0.05;
 
-              return sameTicker && sameType && sameQty && sameStrike && (samePnl || sameCost);
+              return sameTicker && sameType && sameQty && sameStrike && samePnl;
             });
 
             if (!isDuplicate) {
@@ -3177,7 +3154,7 @@
         }
       });
 
-      // 19. EVENTOS GENERALES Y NAVEGACIÓN
+      // EVENTOS DE NAVEGACIÓN Y PERÍODO
       document.getElementById('prevPeriodBtn')?.addEventListener('click', () => {
         if (currentView === 'Month') {
           currentMonth--;
@@ -3237,7 +3214,6 @@
         }
       });
 
-      // 20. INICIALIZACIÓN
       applyTheme();
       loadAccountsData();
       const pYear = document.getElementById('periodYearSelect');
