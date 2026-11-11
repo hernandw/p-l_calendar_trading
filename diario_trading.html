@@ -233,7 +233,7 @@
       <div class="flex items-center justify-between gap-2 pb-1">
         <div class="relative flex-1">
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          <input type="text" id="tickerSearchInput" placeholder="Buscar por ticker (SPY, TSLA, AMD...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50/60 dark:bg-darkSubtle text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="tickerSearchInput" placeholder="Buscar por ticker (PXLW, SMX, SPY...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50/60 dark:bg-darkSubtle text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <select id="tickerSortSelect" class="text-xs font-semibold px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
           <option value="pnl-desc">Mayor P&amp;L</option>
@@ -671,7 +671,7 @@
         </div>
         <div>
           <span class="font-bold text-slate-800 dark:text-white">&bull; Importador Inteligente CSV:</span>
-          <span class="text-slate-500 dark:text-slate-400"> Evita duplicar operaciones ya existentes y permite sustituir de forma segura solo el período del archivo.</span>
+          <span class="text-slate-500 dark:text-slate-400"> Evita duplicar operaciones ya existentes y permite procesar tanto reportes de operaciones como de resumen de efectivo de IBKR.</span>
         </div>
       </div>
       <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-2xl text-xs font-bold tracking-wide transition active:scale-95 shadow-md shadow-slate-900/10">
@@ -737,12 +737,12 @@
     </div>
   </div>
 
-  <!-- SCRIPT DEFINITIVO ROBUSTO Y BLINDADO CON SOPORTE COMPLETO IBKR -->
+  <!-- SCRIPT DEFINITIVO ROBUSTO Y BLINDADO -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V18';
-      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V18';
-      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V18';
+      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V19';
+      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V19';
+      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V19';
 
       let isDarkMode = localStorage.getItem(THEME_KEY) === 'dark';
       function applyTheme() {
@@ -808,7 +808,7 @@
           {
             id: 'acc_ibkr_demo',
             broker: 'Interactive Brokers',
-            number: 'U1234567',
+            number: 'U24279702',
             type: 'Margin',
             currency: 'USD',
             appData: {},
@@ -2776,12 +2776,23 @@
 
             let headerRowIndex = -1;
             let isTransactionsFile = false;
+            let isIbkrCashSummary = false;
             let brokerDetected = 'Schwab';
 
             for (let i = 0; i < Math.min(rows.length, 30); i++) {
               const rowStr = rows[i].map(c => String(c).trim().toLowerCase());
               
-              // 1. Detección Cash Transactions
+              // 1. Detección Cash Report / Summary de IBKR (StartingCash, EndingCash, DepositsMTD, etc.)
+              const isCashSummary = rowStr.some(c => c === 'startingcash' || c === 'endingcash' || c === 'depositsmtd' || c === 'depositsytd');
+              if (isCashSummary) {
+                headerRowIndex = i;
+                isTransactionsFile = true;
+                isIbkrCashSummary = true;
+                brokerDetected = 'IBKR';
+                break;
+              }
+
+              // 2. Detección Cash Transactions estándar (Schwab o IBKR)
               const hasAction = rowStr.some(c => c.includes('action') || c.includes('acción') || c.includes('type') || c.includes('tipo'));
               const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto') || c.includes('importe') || c.includes('netamount'));
               const isIbkrCash = rowStr.some(c => c === 'cashtransaction' || c === 'deposits/withdrawals' || c.includes('cash transactions'));
@@ -2793,7 +2804,7 @@
                 break;
               }
               
-              // 2. Detección Trades
+              // 3. Detección Trades
               const hasSymbol = rowStr.some(c => c === 'symbol' || c === 'símbolo' || c === 'description' || c === 'instrument' || c.includes('symbol'));
               const hasPnl = rowStr.some(c => c.includes('gain/loss') || c.includes('fifopnlrealized') || c.includes('realized p/l') || c.includes('realizedpnl') || c.includes('p&l'));
               const hasIbkrCols = rowStr.some(c => c.includes('fifopnlrealized') || c.includes('ibcommission') || c.includes('tradedate'));
@@ -2813,56 +2824,104 @@
 
             const headers = rows[headerRowIndex].map(h => String(h).trim());
 
-            // CASO A: HISTORIAL DE EFECTIVO
+            // CASO A: HISTORIAL O RESUMEN DE EFECTIVO
             if (isTransactionsFile) {
               csvFileType = 'transactions';
-              const dateIdx = headers.findIndex(h => /date|fecha|settledate|datetime/i.test(h));
-              const actionIdx = headers.findIndex(h => /action|acción|type|tipo/i.test(h));
-              const descIdx = headers.findIndex(h => /description|descripción|comment/i.test(h));
-              const amountIdx = headers.findIndex(h => /amount|monto|importe|netamount/i.test(h));
-
               const flows = [];
               let minD = null;
               let maxD = null;
 
-              for (let r = headerRowIndex + 1; r < rows.length; r++) {
-                const row = rows[r];
-                if (!row || row.length <= Math.max(dateIdx, amountIdx)) continue;
+              if (isIbkrCashSummary) {
+                // Parser especializado para Resumen de Caja IBKR (cash_balanced.csv)
+                const fromDateIdx = headers.findIndex(h => /fromdate/i.test(h));
+                const startingCashIdx = headers.findIndex(h => /^startingcash$/i.test(h));
+                const depositsIdx = headers.findIndex(h => /^deposits$|^depositsmtd$|^depositsytd$/i.test(h));
+                const withdrawalsIdx = headers.findIndex(h => /^withdrawals$|^withdrawalsmtd$|^withdrawalsytd$/i.test(h));
 
-                const dateRaw = String(row[dateIdx] || '').trim();
-                const actionRaw = actionIdx !== -1 ? String(row[actionIdx] || '').trim() : '';
-                const descRaw = descIdx !== -1 ? String(row[descIdx] || '').trim() : '';
-                const amountRaw = String(row[amountIdx] || '').trim();
+                for (let r = headerRowIndex + 1; r < rows.length; r++) {
+                  const row = rows[r];
+                  if (!row || row.length < 5) continue;
 
-                if (!dateRaw || !amountRaw) continue;
+                  const dateRaw = fromDateIdx !== -1 ? String(row[fromDateIdx] || '').trim() : '';
+                  const formattedDate = parseFlexibleDate(dateRaw) || getSystemTodayKey();
 
-                const isExplicitNegative = amountRaw.includes('-') || amountRaw.includes('(');
-                const cleanAmount = parseFloat(amountRaw.replace(/[\$\,\(\)]/g, '').trim());
-                if (isNaN(cleanAmount) || cleanAmount === 0) continue;
+                  const startCash = startingCashIdx !== -1 ? parseFloat(String(row[startingCashIdx] || '').replace(/[\$\,]/g, '')) : 0;
+                  const depAmount = depositsIdx !== -1 ? parseFloat(String(row[depositsIdx] || '').replace(/[\$\,]/g, '')) : 0;
+                  const wthAmount = withdrawalsIdx !== -1 ? parseFloat(String(row[withdrawalsIdx] || '').replace(/[\$\,]/g, '')) : 0;
 
-                const isWithdrawalText = /withdrawal|disbursement|transfer\s*out|wire\s*out|debit|paid|retiro|salida/i.test(actionRaw) || 
-                                         /withdrawal|disbursement|transfer\s*out|wire\s*out|debit|paid|retiro|salida/i.test(descRaw);
-                
-                const isDepositText = /deposit|transfer\s*in|wire\s*in|credit|received|ingreso|depósito/i.test(actionRaw) || 
-                                      /deposit|transfer\s*in|wire\s*in|credit|received|ingreso|depósito/i.test(descRaw);
+                  // El depósito registrado como StartingCash o DepositsMTD
+                  const netDeposit = depAmount > 0 ? depAmount : (startCash > 0 ? startCash : 0);
 
-                let isWithdrawal = isExplicitNegative || (isWithdrawalText && !isDepositText);
-                const formattedDate = parseFlexibleDate(dateRaw);
-                if (!formattedDate) continue;
+                  if (netDeposit > 0) {
+                    flows.push({
+                      id: Date.now() + Math.random(),
+                      type: 'deposit',
+                      category: 'external',
+                      date: formattedDate,
+                      amount: netDeposit,
+                      note: 'Fondeo de Efectivo IBKR (Starting/Deposited Cash)'
+                    });
+                    if (!minD || formattedDate < minD) minD = formattedDate;
+                    if (!maxD || formattedDate > maxD) maxD = formattedDate;
+                  }
 
-                const isCapitalAction = isWithdrawalText || isDepositText || /transfer|wire|moneylink|funds|ach|deposit/i.test(actionRaw) || /transfer|wire|moneylink|funds|ach|deposit/i.test(descRaw);
+                  if (wthAmount > 0) {
+                    flows.push({
+                      id: Date.now() + Math.random() + 1,
+                      type: 'withdrawal',
+                      category: 'external',
+                      date: formattedDate,
+                      amount: wthAmount,
+                      note: 'Retiro de Efectivo IBKR'
+                    });
+                  }
+                }
+              } else {
+                // Parser estándar de transacciones individuales (Schwab o IBKR Cash Transactions)
+                const dateIdx = headers.findIndex(h => /date|fecha|settledate|datetime/i.test(h));
+                const actionIdx = headers.findIndex(h => /action|acción|type|tipo/i.test(h));
+                const descIdx = headers.findIndex(h => /description|descripción|comment/i.test(h));
+                const amountIdx = headers.findIndex(h => /amount|monto|importe|netamount/i.test(h));
 
-                if (isCapitalAction) {
-                  flows.push({
-                    id: Date.now() + Math.random(),
-                    type: isWithdrawal ? 'withdrawal' : 'deposit',
-                    category: 'external',
-                    date: formattedDate,
-                    amount: Math.abs(cleanAmount),
-                    note: `${actionRaw} ${descRaw ? '- ' + descRaw : ''}`.substring(0, 45)
-                  });
-                  if (!minD || formattedDate < minD) minD = formattedDate;
-                  if (!maxD || formattedDate > maxD) maxD = formattedDate;
+                for (let r = headerRowIndex + 1; r < rows.length; r++) {
+                  const row = rows[r];
+                  if (!row || row.length <= Math.max(dateIdx, amountIdx)) continue;
+
+                  const dateRaw = String(row[dateIdx] || '').trim();
+                  const actionRaw = actionIdx !== -1 ? String(row[actionIdx] || '').trim() : '';
+                  const descRaw = descIdx !== -1 ? String(row[descIdx] || '').trim() : '';
+                  const amountRaw = String(row[amountIdx] || '').trim();
+
+                  if (!dateRaw || !amountRaw) continue;
+
+                  const isExplicitNegative = amountRaw.includes('-') || amountRaw.includes('(');
+                  const cleanAmount = parseFloat(amountRaw.replace(/[\$\,\(\)]/g, '').trim());
+                  if (isNaN(cleanAmount) || cleanAmount === 0) continue;
+
+                  const isWithdrawalText = /withdrawal|disbursement|transfer\s*out|wire\s*out|debit|paid|retiro|salida/i.test(actionRaw) || 
+                                           /withdrawal|disbursement|transfer\s*out|wire\s*out|debit|paid|retiro|salida/i.test(descRaw);
+                  
+                  const isDepositText = /deposit|transfer\s*in|wire\s*in|credit|received|ingreso|depósito/i.test(actionRaw) || 
+                                        /deposit|transfer\s*in|wire\s*in|credit|received|ingreso|depósito/i.test(descRaw);
+
+                  let isWithdrawal = isExplicitNegative || (isWithdrawalText && !isDepositText);
+                  const formattedDate = parseFlexibleDate(dateRaw);
+                  if (!formattedDate) continue;
+
+                  const isCapitalAction = isWithdrawalText || isDepositText || /transfer|wire|moneylink|funds|ach|deposit/i.test(actionRaw) || /transfer|wire|moneylink|funds|ach|deposit/i.test(descRaw);
+
+                  if (isCapitalAction) {
+                    flows.push({
+                      id: Date.now() + Math.random(),
+                      type: isWithdrawal ? 'withdrawal' : 'deposit',
+                      category: 'external',
+                      date: formattedDate,
+                      amount: Math.abs(cleanAmount),
+                      note: `${actionRaw} ${descRaw ? '- ' + descRaw : ''}`.substring(0, 45)
+                    });
+                    if (!minD || formattedDate < minD) minD = formattedDate;
+                    if (!maxD || formattedDate > maxD) maxD = formattedDate;
+                  }
                 }
               }
 
@@ -2871,7 +2930,7 @@
               csvMinDate = minD;
               csvMaxDate = maxD;
               document.getElementById('csvTradesFound').textContent = `${flows.length} movimientos (${brokerDetected})`;
-              document.getElementById('csvSummaryText').textContent = `Período: ${minD || '-'} al ${maxD || '-'} | Reporte de Transacciones detectado.`;
+              document.getElementById('csvSummaryText').textContent = `Período: ${minD || '-'} al ${maxD || '-'} | Resumen de Efectivo detectado.`;
               document.getElementById('csvPreviewBox')?.classList.remove('hidden');
               document.getElementById('csvModeSelection')?.classList.remove('hidden');
               const pBtn = document.getElementById('processCsvBtn');
@@ -2895,7 +2954,6 @@
             const expiryIdx = headers.findIndex(h => /expiry|expiration|expdate/i.test(h));
             const putCallIdx = headers.findIndex(h => /put\/call|type|tipo/i.test(h));
             
-            // Flags Schwab
             const washSaleIdx = headers.findIndex(h => /wash\s*sale/i.test(h));
             const disallowedIdx = headers.findIndex(h => /disallowed\s*loss/i.test(h));
             const totalTxPnlIdx = headers.findIndex(h => /total\s*transaction\s*gain\/loss/i.test(h));
@@ -2912,7 +2970,6 @@
             let minDate = null;
             let maxDate = null;
 
-            // En IBKR, agrupar o procesar filas con FifoPnlRealized != 0
             for (let r = headerRowIndex + 1; r < rows.length; r++) {
               const row = rows[r];
               if (!row || row.length <= symbolIdx) continue;
@@ -2927,8 +2984,6 @@
               const rawPnl = parseFloat(gainLossRaw.replace(/\$/g, '').replace(/,/g, '').trim());
               if (isNaN(rawPnl)) continue;
 
-              // En IBKR Flex Query, las aperturas tienen FifoPnlRealized = 0.
-              // Solo registramos filas donde hay P&L realizado o cuando no es IBKR
               if (brokerDetected === 'IBKR' && rawPnl === 0) {
                 continue;
               }
@@ -2944,7 +2999,6 @@
 
               let operationalPnl = rawPnl;
 
-              // Descuento de comisiones en Schwab (si no viene descontado)
               if (brokerDetected !== 'IBKR' && commIdx !== -1 && row[commIdx]) {
                 const commVal = Math.abs(parseFloat(String(row[commIdx]).replace(/[\$\,]/g, '').trim()) || 0);
                 if (commVal > 0 && Math.abs(rawPnl) > commVal && !gainLossRaw.includes('net')) {
@@ -2952,7 +3006,6 @@
                 }
               }
 
-              // Tratamiento de Wash Sale en Schwab
               const isWash = (washSaleIdx !== -1 && row[washSaleIdx]) ? String(row[washSaleIdx]).trim().toLowerCase() === 'yes' : false;
               const disallowed = (disallowedIdx !== -1 && row[disallowedIdx]) ? parseFloat(String(row[disallowedIdx]).replace(/[\$\,]/g, '').trim()) || 0 : 0;
               const totalTxPnl = (totalTxPnlIdx !== -1 && row[totalTxPnlIdx]) ? parseFloat(String(row[totalTxPnlIdx]).replace(/[\$\,]/g, '').trim()) : NaN;
@@ -2976,12 +3029,10 @@
               const assetClass = (assetClassIdx !== -1 && row[assetClassIdx]) ? String(row[assetClassIdx]).trim().toUpperCase() : '';
 
               if (assetClass === 'STK' || brokerDetected === 'IBKR' && (!row[putCallIdx] || String(row[putCallIdx]).trim() === '')) {
-                // ACCIONES (STOCKS)
                 type = 'STK';
                 strike = '-';
                 dte = '-';
               } else {
-                // OPCIONES (OPTIONS)
                 const explicitStrike = (strikeIdx !== -1 && row[strikeIdx]) ? cleanStrike(row[strikeIdx]) : null;
                 const explicitExpiry = (expiryIdx !== -1 && row[expiryIdx]) ? parseFlexibleDate(row[expiryIdx]) : null;
                 const explicitPC = (putCallIdx !== -1 && row[putCallIdx]) ? String(row[putCallIdx]).trim().toUpperCase() : null;
@@ -2991,7 +3042,6 @@
                   type = explicitPC === 'P' || explicitPC === 'PUT' ? 'PUT' : 'CALL';
                   if (explicitExpiry) dte = calculateExactDte(dateKey, explicitExpiry);
                 } else {
-                  // Regex Schwab e IBKR combinado
                   const schwabOptRegex = /^([A-Z0-9]+)\s+(\d{2}\/\d{2}\/\d{4})\s+([\d\.]+)\s+([CP])$/i;
                   const ibkrOptRegex1 = /^([A-Z0-9]+)\s+(\d{1,2}[A-Z]{3}\d{2})\s+([\d\.]+)\s+([CP])$/i;
                   const ibkrOptRegex2 = /^([A-Z]+)\s*(\d{2})(\d{2})(\d{2})([CP])(\d{8})$/i;
