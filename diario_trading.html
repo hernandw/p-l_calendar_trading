@@ -4,11 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>P&amp;L Calendar &amp; Trading Journal Multicuenta</title>
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- PapaParse CDN para CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <script>
@@ -79,31 +76,26 @@
     </div>
     
     <div class="flex items-center gap-1.5">
-      <!-- Conmutador Dark/Light -->
       <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95">
         <i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i>
       </button>
 
-      <!-- Botón Descargar Backup -->
       <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad completa (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span>Backup</span>
       </button>
 
-      <!-- Botón Restaurar Backup -->
       <label title="Restaurar copia de seguridad desde un archivo JSON" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
         <span>Restaurar</span>
         <input type="file" id="restoreBackupInput" accept=".json" class="hidden">
       </label>
 
-      <!-- Botón Importar CSV -->
       <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
         <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
         <span>CSV</span>
       </button>
       
-      <!-- Botón Vaciar Cuenta Activa -->
       <button id="clearAllBtn" type="button" title="Vaciar datos de la cuenta activa" class="p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60 rounded-xl transition active:scale-95">
         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
       </button>
@@ -468,19 +460,13 @@
 
         <div class="grid grid-cols-2 gap-2">
           <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block font-bold text-slate-600 dark:text-slate-300">Cuenta Origen (Sale)</label>
-            </div>
-            <select id="transferFromAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <!-- Cuentas -->
-            </select>
+            <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Cuenta Origen (Sale)</label>
+            <select id="transferFromAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
             <span id="transferFromAvailableLabel" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block mt-1">Disponible: $0.00</span>
           </div>
           <div>
             <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Cuenta Destino (Entra)</label>
-            <select id="transferToAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <!-- Cuentas -->
-            </select>
+            <select id="transferToAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500"></select>
             <span id="transferToCurrentLabel" class="text-[10px] text-slate-400 font-medium block mt-1">Saldo actual: $0.00</span>
           </div>
         </div>
@@ -489,24 +475,19 @@
           <div>
             <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1 flex items-center justify-between">
               <span>Fecha</span>
-              <span class="text-[9px] text-blue-500 cursor-pointer font-normal flex items-center gap-0.5" onclick="document.getElementById('transferDate').showPicker?.() || document.getElementById('transferDate').focus()">
-                <i data-lucide="calendar" class="w-2.5 h-2.5"></i> Elegir
-              </span>
+              <span class="text-[9px] text-blue-500 cursor-pointer font-normal" onclick="document.getElementById('transferDate').showPicker?.()">Elegir</span>
             </label>
-            <input type="date" id="transferDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+            <input type="date" id="transferDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:ring-2 focus:ring-blue-500 cursor-pointer">
           </div>
           <div>
-            <div class="flex items-center justify-between mb-1">
-              <label class="block font-bold text-slate-600 dark:text-slate-300">Monto a Transferir ($)</label>
-            </div>
-            <input type="number" step="0.01" min="0.01" id="transferAmount" placeholder="500.00" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <span id="transferAmountErrorMsg" class="hidden text-[10px] text-rose-500 font-bold block mt-1"></span>
+            <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Monto a Transferir ($)</label>
+            <input type="number" step="0.01" min="0.01" id="transferAmount" placeholder="500.00" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
 
         <div>
           <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nota / Concepto</label>
-          <input type="text" id="transferNote" placeholder="Transferencia de capital entre brokers" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="transferNote" placeholder="Transferencia entre brokers" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div class="flex items-center justify-between pt-2 gap-2">
@@ -515,8 +496,7 @@
           </button>
           <div class="flex items-center gap-2 ml-auto">
             <button type="button" id="cancelTransferBtn" class="px-3.5 py-2 border border-slate-200 dark:border-darkBorder rounded-xl text-slate-600 dark:text-slate-400">Cancelar</button>
-            <button type="submit" id="submitTransferBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
-              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+            <button type="submit" id="submitTransferBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition">
               <span id="submitTransferText">Confirmar Transferencia</span>
             </button>
           </div>
@@ -525,7 +505,7 @@
     </div>
   </div>
 
-  <!-- MODAL: GESTOR Y CREADOR DE CUENTAS -->
+  <!-- MODAL: GESTOR DE CUENTAS -->
   <div id="accountModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white dark:bg-darkCard w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
@@ -533,7 +513,7 @@
           <i data-lucide="building-2" class="w-5 h-5 text-blue-500"></i>
           <h2 id="accountModalTitle" class="text-base font-black text-slate-900 dark:text-white">Nueva Cuenta de Broker</h2>
         </div>
-        <button id="closeAccountModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <button id="closeAccountModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-slate-600">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
@@ -543,30 +523,29 @@
 
         <div>
           <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Broker / Plataforma</label>
-          <input type="text" id="accBrokerInput" placeholder="Ej. Interactive Brokers, Charles Schwab, Webull" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="accBrokerInput" placeholder="Ej. Interactive Brokers, Charles Schwab" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold">
         </div>
 
         <div>
-          <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nro. o Identificador de Cuenta</label>
-          <input type="text" id="accNumberInput" placeholder="Ej. U24279702 / XXXX7484" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nro. de Cuenta</label>
+          <input type="text" id="accNumberInput" placeholder="Ej. U24279702 / XXXX7484" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-mono">
         </div>
 
         <div>
           <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Tipo de Cuenta</label>
-          <select id="accTypeInput" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select id="accTypeInput" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold">
             <option value="Margin">Margin (Apalancada / Opciones)</option>
             <option value="Cash">Cash (Efectivo)</option>
             <option value="IRA / Retiro">IRA / Retiro</option>
-            <option value="Fondeo">Cuenta de Fondeo</option>
           </select>
         </div>
 
         <div class="flex items-center justify-between pt-3 gap-2">
-          <button type="button" id="deleteAccountBtn" class="hidden px-3 py-2 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold rounded-xl hover:bg-rose-100 transition">
+          <button type="button" id="deleteAccountBtn" class="hidden px-3 py-2 bg-rose-50 dark:bg-rose-950/40 text-rose-600 font-bold rounded-xl hover:bg-rose-100 transition">
             Eliminar
           </button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="cancelAccountBtn" class="px-3 py-2 border border-slate-200 dark:border-darkBorder rounded-xl text-slate-600 dark:text-slate-400">Cancelar</button>
+            <button type="button" id="cancelAccountBtn" class="px-3 py-2 border border-slate-200 dark:border-darkBorder rounded-xl text-slate-600">Cancelar</button>
             <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition">Guardar</button>
           </div>
         </div>
@@ -577,31 +556,22 @@
   <!-- MODAL: INFORMACIÓN -->
   <div id="infoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white dark:bg-darkCard w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col items-center text-center">
-      <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400">
+      <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400">
         <i data-lucide="layers" class="w-7 h-7 stroke-[1.8]"></i>
       </div>
       <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight mb-4">Soporte Multicuenta &amp; Capital</h3>
-      <div class="text-left text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed mb-6">
-        <div>
-          <span class="font-bold text-slate-800 dark:text-white">&bull; Cuentas Separadas &amp; Transferencias:</span>
-          <span class="text-slate-500 dark:text-slate-400"> Administra cuentas independientes. Si tienes 2 o más cuentas, puedes transferir saldo entre ellas con validación estricta de fondos.</span>
-        </div>
-        <div>
-          <span class="font-bold text-slate-800 dark:text-white">&bull; Control de Sobregiros:</span>
-          <span class="text-slate-500 dark:text-slate-400"> El sistema bloquea transferencias o retiros que excedan el saldo disponible en tu cuenta.</span>
-        </div>
-        <div>
-          <span class="font-bold text-slate-800 dark:text-white">&bull; Importador Inteligente CSV:</span>
-          <span class="text-slate-500 dark:text-slate-400"> Evita duplicar operaciones ya existentes y permite procesar tanto reportes de operaciones como de resumen de efectivo de IBKR y Schwab.</span>
-        </div>
+      <div class="text-left text-xs text-slate-600 dark:text-slate-300 space-y-3 mb-6">
+        <div><strong class="text-slate-800 dark:text-white">&bull; Cuentas Separadas:</strong> Administra balances independientes en Charles Schwab e Interactive Brokers.</div>
+        <div><strong class="text-slate-800 dark:text-white">&bull; Control de Sobregiros:</strong> Bloquea traspasos o retiros mayores a los fondos disponibles.</div>
+        <div><strong class="text-slate-800 dark:text-white">&bull; Comisiones Reales:</strong> Extrae la comisión exacta registrada en la columna IBCommission.</div>
       </div>
-      <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-2xl text-xs font-bold tracking-wide transition active:scale-95 shadow-md shadow-slate-900/10">
+      <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 text-white rounded-2xl text-xs font-bold transition">
         Entendido
       </button>
     </div>
   </div>
 
-  <!-- MODAL: IMPORTADOR CSV FLEXIBLE (SCHWAB & IBKR) -->
+  <!-- MODAL: IMPORTADOR CSV FLEXIBLE -->
   <div id="csvModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
@@ -609,56 +579,48 @@
           <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i>
           <h2 class="text-lg font-bold text-slate-900 dark:text-white">Importar Archivo CSV</h2>
         </div>
-        <button id="closeCsvModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+        <button id="closeCsvModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
       <div class="mt-4 space-y-4 text-xs text-slate-600 dark:text-slate-300">
-        <p>Sube tu reporte de <strong>Charles Schwab</strong> o <strong>Interactive Brokers</strong>. Se cargará en la cuenta: <strong id="csvTargetAccountLabel" class="text-blue-500">...</strong></p>
+        <p>Sube tu reporte de Schwab o Interactive Brokers. Se cargará en: <strong id="csvTargetAccountLabel" class="text-blue-500">...</strong></p>
         
-        <label id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50/60 dark:bg-darkSubtle hover:bg-blue-50/40 dark:hover:bg-slate-900/40 transition">
-          <i data-lucide="upload" class="w-8 h-8 text-slate-400 dark:text-slate-500 mb-2"></i>
+        <label id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50/60 dark:bg-darkSubtle transition">
+          <i data-lucide="upload" class="w-8 h-8 text-slate-400 mb-2"></i>
           <span class="font-semibold text-slate-700 dark:text-slate-200">Arrastra tu archivo CSV aquí</span>
-          <span class="text-[11px] text-slate-400 mt-1">o haz clic para examinar</span>
           <input type="file" id="csvFileInput" accept=".csv" class="hidden">
         </label>
 
         <div id="csvPreviewBox" class="hidden bg-slate-50 dark:bg-darkSubtle p-3 rounded-xl border border-slate-200 dark:border-darkBorder">
           <div class="font-bold text-slate-800 dark:text-white flex items-center justify-between">
             <span id="csvFileName">archivo.csv</span>
-            <span id="csvTradesFound" class="text-blue-600 dark:text-blue-400 font-bold">0 registros</span>
+            <span id="csvTradesFound" class="text-blue-600 font-bold">0 registros</span>
           </div>
-          <div id="csvSummaryText" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1"></div>
+          <div id="csvSummaryText" class="text-[11px] text-slate-500 mt-1"></div>
         </div>
 
-        <div id="csvModeSelection" class="hidden bg-slate-50/80 dark:bg-darkSubtle p-3 rounded-xl border border-slate-200 dark:border-darkBorder space-y-2">
-          <div class="font-bold text-slate-700 dark:text-slate-200 text-[11px]">¿Cómo deseas procesar los datos en esta cuenta?</div>
-          <div class="space-y-1.5">
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
-              <input type="radio" name="csvImportMode" value="merge" checked class="text-blue-600 focus:ring-blue-500">
-              <span><strong>Combinar (Solo nuevos)</strong> - Omite operaciones ya registradas.</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
-              <input type="radio" name="csvImportMode" value="replace_range" class="text-amber-600 focus:ring-amber-500">
-              <span class="text-amber-700 dark:text-amber-300"><strong>Sustituir período del archivo</strong> - Reemplaza los días de este CSV y conserva los demás.</span>
-            </label>
-            <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
-              <input type="radio" name="csvImportMode" value="replace" class="text-rose-600 focus:ring-rose-500">
-              <span class="text-rose-600 dark:text-rose-400"><strong>Reemplazar cuenta completa</strong> - Borra todo el historial previo de esta cuenta.</span>
-            </label>
-          </div>
+        <div id="csvModeSelection" class="hidden space-y-1.5">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="csvImportMode" value="merge" checked class="text-blue-600">
+            <span><strong>Combinar (Solo nuevos)</strong> - Omite operaciones ya existentes.</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" name="csvImportMode" value="replace" class="text-rose-600">
+            <span class="text-rose-600"><strong>Reemplazar cuenta completa</strong> - Borra el historial previo.</span>
+          </label>
         </div>
 
         <div class="flex items-center justify-end gap-2 pt-2">
-          <button id="cancelCsvBtn" type="button" class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Cancelar</button>
+          <button id="cancelCsvBtn" type="button" class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder">Cancelar</button>
           <button id="processCsvBtn" type="button" disabled class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-semibold shadow-sm transition">Cargar a la Cuenta</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- SCRIPT DEFINITIVO AUTÓNOMO (SIN MÓDULOS EXTERNOS) -->
+  <!-- SCRIPT DEFINITIVO ROBUSTO Y AUTÓNOMO -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_STABLE';
@@ -666,6 +628,18 @@
       const THEME_KEY = 'TRADING_PNL_THEME_MODE_STABLE';
 
       let isDarkMode = localStorage.getItem(THEME_KEY) === 'dark';
+      let accounts = [];
+      let activeAccountId = null;
+      let currentView = 'Month';
+      let currentYear = new Date().getFullYear();
+      let currentMonth = new Date().getMonth();
+      let selectedDateKey = null;
+      let parsedCsvTrades = null;
+      let parsedCsvFlows = null;
+      let csvFileType = 'trades';
+      let csvMinDate = null;
+      let csvMaxDate = null;
+
       function applyTheme() {
         const htmlEl = document.documentElement;
         const themeIcon = document.getElementById('themeIcon');
@@ -689,156 +663,16 @@
         }
       }
 
-      document.getElementById('themeToggleBtn')?.addEventListener('click', () => {
-        isDarkMode = !isDarkMode;
-        localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
-        applyTheme();
-        refreshActiveView();
-      });
-
-      function getTickerBadgeClass(ticker) {
-        const sym = (ticker || '').toUpperCase().trim();
-        switch(sym) {
-          case 'SPY': return 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30';
-          case 'QQQ': return 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30';
-          case 'TSLA': return 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/30';
-          case 'NVDA': return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
-          case 'AMD': return 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30';
-          case 'AAPL': return 'bg-slate-500/15 text-slate-800 dark:text-slate-200 border border-slate-500/30';
-          case 'PXLW': return 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30';
-          case 'SMX': return 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30';
-          default: return 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-400/20';
-        }
-      }
-
-      let accounts = [];
-      let activeAccountId = null;
-      let currentView = 'Month';
-      let currentYear = new Date().getFullYear();
-      let currentMonth = new Date().getMonth();
-      let selectedDateKey = null;
-      let parsedCsvTrades = null;
-      let parsedCsvFlows = null;
-      let csvFileType = 'trades';
-      let csvMinDate = null;
-      let csvMaxDate = null;
-
       function getDefaultAccounts() {
-        return [
-          {
-            id: 'acc_ibkr_main',
-            broker: 'Interactive Brokers',
-            number: 'U24279702',
-            type: 'Margin',
-            currency: 'USD',
-            appData: {},
-            capitalFlows: []
-          }
-        ];
-      }
-
-      function getAccountBalance(accountId, excludeFlowId = null, excludeTransferId = null) {
-        const acc = accounts.find(a => a.id === accountId);
-        if (!acc) return 0;
-
-        let totalDeposited = 0;
-        let totalWithdrawn = 0;
-
-        (acc.capitalFlows || []).forEach(flow => {
-          if (excludeTransferId && flow.transferId && String(flow.transferId) === String(excludeTransferId)) return;
-          if (excludeFlowId && (flow.id === excludeFlowId || String(flow.id) === String(excludeFlowId))) return;
-
-          const amt = Number(flow.amount || 0);
-          if (flow.type === 'deposit') {
-            totalDeposited += amt;
-          } else if (flow.type === 'withdrawal') {
-            totalWithdrawn += amt;
-          }
-        });
-
-        const netCapitalInflow = totalDeposited - totalWithdrawn;
-
-        let cumulativeNetOperatingPnl = 0;
-        const appData = acc.appData || {};
-        Object.keys(appData).forEach(k => {
-          (appData[k] || []).forEach(t => {
-            cumulativeNetOperatingPnl += Number(t.pnl || 0);
-          });
-        });
-
-        return netCapitalInflow + cumulativeNetOperatingPnl;
-      }
-
-      function getSystemTodayKey() {
-        const now = new Date();
-        const y = now.getFullYear();
-        const m = String(now.getMonth() + 1).padStart(2, '0');
-        const d = String(now.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-      }
-
-      function calculateExactDte(openedDateStr, expDateStr) {
-        if (!openedDateStr || !expDateStr) return '0DTE';
-        try {
-          const pOpen = openedDateStr.includes('/') ? openedDateStr.split('/') : openedDateStr.split('-');
-          const pExp = expDateStr.includes('/') ? expDateStr.split('/') : expDateStr.split('-');
-          
-          let dOpen = new Date(parseInt(pOpen[0], 10), parseInt(pOpen[1], 10) - 1, parseInt(pOpen[2], 10));
-          let dExp = new Date(parseInt(pExp[0], 10), parseInt(pExp[1], 10) - 1, parseInt(pExp[2], 10));
-
-          const diffTime = dExp.getTime() - dOpen.getTime();
-          const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-          return diffDays <= 0 ? '0DTE' : `${diffDays}DTE`;
-        } catch (e) {
-          return '0DTE';
-        }
-      }
-
-      function formatDteBadge(dteVal) {
-        if (!dteVal || dteVal === '-') return '-';
-        const clean = String(dteVal).trim().toUpperCase();
-        if (clean.endsWith('DTE')) return clean;
-        if (!isNaN(parseInt(clean, 10))) return `${parseInt(clean, 10)}DTE`;
-        return clean;
-      }
-
-      function updateTotalTradesHeader() {
-        const active = getActiveAccount();
-        const appData = active.appData || {};
-        let count = 0;
-        Object.keys(appData).forEach(k => {
-          if (k.startsWith(`${currentYear}`)) {
-            count += (appData[k] || []).length;
-          }
-        });
-        const pill = document.getElementById('totalTradesPill');
-        if (pill) pill.textContent = `${count} trades en total`;
-      }
-
-      function formatMoney(val) {
-        if (val === undefined || isNaN(val)) return '$0.00';
-        const sign = val > 0 ? '+' : (val < 0 ? '-' : '');
-        const absVal = Math.abs(val);
-        if (absVal >= 1000) return `${sign}${(absVal / 1000).toFixed(2)}K`;
-        return `${sign}${absVal.toFixed(2)}`;
-      }
-
-      function formatExactCurrency(val) {
-        if (val === undefined || isNaN(val)) return '$0.00';
-        const sign = val > 0 ? '+' : (val < 0 ? '-' : '');
-        return `${sign}$${Math.abs(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-      }
-
-      function getDayPnL(dateKey) {
-        const active = getActiveAccount();
-        const appData = active.appData || {};
-        if (!appData[dateKey] || appData[dateKey].length === 0) return null;
-        return appData[dateKey].reduce((sum, t) => sum + Number(t.pnl || 0), 0);
-      }
-
-      function cleanStrike(val) {
-        if (!val || val === '-') return '-';
-        return String(val).replace(/\$/g, '').trim();
+        return [{
+          id: 'acc_ibkr_main',
+          broker: 'Interactive Brokers',
+          number: 'U24279702',
+          type: 'Margin',
+          currency: 'USD',
+          appData: {},
+          capitalFlows: []
+        }];
       }
 
       function loadAccountsData() {
@@ -875,6 +709,62 @@
         return accounts.find(a => a.id === activeAccountId) || accounts[0] || { appData: {}, capitalFlows: [] };
       }
 
+      function getSystemTodayKey() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function formatMoney(val) {
+        if (val === undefined || isNaN(val)) return '$0.00';
+        const sign = val > 0 ? '+' : (val < 0 ? '-' : '');
+        const absVal = Math.abs(val);
+        if (absVal >= 1000) return `${sign}${(absVal / 1000).toFixed(2)}K`;
+        return `${sign}${absVal.toFixed(2)}`;
+      }
+
+      function formatExactCurrency(val) {
+        if (val === undefined || isNaN(val)) return '$0.00';
+        const sign = val > 0 ? '+' : (val < 0 ? '-' : '');
+        return `${sign}$${Math.abs(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+
+      function getDayPnL(dateKey) {
+        const active = getActiveAccount();
+        const trades = active.appData?.[dateKey] || [];
+        if (trades.length === 0) return null;
+        return trades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
+      }
+
+      function getAccountBalance(accountId, excludeFlowId = null, excludeTransferId = null) {
+        const acc = accounts.find(a => a.id === accountId);
+        if (!acc) return 0;
+
+        let totalDeposited = 0;
+        let totalWithdrawn = 0;
+
+        (acc.capitalFlows || []).forEach(flow => {
+          if (excludeTransferId && flow.transferId && String(flow.transferId) === String(excludeTransferId)) return;
+          if (excludeFlowId && (flow.id === excludeFlowId || String(flow.id) === String(excludeFlowId))) return;
+
+          const amt = Number(flow.amount || 0);
+          if (flow.type === 'deposit') totalDeposited += amt;
+          else if (flow.type === 'withdrawal') totalWithdrawn += amt;
+        });
+
+        const netCapitalInflow = totalDeposited - totalWithdrawn;
+        let cumulativePnl = 0;
+        Object.keys(acc.appData || {}).forEach(k => {
+          (acc.appData[k] || []).forEach(t => {
+            cumulativePnl += Number(t.pnl || 0);
+          });
+        });
+
+        return netCapitalInflow + cumulativePnl;
+      }
+
       function renderAccountSelector() {
         const select = document.getElementById('accountSelect');
         if (!select) return;
@@ -899,359 +789,180 @@
         }
       }
 
-      document.getElementById('accountSelect')?.addEventListener('change', (e) => {
-        activeAccountId = e.target.value;
-        localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
-        renderAccountSelector();
-        refreshActiveView();
-      });
-
-      function refreshActiveView() {
-        renderAccountSelector();
-        updateTotalTradesHeader();
-        if (currentView === 'Month') renderMonthView();
-        else if (currentView === 'Year') renderYearView();
-        else if (currentView === 'Tickers') renderTickersView();
-        else if (currentView === 'Commissions') renderCommissionsView();
-        else renderCapitalView();
-        safeIcons();
-      }
-
-      // BACKUP Y RESTAURACIÓN
-      document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
-        const backupData = {
-          version: '1.0',
-          exportedAt: new Date().toISOString(),
-          activeAccountId: activeAccountId,
-          isDarkMode: isDarkMode,
-          accounts: accounts
-        };
-        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `trading_journal_backup_${getSystemTodayKey()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      });
-
-      document.getElementById('restoreBackupInput')?.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          try {
-            const parsed = JSON.parse(event.target.result);
-            if (!parsed.accounts || !Array.isArray(parsed.accounts)) {
-              alert("El archivo no tiene un formato de respaldo válido.");
-              return;
-            }
-            if (confirm(`¿Restaurar respaldo? Se reemplazarán las cuentas actuales por las ${parsed.accounts.length} del archivo.`)) {
-              accounts = parsed.accounts;
-              activeAccountId = parsed.activeAccountId || accounts[0].id;
-              saveAccountsData();
-              localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
-              if (parsed.isDarkMode !== undefined) {
-                isDarkMode = parsed.isDarkMode;
-                localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
-                applyTheme();
-              }
-              refreshActiveView();
-              alert("¡Copia de seguridad restaurada!");
-            }
-          } catch(err) {
-            alert("Error al leer JSON: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-        e.target.value = '';
-      });
-
-      // MODAL DE CUENTAS
-      const accountModal = document.getElementById('accountModal');
-      const deleteAccountBtn = document.getElementById('deleteAccountBtn');
-
-      document.getElementById('openNewAccountBtn')?.addEventListener('click', () => {
-        document.getElementById('editAccountId').value = '';
-        document.getElementById('accountModalTitle').textContent = 'Nueva Cuenta de Broker';
-        document.getElementById('accBrokerInput').value = '';
-        document.getElementById('accNumberInput').value = '';
-        document.getElementById('accTypeInput').value = 'Margin';
-        deleteAccountBtn?.classList.add('hidden');
-        accountModal.classList.remove('hidden');
-        accountModal.classList.add('flex');
-        safeIcons();
-      });
-
-      document.getElementById('editActiveAccountBtn')?.addEventListener('click', () => {
+      function updateTotalTradesHeader() {
         const active = getActiveAccount();
-        document.getElementById('editAccountId').value = active.id;
-        document.getElementById('accountModalTitle').textContent = 'Editar Cuenta Activa';
-        document.getElementById('accBrokerInput').value = active.broker;
-        document.getElementById('accNumberInput').value = active.number;
-        document.getElementById('accTypeInput').value = active.type;
-        deleteAccountBtn?.classList.toggle('hidden', accounts.length <= 1);
-        accountModal.classList.remove('hidden');
-        accountModal.classList.add('flex');
-        safeIcons();
-      });
-
-      function closeAccountModal() {
-        accountModal.classList.add('hidden');
-        accountModal.classList.remove('flex');
-      }
-      document.getElementById('closeAccountModalBtn')?.addEventListener('click', closeAccountModal);
-      document.getElementById('cancelAccountBtn')?.addEventListener('click', closeAccountModal);
-
-      document.getElementById('accountForm')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const editId = document.getElementById('editAccountId').value;
-        const broker = document.getElementById('accBrokerInput').value.trim();
-        const number = document.getElementById('accNumberInput').value.trim();
-        const type = document.getElementById('accTypeInput').value;
-
-        if (!broker || !number) return;
-
-        if (editId) {
-          const acc = accounts.find(a => a.id === editId);
-          if (acc) {
-            acc.broker = broker;
-            acc.number = number;
-            acc.type = type;
+        let count = 0;
+        Object.keys(active.appData || {}).forEach(k => {
+          if (k.startsWith(`${currentYear}`)) {
+            count += (active.appData[k] || []).length;
           }
-        } else {
-          const newAcc = {
-            id: 'acc_' + Date.now(),
-            broker,
-            number,
-            type,
-            currency: 'USD',
-            appData: {},
-            capitalFlows: []
-          };
-          accounts.push(newAcc);
-          activeAccountId = newAcc.id;
-          localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
-        }
-
-        saveAccountsData();
-        closeAccountModal();
-        refreshActiveView();
-      });
-
-      deleteAccountBtn?.addEventListener('click', () => {
-        const active = getActiveAccount();
-        if (confirm(`¿Eliminar la cuenta "${active.broker} (${active.number})"?`)) {
-          accounts = accounts.filter(a => a.id !== active.id);
-          activeAccountId = accounts[0].id;
-          localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
-          saveAccountsData();
-          closeAccountModal();
-          refreshActiveView();
-        }
-      });
-
-      // TRANSFERENCIAS ENTRE CUENTAS
-      const transferModal = document.getElementById('transferModal');
-      const deleteTransferBtn = document.getElementById('deleteTransferBtn');
-
-      function updateTransferBalanceHelp(fromId, toId, currentTransferId = null) {
-        const fromLabel = document.getElementById('transferFromAvailableLabel');
-        const toLabel = document.getElementById('transferToCurrentLabel');
-        if (fromLabel && fromId) {
-          const avail = getAccountBalance(fromId, null, currentTransferId);
-          fromLabel.textContent = `Disponible: ${formatExactCurrency(avail)}`;
-          fromLabel.className = `text-[10px] font-bold block mt-1 ${avail > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
-        }
-        if (toLabel && toId) {
-          const cur = getAccountBalance(toId, null, currentTransferId);
-          toLabel.textContent = `Saldo actual: ${formatExactCurrency(cur)}`;
-        }
-      }
-
-      function populateTransferDropdowns(fromId = null, toId = null, currentTransferId = null) {
-        const fromSelect = document.getElementById('transferFromAccount');
-        const toSelect = document.getElementById('transferToAccount');
-        if (!fromSelect || !toSelect) return;
-        fromSelect.innerHTML = '';
-        toSelect.innerHTML = '';
-
-        accounts.forEach(acc => {
-          const text = `${acc.broker} (${acc.number}) - ${acc.type}`;
-          const optFrom = document.createElement('option');
-          optFrom.value = acc.id;
-          optFrom.textContent = text;
-          fromSelect.appendChild(optFrom);
-
-          const optTo = document.createElement('option');
-          optTo.value = acc.id;
-          optTo.textContent = text;
-          toSelect.appendChild(optTo);
         });
-
-        fromSelect.value = fromId || activeAccountId;
-        toSelect.value = toId || (accounts.find(a => a.id !== fromSelect.value)?.id || accounts[0].id);
-        updateTransferBalanceHelp(fromSelect.value, toSelect.value, currentTransferId);
+        document.getElementById('totalTradesPill').textContent = `${count} trades en total`;
       }
 
-      document.getElementById('transferFromAccount')?.addEventListener('change', (e) => {
-        const editId = document.getElementById('editTransferId').value || null;
-        const toSelect = document.getElementById('transferToAccount');
-        if (toSelect.value === e.target.value) {
-          const alt = accounts.find(a => a.id !== e.target.value);
-          if (alt) toSelect.value = alt.id;
-        }
-        updateTransferBalanceHelp(e.target.value, toSelect.value, editId);
-      });
+      function updateSchwabMetrics() {
+        const active = getActiveAccount();
+        let gains = 0, losses = 0, wins = 0, total = 0;
+        const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
 
-      document.getElementById('openTransferModalBtn')?.addEventListener('click', () => {
-        if (accounts.length < 2) return alert("Se requieren al menos 2 cuentas para transferir.");
-        document.getElementById('editTransferId').value = '';
-        document.getElementById('transferModalTitle').textContent = 'Transferencia entre Brokers';
-        document.getElementById('submitTransferText').textContent = 'Confirmar Transferencia';
-        deleteTransferBtn?.classList.add('hidden');
-        populateTransferDropdowns();
-        document.getElementById('transferDate').value = getSystemTodayKey();
-        document.getElementById('transferAmount').value = '';
-        document.getElementById('transferNote').value = '';
-        transferModal.classList.remove('hidden');
-        transferModal.classList.add('flex');
-        safeIcons();
-      });
-
-      function closeTransferModal() {
-        transferModal.classList.add('hidden');
-        transferModal.classList.remove('flex');
-      }
-      document.getElementById('closeTransferModalBtn')?.addEventListener('click', closeTransferModal);
-      document.getElementById('cancelTransferBtn')?.addEventListener('click', closeTransferModal);
-
-      window.openEditTransferModal = function(transferId, flowId = null) {
-        let foundSourceId = null;
-        let foundTargetId = null;
-        let foundFlow = null;
-
-        if (transferId) {
-          accounts.forEach(acc => {
-            (acc.capitalFlows || []).forEach(f => {
-              if (String(f.transferId) === String(transferId)) {
-                foundFlow = f;
-                if (f.type === 'withdrawal') foundSourceId = acc.id;
-                if (f.type === 'deposit') foundTargetId = acc.id;
-              }
+        Object.keys(active.appData || {}).forEach(k => {
+          if (k.startsWith(prefix)) {
+            (active.appData[k] || []).forEach(t => {
+              const p = Number(t.pnl || 0);
+              total++;
+              if (p > 0) { gains += p; wins++; }
+              else if (p < 0) { losses += Math.abs(p); }
             });
-          });
+          }
+        });
+
+        document.getElementById('metricTotalVal').textContent = formatExactCurrency(gains - losses);
+        document.getElementById('metricGrossGains').textContent = `+${formatExactCurrency(gains)}`;
+        document.getElementById('metricGrossLosses').textContent = `-${formatExactCurrency(losses)}`;
+        const vol = gains + losses;
+        document.getElementById('metricSchwabRatio').textContent = vol > 0 ? `${((gains / vol) * 100).toFixed(1)}%` : '0.00%';
+        document.getElementById('metricTradesPct').textContent = total > 0 ? `${Math.round((wins / total) * 100)}%` : '0%';
+        document.getElementById('metricTradesCount').textContent = `(${wins} / ${total} ops)`;
+      }
+
+      // 1. VISTA MES
+      function renderMonthView() {
+        const grid = document.getElementById('calendarGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        document.getElementById('sectionSubTitle').textContent = `Mes: ${monthNames[currentMonth]} ${currentYear}`;
+
+        const firstOfMonth = new Date(currentYear, currentMonth, 1);
+        const startDay = new Date(firstOfMonth);
+        let dow = startDay.getDay();
+        let diff = (dow === 0 ? 1 : (dow === 6 ? 2 : 1 - dow));
+        startDay.setDate(startDay.getDate() + diff);
+
+        const days = [];
+        const cursor = new Date(startDay);
+        while (days.length < 25) {
+          if (cursor.getDay() >= 1 && cursor.getDay() <= 5) days.push(new Date(cursor));
+          cursor.setDate(cursor.getDate() + 1);
         }
 
-        if (!foundFlow && flowId) {
-          const active = getActiveAccount();
-          foundFlow = (active.capitalFlows || []).find(f => f.id === flowId);
-          if (foundFlow) {
-            transferId = 'TRF_' + foundFlow.id;
-            foundFlow.transferId = transferId;
-            foundFlow.category = 'transfer';
-            if (foundFlow.type === 'withdrawal') {
-              foundSourceId = active.id;
-              foundTargetId = accounts.find(a => a.id !== active.id)?.id;
-            } else {
-              foundTargetId = active.id;
-              foundSourceId = accounts.find(a => a.id !== active.id)?.id;
+        const todayStr = getSystemTodayKey();
+        const active = getActiveAccount();
+
+        days.forEach(dObj => {
+          const y = dObj.getFullYear();
+          const m = String(dObj.getMonth() + 1).padStart(2, '0');
+          const d = String(dObj.getDate()).padStart(2, '0');
+          const dateKey = `${y}-${m}-${d}`;
+          const pnl = getDayPnL(dateKey);
+          const trades = active.appData?.[dateKey] || [];
+          const isToday = (dateKey === todayStr);
+
+          let bg = "bg-slate-50/40 dark:bg-darkSubtle/40 border border-slate-200/80 dark:border-darkBorder";
+          let textCls = "text-slate-400";
+          let pnlDisplay = "0.00";
+
+          if (pnl !== null) {
+            if (pnl > 0) {
+              bg = "bg-pnlGreen-bg dark:bg-pnlGreen-darkBg border border-pnlGreen-border dark:border-pnlGreen-darkBorder";
+              textCls = "text-pnlGreen-text dark:text-pnlGreen-darkText";
+              pnlDisplay = formatMoney(pnl);
+            } else if (pnl < 0) {
+              bg = "bg-pnlRed-bg dark:bg-pnlRed-darkBg border border-pnlRed-border dark:border-pnlRed-darkBorder";
+              textCls = "text-pnlRed-text dark:text-pnlRed-darkText";
+              pnlDisplay = formatMoney(pnl);
             }
           }
-        }
 
-        if (!foundFlow) return;
-
-        document.getElementById('editTransferId').value = String(transferId);
-        document.getElementById('transferModalTitle').textContent = 'Modificar Transferencia entre Cuentas';
-        document.getElementById('submitTransferText').textContent = 'Guardar Cambios';
-        deleteTransferBtn?.classList.remove('hidden');
-
-        populateTransferDropdowns(foundSourceId, foundTargetId, transferId);
-        document.getElementById('transferDate').value = foundFlow.date;
-        document.getElementById('transferAmount').value = foundFlow.amount;
-        document.getElementById('transferNote').value = foundFlow.note || '';
-
-        transferModal.classList.remove('hidden');
-        transferModal.classList.add('flex');
-        safeIcons();
-      };
-
-      deleteTransferBtn?.addEventListener('click', () => {
-        const transferId = document.getElementById('editTransferId').value;
-        if (!transferId) return;
-        if (confirm("¿Deseas anular esta transferencia en ambas cuentas?")) {
-          accounts.forEach(acc => {
-            acc.capitalFlows = (acc.capitalFlows || []).filter(f => String(f.transferId) !== String(transferId));
-          });
-          saveAccountsData();
-          closeTransferModal();
-          refreshActiveView();
-        }
-      });
-
-      document.getElementById('transferForm')?.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const editTransferId = document.getElementById('editTransferId').value;
-        const fromId = document.getElementById('transferFromAccount').value;
-        const toId = document.getElementById('transferToAccount').value;
-        const date = document.getElementById('transferDate').value;
-        const amount = parseFloat(document.getElementById('transferAmount').value);
-        const note = document.getElementById('transferNote').value.trim();
-
-        if (fromId === toId) return alert("Origen y destino no pueden ser la misma cuenta.");
-        if (isNaN(amount) || amount <= 0 || !date) return;
-
-        const available = getAccountBalance(fromId, null, editTransferId || null);
-        if (amount > available + 0.0001) {
-          return alert(`Saldo insuficiente: disponible ${formatExactCurrency(available)}`);
-        }
-
-        const accFrom = accounts.find(a => a.id === fromId);
-        const accTo = accounts.find(a => a.id === toId);
-
-        if (editTransferId) {
-          accounts.forEach(acc => {
-            acc.capitalFlows = (acc.capitalFlows || []).filter(f => String(f.transferId) !== String(editTransferId));
-          });
-        }
-
-        const finalTransferId = editTransferId || ('TRF_' + Date.now());
-        if (!accFrom.capitalFlows) accFrom.capitalFlows = [];
-        if (!accTo.capitalFlows) accTo.capitalFlows = [];
-
-        accFrom.capitalFlows.push({
-          id: Date.now() + 1,
-          transferId: finalTransferId,
-          type: 'withdrawal',
-          category: 'transfer',
-          sourceAccountId: fromId,
-          targetAccountId: toId,
-          date,
-          amount,
-          note: `Transferencia a ${accTo.broker} (${accTo.number})${note ? ' - ' + note : ''}`
+          const cell = document.createElement('div');
+          cell.className = `min-h-[74px] p-2.5 rounded-2xl flex flex-col justify-between cursor-pointer select-none ${bg}`;
+          cell.innerHTML = `
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-bold ${isToday ? 'text-blue-600 bg-blue-50 dark:bg-blue-950 px-2 rounded' : 'text-slate-700 dark:text-slate-300'}">${isToday ? 'Today' : dObj.getDate()}</span>
+              ${trades.length > 0 ? `<span class="px-1 text-[10px] font-bold rounded bg-slate-200 dark:bg-slate-800">${trades.length}t</span>` : ''}
+            </div>
+            <div class="text-right text-xs font-extrabold ${textCls}">${pnl !== null ? pnlDisplay : '-'}</div>
+          `;
+          cell.onclick = () => openDayModal(dateKey);
+          grid.appendChild(cell);
         });
 
-        accTo.capitalFlows.push({
-          id: Date.now() + 2,
-          transferId: finalTransferId,
-          type: 'deposit',
-          category: 'transfer',
-          sourceAccountId: fromId,
-          targetAccountId: toId,
-          date,
-          amount,
-          note: `Transferencia desde ${accFrom.broker} (${accFrom.number})${note ? ' - ' + note : ''}`
+        updateSchwabMetrics();
+      }
+
+      // 2. VISTA AÑO
+      function renderYearView() {
+        const grid = document.getElementById('yearMonthsGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        const monthsShort = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        const active = getActiveAccount();
+
+        for (let m = 0; m < 12; m++) {
+          const monthPrefix = `${currentYear}-${String(m + 1).padStart(2, '0')}`;
+          let mPnl = 0, mTrades = 0;
+          Object.keys(active.appData || {}).forEach(k => {
+            if (k.startsWith(monthPrefix)) {
+              (active.appData[k] || []).forEach(t => {
+                mPnl += Number(t.pnl || 0);
+                mTrades++;
+              });
+            }
+          });
+
+          const card = document.createElement('div');
+          card.className = "p-3.5 rounded-2xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/50 flex flex-col justify-between cursor-pointer";
+          card.innerHTML = `
+            <div class="flex justify-between text-xs font-bold">
+              <span>${monthsShort[m]}</span>
+              <span class="text-slate-400 text-[10px]">${mTrades} trades</span>
+            </div>
+            <div class="text-sm font-black my-2 ${mPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(mPnl)}</div>
+          `;
+          card.onclick = () => {
+            currentMonth = m;
+            switchView('Month');
+          };
+          grid.appendChild(card);
+        }
+      }
+
+      // 3. VISTA TICKERS
+      function renderTickersView() {
+        const grid = document.getElementById('tickersGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        const active = getActiveAccount();
+        const tickerStats = {};
+
+        Object.keys(active.appData || {}).forEach(k => {
+          if (k.startsWith(`${currentYear}`)) {
+            (active.appData[k] || []).forEach(t => {
+              const sym = (t.ticker || 'OTHER').toUpperCase().trim();
+              if (!tickerStats[sym]) tickerStats[sym] = { ticker: sym, total: 0, pnl: 0, wins: 0 };
+              tickerStats[sym].total++;
+              tickerStats[sym].pnl += Number(t.pnl || 0);
+              if (Number(t.pnl || 0) > 0) tickerStats[sym].wins++;
+            });
+          }
         });
 
-        saveAccountsData();
-        closeTransferModal();
-        refreshActiveView();
-      });
+        Object.values(tickerStats).forEach(data => {
+          const card = document.createElement('div');
+          card.className = "p-3 rounded-2xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/50 flex justify-between items-center text-xs";
+          card.innerHTML = `
+            <div>
+              <span class="font-bold text-sm block">${data.ticker}</span>
+              <span class="text-[10px] text-slate-400">${data.total} ops &bull; ${Math.round((data.wins / data.total) * 100)}% Win</span>
+            </div>
+            <div class="font-black text-sm ${data.pnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(data.pnl)}</div>
+          `;
+          grid.appendChild(card);
+        });
+      }
 
-      // RENDERIZADO COMISIONES
+      // 4. VISTA COMISIONES (COMISIÓN REAL DE IBKR O ESTIMADA)
       function renderCommissionsView() {
         const tbody = document.getElementById('commissionsTableBody');
         if (!tbody) return;
@@ -1260,9 +971,7 @@
         const active = getActiveAccount();
         const fallbackRate = parseFloat(document.getElementById('feePerContractInput')?.value) || 1.30;
         const tickerStats = {};
-        let totalComms = 0;
-        let totalOps = 0;
-        let totalNet = 0;
+        let totalComms = 0, totalOps = 0, totalNet = 0;
 
         Object.keys(active.appData || {}).forEach(dKey => {
           if (dKey.startsWith(`${currentYear}`)) {
@@ -1306,7 +1015,7 @@
         });
       }
 
-      // RENDERIZADO CAPITAL REAL CON BOTONES DE EDITAR Y ELIMINAR
+      // 5. VISTA CAPITAL CON BOTONES DE EDITAR Y BORRAR
       function renderCapitalView() {
         const active = getActiveAccount();
         const currentBal = getAccountBalance(active.id);
@@ -1408,7 +1117,6 @@
         document.getElementById('capitalFormActionLabel').textContent = 'Editar Movimiento Externo';
         document.getElementById('capitalSubmitText').textContent = 'Guardar Cambios';
         document.getElementById('cancelCapitalEditBtn')?.classList.remove('hidden');
-
         document.getElementById('capitalFlowForm')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       };
 
@@ -1446,7 +1154,6 @@
         }
       };
 
-      // REGISTRAR MOVIMIENTO MANUAL DE CAPITAL
       document.getElementById('capitalFlowForm')?.addEventListener('submit', (e) => {
         e.preventDefault();
         const active = getActiveAccount();
@@ -1489,35 +1196,7 @@
         renderCapitalView();
       });
 
-      function updateSchwabMetrics() {
-        const active = getActiveAccount();
-        let gains = 0, losses = 0, wins = 0, total = 0;
-        const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
-
-        Object.keys(active.appData || {}).forEach(k => {
-          if (k.startsWith(prefix)) {
-            (active.appData[k] || []).forEach(t => {
-              const p = Number(t.pnl || 0);
-              total++;
-              if (p > 0) { gains += p; wins++; }
-              else if (p < 0) { losses += Math.abs(p); }
-            });
-          }
-        });
-
-        document.getElementById('metricTotalVal').textContent = formatExactCurrency(gains - losses);
-        document.getElementById('metricGrossGains').textContent = `+${formatExactCurrency(gains)}`;
-        document.getElementById('metricGrossLosses').textContent = `-${formatExactCurrency(losses)}`;
-        const vol = gains + losses;
-        document.getElementById('metricSchwabRatio').textContent = vol > 0 ? `${((gains / vol) * 100).toFixed(1)}%` : '0.00%';
-        document.getElementById('metricTradesPct').textContent = total > 0 ? `${Math.round((wins / total) * 100)}%` : '0%';
-        document.getElementById('metricTradesCount').textContent = `(${wins} / ${total} ops)`;
-      }
-
-      function renderYearView() {}
-      function renderTickersView() {}
-
-      function openDayModal(dateKey, dObj) {
+      function openDayModal(dateKey) {
         selectedDateKey = dateKey;
         document.getElementById('modalDateTitle').textContent = `Operaciones de ${dateKey}`;
         document.getElementById('dayModal').classList.remove('hidden');
@@ -1572,9 +1251,88 @@
         }
       };
 
-      document.getElementById('closeModalBtn')?.addEventListener('click', () => {
-        document.getElementById('dayModal').classList.add('hidden');
-        document.getElementById('dayModal').classList.remove('flex');
+      function switchView(view) {
+        currentView = view;
+        ['Month', 'Year', 'Tickers', 'Commissions', 'Capital'].forEach(s => {
+          document.getElementById(s.toLowerCase() + 'View')?.classList.toggle('hidden', s !== view);
+          const btn = document.getElementById('view' + s + 'Btn');
+          if (btn) {
+            btn.className = s === view
+              ? "px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5"
+              : "px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5";
+          }
+        });
+
+        if (view === 'Month') renderMonthView();
+        else if (view === 'Year') renderYearView();
+        else if (view === 'Tickers') renderTickersView();
+        else if (view === 'Commissions') renderCommissionsView();
+        else if (view === 'Capital') renderCapitalView();
+        safeIcons();
+      }
+
+      function refreshActiveView() {
+        renderAccountSelector();
+        updateTotalTradesHeader();
+        if (currentView === 'Month') renderMonthView();
+        else if (currentView === 'Year') renderYearView();
+        else if (currentView === 'Tickers') renderTickersView();
+        else if (currentView === 'Commissions') renderCommissionsView();
+        else renderCapitalView();
+        safeIcons();
+      }
+
+      // RESTAURACIÓN CORREGIDA
+      document.getElementById('restoreBackupInput')?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          try {
+            const parsed = JSON.parse(event.target.result);
+            if (!parsed.accounts || !Array.isArray(parsed.accounts)) {
+              alert("El archivo no tiene un formato de respaldo válido.");
+              return;
+            }
+            if (confirm(`¿Restaurar respaldo con ${parsed.accounts.length} cuenta(s)?`)) {
+              accounts = parsed.accounts;
+              activeAccountId = parsed.activeAccountId || accounts[0].id;
+              saveAccountsData();
+              localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+              if (parsed.isDarkMode !== undefined) {
+                isDarkMode = parsed.isDarkMode;
+                localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
+                applyTheme();
+              }
+              refreshActiveView();
+              alert("¡Copia de seguridad restaurada con éxito!");
+            }
+          } catch(err) {
+            alert("Error al leer JSON: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      // BACKUP
+      document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
+        const backupData = {
+          version: '1.0',
+          exportedAt: new Date().toISOString(),
+          activeAccountId: activeAccountId,
+          isDarkMode: isDarkMode,
+          accounts: accounts
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trading_journal_backup_${getSystemTodayKey()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
       });
 
       // MODAL CSV (COMPATIBLE CON SCHWAB E IBKR)
@@ -1853,30 +1611,10 @@
         }
       });
 
-      // NAVEGACIÓN Y PERÍODOS
+      // EVENTOS DE NAVEGACIÓN Y PERÍODO
       ['Month', 'Year', 'Tickers', 'Commissions', 'Capital'].forEach(v => {
         document.getElementById('view' + v + 'Btn')?.addEventListener('click', () => switchView(v));
       });
-
-      function switchView(view) {
-        currentView = view;
-        ['Month', 'Year', 'Tickers', 'Commissions', 'Capital'].forEach(s => {
-          document.getElementById(s.toLowerCase() + 'View')?.classList.toggle('hidden', s !== view);
-          const btn = document.getElementById('view' + s + 'Btn');
-          if (btn) {
-            btn.className = s === view
-              ? "px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5"
-              : "px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5";
-          }
-        });
-
-        if (view === 'Month') renderMonthView();
-        else if (view === 'Year') renderYearView();
-        else if (view === 'Tickers') renderTickersView();
-        else if (view === 'Commissions') renderCommissionsView();
-        else if (view === 'Capital') renderCapitalView();
-        safeIcons();
-      }
 
       document.getElementById('prevPeriodBtn')?.addEventListener('click', () => {
         currentMonth--;
@@ -1895,6 +1633,11 @@
       document.getElementById('periodYearSelect')?.addEventListener('change', (e) => {
         currentYear = parseInt(e.target.value, 10);
         refreshActiveView();
+      });
+
+      document.getElementById('closeModalBtn')?.addEventListener('click', () => {
+        document.getElementById('dayModal').classList.add('hidden');
+        document.getElementById('dayModal').classList.remove('flex');
       });
 
       document.getElementById('helpBtn')?.addEventListener('click', () => {
@@ -1917,6 +1660,7 @@
         }
       });
 
+      // INICIALIZACIÓN
       applyTheme();
       loadAccountsData();
       document.getElementById('periodYearSelect').value = String(currentYear);
