@@ -230,12 +230,12 @@
       <div id="yearMonthsGrid" class="grid grid-cols-3 gap-3 py-1"></div>
     </section>
 
-    <!-- 3. VISTA TICKERS -->
+    <!-- 3. VISTA TICKERS (DISEÑO EXACTO RESTAURADO) -->
     <section id="tickersView" class="hidden w-full space-y-3">
       <div class="flex items-center justify-between gap-2 pb-1">
         <div class="relative flex-1">
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          <input type="text" id="tickerSearchInput" placeholder="Buscar ticker (PXLW, SMX, SPY, TSLA...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50/60 dark:bg-darkSubtle text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="tickerSearchInput" placeholder="Buscar por ticker (SPY, TSLA, AMD...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50/60 dark:bg-darkSubtle text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <select id="tickerSortSelect" class="text-xs font-semibold px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
           <option value="pnl-desc">Mayor P&amp;L</option>
@@ -401,7 +401,7 @@
     <!-- TARJETAS DE MÉTRICAS -->
     <footer class="mt-6 pt-5 border-t border-slate-100 dark:border-darkBorder grid grid-cols-2 sm:grid-cols-4 gap-3">
       <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder flex flex-col justify-between">
-        <div id="metricTotalTitle" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ganancia Neta</div>
+        <div id="metricTotalTitle" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ganancia Neta Mes</div>
         <div id="metricTotalVal" class="text-base font-extrabold text-slate-800 dark:text-white mt-0.5">$0.00</div>
       </div>
 
@@ -490,13 +490,13 @@
           </div>
           <div>
             <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Monto a Transferir ($)</label>
-            <input type="number" step="0.01" min="0.01" id="transferAmount" placeholder="500.00" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-bold focus:ring-2 focus:ring-blue-500">
+            <input type="number" step="0.01" min="0.01" id="transferAmount" placeholder="500.00" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
 
         <div>
           <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nota / Concepto</label>
-          <input type="text" id="transferNote" placeholder="Transferencia entre brokers" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="transferNote" placeholder="Transferencia entre brokers" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div class="flex items-center justify-between pt-2 gap-2">
@@ -514,8 +514,8 @@
     </div>
   </div>
 
-  <!-- MODAL: GESTOR DE CUENTAS -->
-  <div id="accountModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <!-- MODAL: GESTOR DE CUENTAS (CORREGIDO PARA ABRIR INMEDIATAMENTE) -->
+  <div id="accountModal" style="display: none;" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4">
     <div class="bg-white dark:bg-darkCard w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
         <div class="flex items-center gap-2">
@@ -565,7 +565,7 @@
   <!-- MODAL: INFORMACIÓN -->
   <div id="infoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div class="bg-white dark:bg-darkCard w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col items-center text-center">
-      <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400">
+      <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400">
         <i data-lucide="layers" class="w-7 h-7 stroke-[1.8]"></i>
       </div>
       <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight mb-4">Soporte Multicuenta &amp; Capital</h3>
@@ -617,7 +617,7 @@
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="radio" name="csvImportMode" value="replace" class="text-rose-600">
-            <span class="text-rose-600"><strong>Reemplazar cuenta completa</strong> - Borra el historial previo de esta cuenta.</span>
+            <span class="text-rose-600"><strong>Reemplazar cuenta completa</strong> - Borra el historial previo.</span>
           </label>
         </div>
 
@@ -629,7 +629,7 @@
     </div>
   </div>
 
-  <!-- SCRIPT DEFINITIVO AUTÓNOMO -->
+  <!-- SCRIPT DEFINITIVO ROBUSTO Y AUTÓNOMO -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_STABLE';
@@ -646,8 +646,6 @@
       let parsedCsvTrades = null;
       let parsedCsvFlows = null;
       let csvFileType = 'trades';
-      let csvMinDate = null;
-      let csvMaxDate = null;
 
       function safeIcons() {
         try {
@@ -825,6 +823,8 @@
           }
         });
 
+        const isMonth = (currentView === 'Month');
+        document.getElementById('metricTotalTitle').textContent = isMonth ? "Ganancia Neta Mes" : "Ganancia Neta Año";
         document.getElementById('metricTotalVal').textContent = formatExactCurrency(gains - losses);
         document.getElementById('metricGrossGains').textContent = `+${formatExactCurrency(gains)}`;
         document.getElementById('metricGrossLosses').textContent = `-${formatExactCurrency(losses)}`;
@@ -937,7 +937,7 @@
         }
       }
 
-      // 3. RENDERIZADO TICKERS COMPLETO
+      // 3. RENDERIZADO TICKERS (DISEÑO EXACTO RESTAURADO CON BADGES Y WIN/LOSS COLOR)
       function renderTickersView() {
         const grid = document.getElementById('tickersGrid');
         if (!grid) return;
@@ -951,11 +951,13 @@
           if (k.startsWith(`${currentYear}`)) {
             (active.appData[k] || []).forEach(t => {
               const sym = (t.ticker || 'OTHER').toUpperCase().trim();
-              if (!tickerStats[sym]) tickerStats[sym] = { ticker: sym, total: 0, pnl: 0, wins: 0, cost: 0 };
+              if (!tickerStats[sym]) tickerStats[sym] = { ticker: sym, total: 0, pnl: 0, wins: 0, losses: 0, cost: 0 };
               tickerStats[sym].total++;
-              tickerStats[sym].pnl += Number(t.pnl || 0);
+              const p = Number(t.pnl || 0);
+              tickerStats[sym].pnl += p;
               tickerStats[sym].cost += Number(t.costBasis || 0);
-              if (Number(t.pnl || 0) > 0) tickerStats[sym].wins++;
+              if (p > 0) tickerStats[sym].wins++;
+              else if (p < 0) tickerStats[sym].losses++;
             });
           }
         });
@@ -978,23 +980,47 @@
 
         list.forEach(data => {
           const winRate = data.total > 0 ? Math.round((data.wins / data.total) * 100) : 0;
+          const isNetWin = data.pnl >= 0;
+          const roi = data.cost > 0 ? ((data.pnl / data.cost) * 100).toFixed(1) : 0;
+
+          // Color del badge del ticker según símbolo
+          let tickerBadgeStyle = getTickerBadgeClass(data.ticker);
+
+          // Píldora de Win Rate: verde si >= 50% o ganancia, roja si < 50% o pérdida
+          let winPillStyle = winRate >= 50 
+            ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40' 
+            : 'bg-rose-950/80 text-rose-400 border border-rose-500/40';
+
           const card = document.createElement('div');
-          card.className = "p-3 rounded-2xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/50 flex justify-between items-center text-xs";
+          card.className = "p-4 rounded-2xl border border-slate-800 bg-[#0d1424] text-white flex flex-col justify-between shadow-md hover:border-blue-500 transition";
           card.innerHTML = `
-            <div>
-              <span class="font-bold text-sm block">${data.ticker}</span>
-              <span class="text-[10px] text-slate-400">${data.total} ops &bull; ${winRate}% Win</span>
+            <div class="flex items-center justify-between pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-lg text-xs font-black tracking-wide ${tickerBadgeStyle}">${data.ticker}</span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-black ${winPillStyle}">${winRate}% Win</span>
+              </div>
+              <span class="text-base font-extrabold tracking-tight ${isNetWin ? 'text-emerald-400' : 'text-rose-400'}">
+                ${formatExactCurrency(data.pnl)}
+              </span>
             </div>
-            <div class="text-right">
-              <span class="font-black text-sm block ${data.pnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(data.pnl)}</span>
-              <span class="text-[10px] text-slate-400">Inv: ${formatExactCurrency(data.cost)}</span>
+
+            <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 text-[11px]">
+              <div>
+                <span class="text-slate-400 block text-[10px]">Trades:</span>
+                <span class="font-bold text-slate-100">${data.total} <span class="text-slate-400 font-medium">(${data.wins}W / ${data.losses}L)</span></span>
+              </div>
+              <div class="text-right">
+                <span class="text-slate-400 block text-[10px]">Inversión Total:</span>
+                <span class="font-bold text-slate-100 block">+${formatExactCurrency(data.cost).replace('$', '$')}</span>
+                <span class="font-bold text-[10px] ${isNetWin ? 'text-emerald-400' : 'text-rose-400'}">${isNetWin ? '+' : ''}${roi}% ROI</span>
+              </div>
             </div>
           `;
           grid.appendChild(card);
         });
       }
 
-      // 4. RENDERIZADO COMISIONES (REALES DEL CSV O ESTIMADAS)
+      // 4. RENDERIZADO COMISIONES (DINÁMICO SEGÚN BROKER)
       function renderCommissionsView() {
         const tbody = document.getElementById('commissionsTableBody');
         if (!tbody) return;
@@ -1004,11 +1030,10 @@
         const isIbkr = (active.broker || '').toLowerCase().includes('interactive');
         const fallbackRate = parseFloat(document.getElementById('feePerContractInput')?.value) || 1.30;
         
-        // Ajuste de texto del recuadro informativo según el broker
         const noticeLabel = document.getElementById('commissionsNoticeLabel');
         const fallbackCont = document.getElementById('commissionsFallbackContainer');
         if (noticeLabel) {
-          noticeLabel.textContent = isIbkr ? "Comisiones reales leídas de Interactive Brokers:" : "Tarifa estimada para opciones (Schwab):";
+          noticeLabel.textContent = isIbkr ? "Comisiones reales de Interactive Brokers (IBCommission):" : "Tarifa estimada para opciones (Schwab):";
         }
         if (fallbackCont) {
           fallbackCont.style.display = isIbkr ? 'none' : 'flex';
@@ -1024,7 +1049,6 @@
               const qty = parseInt(t.qty, 10) || 1;
               const pnl = Number(t.pnl || 0);
 
-              // Si tiene comisión explícita del CSV, usar el 100% real.
               let comm = 0;
               if (t.commission !== undefined && t.commission > 0) {
                 comm = t.commission;
@@ -1333,15 +1357,109 @@
         safeIcons();
       }
 
-      // CAMBIAR DE CUENTA ACTIVA: ACTUALIZACIÓN EN VIVO DE TODO EL DASHBOARD
+      // CAMBIO DE CUENTA ACTIVA CON AUTO-POSICIONAMIENTO EN EL MES DE DATOS
       document.getElementById('accountSelect')?.addEventListener('change', (e) => {
         activeAccountId = e.target.value;
         localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+        
+        const active = getActiveAccount();
+        const dates = Object.keys(active.appData || {}).sort();
+        if (dates.length > 0) {
+          const lastDate = dates[dates.length - 1]; // Ir al mes más reciente con operaciones
+          const parts = lastDate.split('-');
+          currentYear = parseInt(parts[0], 10);
+          currentMonth = parseInt(parts[1], 10) - 1;
+          document.getElementById('periodYearSelect').value = String(currentYear);
+        }
+
         renderAccountSelector();
         refreshActiveView();
       });
 
-      // RESTAURACIÓN CORREGIDA Y ROBUSTA
+      // MODAL DE GESTIÓN DE CUENTAS (CORRECCIÓN CON STYLE.DISPLAY DIRECTO)
+      const accountModal = document.getElementById('accountModal');
+      const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+
+      document.getElementById('openNewAccountBtn')?.addEventListener('click', () => {
+        document.getElementById('editAccountId').value = '';
+        document.getElementById('accountModalTitle').textContent = 'Nueva Cuenta de Broker';
+        document.getElementById('accBrokerInput').value = '';
+        document.getElementById('accNumberInput').value = '';
+        document.getElementById('accTypeInput').value = 'Margin';
+        deleteAccountBtn?.classList.add('hidden');
+        accountModal.style.display = 'flex';
+        safeIcons();
+      });
+
+      document.getElementById('editActiveAccountBtn')?.addEventListener('click', () => {
+        const active = getActiveAccount();
+        document.getElementById('editAccountId').value = active.id;
+        document.getElementById('accountModalTitle').textContent = 'Editar Cuenta Activa';
+        document.getElementById('accBrokerInput').value = active.broker;
+        document.getElementById('accNumberInput').value = active.number;
+        document.getElementById('accTypeInput').value = active.type;
+        deleteAccountBtn?.classList.toggle('hidden', accounts.length <= 1);
+        accountModal.style.display = 'flex';
+        safeIcons();
+      });
+
+      function closeAccountModal() {
+        accountModal.style.display = 'none';
+      }
+      document.getElementById('closeAccountModalBtn')?.addEventListener('click', closeAccountModal);
+      document.getElementById('cancelAccountBtn')?.addEventListener('click', closeAccountModal);
+
+      document.getElementById('accountForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('editAccountId').value;
+        const broker = document.getElementById('accBrokerInput').value.trim();
+        const number = document.getElementById('accNumberInput').value.trim();
+        const type = document.getElementById('accTypeInput').value;
+
+        if (!broker || !number) return;
+
+        if (editId) {
+          const acc = accounts.find(a => a.id === editId);
+          if (acc) {
+            acc.broker = broker;
+            acc.number = number;
+            acc.type = type;
+          }
+        } else {
+          const newAcc = {
+            id: 'acc_' + Date.now(),
+            broker,
+            number,
+            type,
+            currency: 'USD',
+            appData: {},
+            capitalFlows: []
+          };
+          accounts.push(newAcc);
+          activeAccountId = newAcc.id;
+          localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+        }
+
+        saveAccountsData();
+        closeAccountModal();
+        renderAccountSelector();
+        refreshActiveView();
+      });
+
+      deleteAccountBtn?.addEventListener('click', () => {
+        const active = getActiveAccount();
+        if (confirm(`¿Eliminar la cuenta "${active.broker} (${active.number})"?`)) {
+          accounts = accounts.filter(a => a.id !== active.id);
+          activeAccountId = accounts[0].id;
+          localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+          saveAccountsData();
+          closeAccountModal();
+          renderAccountSelector();
+          refreshActiveView();
+        }
+      });
+
+      // RESTAURACIÓN DE BACKUP ROBUSTA
       document.getElementById('restoreBackupInput')?.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1375,7 +1493,7 @@
         e.target.value = '';
       });
 
-      // BACKUP COMPLETO
+      // BACKUP
       document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
         const backupData = {
           version: '1.0',
@@ -1634,6 +1752,7 @@
         });
       });
 
+      // PROCESAMIENTO SIN DUPLICADOS (CON FIRMA INMUTABLE DE TRADE)
       document.getElementById('processCsvBtn')?.addEventListener('click', () => {
         const mode = document.querySelector('input[name="csvImportMode"]:checked')?.value || 'merge';
         const active = getActiveAccount();
@@ -1643,7 +1762,11 @@
           if (!active.capitalFlows) active.capitalFlows = [];
 
           parsedCsvFlows.forEach(f => {
-            const isDup = active.capitalFlows.some(cf => cf.date === f.date && Math.abs(cf.amount - f.amount) < 0.05);
+            const isDup = active.capitalFlows.some(cf => 
+              cf.date === f.date && 
+              Math.abs(cf.amount - f.amount) < 0.05 && 
+              cf.type === f.type
+            );
             if (!isDup) active.capitalFlows.push(f);
           });
 
@@ -1660,13 +1783,32 @@
 
           parsedCsvTrades.forEach(item => {
             if (!active.appData[item.dateKey]) active.appData[item.dateKey] = [];
-            const isDup = active.appData[item.dateKey].some(ex => ex.ticker === item.trade.ticker && Math.abs(ex.pnl - item.trade.pnl) < 0.05);
+            
+            // Verificación estricta por ticker, P&L, costo y cantidad
+            const isDup = active.appData[item.dateKey].some(ex => {
+              const sameTicker = (ex.ticker || '').toUpperCase().trim() === (item.trade.ticker || '').toUpperCase().trim();
+              const samePnl = Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.05;
+              const sameCost = Math.abs(Number(ex.costBasis || 0) - Number(item.trade.costBasis || 0)) < 0.05;
+              const sameQty = parseInt(ex.qty, 10) === parseInt(item.trade.qty, 10);
+              return sameTicker && samePnl && sameCost && sameQty;
+            });
+
             if (!isDup) active.appData[item.dateKey].push(item.trade);
           });
 
           saveAccountsData();
           csvModal.classList.add('hidden');
           csvModal.classList.remove('flex');
+
+          // Desplazar automáticamente al mes de los trades subidos
+          if (parsedCsvTrades.length > 0) {
+            const lastDate = parsedCsvTrades[parsedCsvTrades.length - 1].dateKey;
+            const parts = lastDate.split('-');
+            currentYear = parseInt(parts[0], 10);
+            currentMonth = parseInt(parts[1], 10) - 1;
+            document.getElementById('periodYearSelect').value = String(currentYear);
+          }
+
           refreshActiveView();
         }
       });
