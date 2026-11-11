@@ -2,47 +2,74 @@ import express from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
-const DATA_FILE = path.join(__dirname, 'data', 'trading_data.json');
+const PORT = process.env.PORT || 3000;
+const DATA_DIR = path.join(__dirname, 'data');
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
 
-app.use(cors());
+app.use(cors({
+  origin: '*', // O la URL de tu GitHub Pages en producción
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json({ limit: '50mb' }));
 
-// 1. Servir archivos estáticos desde 'public' y la raíz
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(__dirname));
-
-// 2. Ruta raíz que entrega index.html automáticamente
-app.get('/', async (req, res) => {
+// Asegurar carpeta de datos y registro de usuarios
+async function initStorage() {
   try {
-    const publicIndex = path.join(__dirname, 'public', 'index.html');
-    await fs.access(publicIndex);
-    return res.sendFile(publicIndex);
-  } catch {
-    return res.sendFile(path.join(__dirname, 'index.html'));
+    await fs.mkdir(DATA_DIR, { recursive: true });
+    try {
+      await fs.access(USERS_FILE);
+    } catch {
+      await fs.writeFile(USERS_FILE, JSON.stringify([], null, 2), 'utf-8');
+    }
+  } catch (err) {
+    console.error("Error inicializando storage:", err);
   }
-});
+}
 
-// Inicializar archivo de datos si no existe
-async function ensureDataFile() {
+// Helper para obtener archivo de datos de un usuario específico
+async function getUserDataFile(username) {
+  const safeName = username.replace(/[^a-zA-Z0-9_]/g, '_');
+  return path.join(DATA_DIR, `user_${safeName}.json`);
+}
+
+// 1. REGISTRO DE USUARIO
+app.post('/api/register', async (req, res) => {
   try {
-    await fs.mkdir(path.join(__dirname, 'data'), { recursive: true });
-    await fs.access(DATA_FILE);
-  } catch {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
+    }
+
+    const usersRaw = await fs.readFile(USERS_FILE, 'utf-8');
+    const users = JSON.parse(usersRaw);
+
+    if (users.some(u => u.username === username)) {
+      return res.status(400).json({ error: 'El usuario ya existe' });
+    }
+
+    users.push({ username, password });
+    await fs.writeFile(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
+
+    // Crear archivo de trading inicial para el usuario
+    const userFile = await getUserDataFile(username);
     const initialData = {
-      activeAccountId: "acc_schwab_main",
+      activeAccountId: "acc_default",
       isDarkMode: true,
       accounts: [
         {
-          id: "acc_schwab_main",
-          broker: "Charles Schwab",
-          number: "XXXX7484",
+          id: "acc_default",
+          broker: "Interactive Brokers",
+          number: "U000000",
           type: "Margin",
           currency: "USD",
           appData: {},
@@ -50,54 +77,96 @@ async function ensureDataFile() {
         }
       ]
     };
-    await fs.writeFile(DATA_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
-  }
-}
+    await fs.writeFile(userFile, JSON.stringify(initialData, null, 2), 'utf-8');
 
-// GET: Obtener todos los datos
-app.get('/api/data', async (req, res) => {
-  try {
-    const raw = await fs.readFile(DATA_FILE, 'utf-8');
-    res.json(JSON.parse(raw));
-  } catch (error) {
-    res.status(500).json({ error: 'Error al leer el archivo de datos', details: error.message });
+    res.json({ success: true, message: 'Usuario registrado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Guardar estado completo
-app.post('/api/data', async (req, res) => {
+// 2. LOGIN DE USUARIO
+app.post('/api/login', async (req, res) => {
   try {
-    const payload = req.body;
-    if (!payload.accounts || !Array.isArray(payload.accounts)) {
-      return res.status(400).json({ error: 'Formato de datos inválido' });
+    const { username, password } = req.body;
+    const usersRaw = await fs.readFile(USERS_FILE, 'utf-8');
+    const users = JSON.parse(usersRaw);
+
+    const user = users.find(u => u.username === username && u.password === password);
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
     }
-    await fs.writeFile(DATA_FILE, JSON.stringify(payload, null, 2), 'utf-8');
-    res.json({ status: 'ok', message: 'Datos guardados en disco correctamente' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al persistir en disco', details: error.message });
+
+    // Token simple basado en timestamp (sesión válida en cliente)
+    res.json({ success: true, token: Buffer.from(`${username}:${Date.now()}`).toString('base64'), username });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Generar backup local con timestamp
-app.post('/api/backup', async (req, res) => {
+// Middleware de autenticación por Token
+const authMiddleware = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return res.status(401).json({ error: 'No autorizado' });
   try {
-    const raw = await fs.readFile(DATA_FILE, 'utf-8');
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupFilename = `backup_${timestamp}.json`;
-    const backupPath = path.join(__dirname, 'data', backupFilename);
-    await fs.writeFile(backupPath, raw, 'utf-8');
-    res.json({ 
-      status: 'ok', 
-      backupPath: `data/${backupFilename}`,
-      absolutePath: backupPath 
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al generar backup', details: error.message });
+    const token = authHeader.split(' ')[1];
+    const decoded = Buffer.from(token, 'base64').toString('ascii');
+    const [username, timestamp] = decoded.split(':');
+    
+    // Validar expiración de sesión (3 minutos = 180000 ms)
+    if (Date.now() - parseInt(timestamp, 10) > 3 * 60 * 1000) {
+      return res.status(401).json({ error: 'Sesión expirada. Inicie sesión nuevamente.' });
+    }
+
+    req.username = username;
+    next();
+  } catch {
+    res.status(401).json({ error: 'Token inválido' });
+  }
+};
+
+// 3. OBTENER DATOS DE TRADING DEL USUARIO
+app.get('/api/data', authMiddleware, async (req, res) => {
+  try {
+    const userFile = await getUserDataFile(req.username);
+    try {
+      const raw = await fs.readFile(userFile, 'utf-8');
+      res.json(JSON.parse(raw));
+    } catch {
+      res.json({ accounts: [], activeAccountId: null, isDarkMode: true });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-ensureDataFile().then(() => {
+// 4. GUARDAR DATOS DE TRADING DEL USUARIO
+app.post('/api/data', authMiddleware, async (req, res) => {
+  try {
+    const userFile = await getUserDataFile(req.username);
+    await fs.writeFile(userFile, JSON.stringify(req.body, null, 2), 'utf-8');
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. BACKUP EN DISCO
+app.post('/api/backup', authMiddleware, async (req, res) => {
+  try {
+    const userFile = await getUserDataFile(req.username);
+    const raw = await fs.readFile(userFile, 'utf-8');
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const backupPath = path.join(DATA_DIR, `backup_${req.username}_${timestamp}.json`);
+    await fs.writeFile(backupPath, raw, 'utf-8');
+    res.json({ success: true, backupPath: `data/backup_${timestamp}.json` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+initStorage().then(() => {
   app.listen(PORT, () => {
-    console.log(`🚀 Servidor listo en: http://localhost:${PORT}`);
+    console.log(`🚀 Backend corriendo en puerto ${PORT}`);
   });
 });
