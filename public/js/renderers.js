@@ -1,5 +1,5 @@
 /**
- * public/js/renderers.js - Renderizado Visual con Controles de Edición y Eliminación
+ * public/js/renderers.js - Renderizado Visual y Métricas Dinámicas
  */
 import { state, getActiveAccount, getDayPnL, formatMoney, formatExactCurrency, getSystemTodayKey, cleanStrike } from './state.js';
 
@@ -82,10 +82,15 @@ export function updateTotalTradesHeader() {
   if (pill) pill.textContent = `${count} trades en total`;
 }
 
+// MÉTRICAS DINÁMICAS SEGÚN LA VISTA ACTIVA (MES O AÑO)
 export function updateSchwabMetrics() {
   const active = getActiveAccount();
   let gains = 0, losses = 0, wins = 0, total = 0;
-  const prefix = `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, '0')}`;
+  
+  const isMonth = (state.currentView === 'Month');
+  const prefix = isMonth 
+    ? `${state.currentYear}-${String(state.currentMonth + 1).padStart(2, '0')}`
+    : `${state.currentYear}`;
 
   Object.keys(active.appData || {}).forEach(k => {
     if (k.startsWith(prefix)) {
@@ -98,7 +103,6 @@ export function updateSchwabMetrics() {
     }
   });
 
-  const isMonth = (state.currentView === 'Month');
   const mTitle = document.getElementById('metricTotalTitle');
   const mVal = document.getElementById('metricTotalVal');
   const mGains = document.getElementById('metricGrossGains');
@@ -218,6 +222,7 @@ export function renderYearView() {
     };
     grid.appendChild(card);
   }
+  updateSchwabMetrics();
 }
 
 export function renderTickersView() {
@@ -312,15 +317,17 @@ export function renderTickersView() {
   });
 }
 
+// COMISIONES EXACTAS: IBKR NO USA ROUND-TRIP EST. Y ACCIONES (STK) MUESTRAN "acc" EN LUGAR DE "ops"
 export function renderCommissionsView() {
   const tbody = document.getElementById('commissionsTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
 
   const active = getActiveAccount();
+  const isIbkr = (active.broker || '').toLowerCase().includes('interactive');
   const fallbackRate = parseFloat(document.getElementById('feePerContractInput')?.value) || 1.30;
   const tickerStats = {};
-  let totalComms = 0, totalContracts = 0, totalNet = 0;
+  let totalComms = 0, totalUnits = 0, totalNet = 0;
 
   Object.keys(active.appData || {}).forEach(dKey => {
     if (dKey.startsWith(`${state.currentYear}`)) {
@@ -332,20 +339,20 @@ export function renderCommissionsView() {
         let comm = 0;
         if (t.commission !== undefined && t.commission > 0) {
           comm = t.commission;
-        } else if (t.type === 'STK') {
-          comm = 0;
+        } else if (isIbkr || t.type === 'STK') {
+          comm = 0; // Si es IBKR y no trae comisión explícita, o es acción, comisión real de fila
         } else {
-          comm = qty * fallbackRate;
+          comm = qty * fallbackRate; // Schwab TOS
         }
 
         if (!tickerStats[sym]) {
-          tickerStats[sym] = { ticker: sym, contracts: 0, netPnl: 0, commission: 0 };
+          tickerStats[sym] = { ticker: sym, units: 0, netPnl: 0, commission: 0, isStock: t.type === 'STK' };
         }
-        tickerStats[sym].contracts += qty;
+        tickerStats[sym].units += qty;
         tickerStats[sym].netPnl += pnl;
         tickerStats[sym].commission += comm;
 
-        totalContracts += qty;
+        totalUnits += qty;
         totalNet += pnl;
         totalComms += comm;
       });
@@ -356,7 +363,8 @@ export function renderCommissionsView() {
   const cFees = document.getElementById('commTotalFees');
   const cImp = document.getElementById('commTotalImpact');
 
-  if (cCtos) cCtos.textContent = `${totalContracts} ops`;
+  const unitLabel = active.type === 'STK' || Object.values(tickerStats).some(s => s.isStock) ? 'acc' : 'ops';
+  if (cCtos) cCtos.textContent = `${totalUnits} ${unitLabel}`;
   if (cFees) cFees.textContent = `-${formatExactCurrency(totalComms).replace('-', '').replace('+', '')}`;
   const gross = totalNet + totalComms;
   const impact = gross > 0 ? ((totalComms / gross) * 100).toFixed(1) : 0;
@@ -369,7 +377,7 @@ export function renderCommissionsView() {
       <td class="py-2.5 px-3">
         <span class="px-2 py-0.5 rounded-lg font-black ${getTickerBadgeClass(s.ticker)}">${s.ticker}</span>
       </td>
-      <td class="py-2.5 px-2 text-center font-bold text-slate-300">${s.contracts} ops</td>
+      <td class="py-2.5 px-2 text-center font-bold text-slate-300">${s.units} ${s.isStock ? 'acc' : 'ops'}</td>
       <td class="py-2.5 px-2 text-right font-bold text-rose-400">-${formatExactCurrency(s.commission).replace('-', '').replace('+', '')}</td>
       <td class="py-2.5 px-2 text-right font-bold text-slate-200">${formatExactCurrency(s.netPnl + s.commission)}</td>
       <td class="py-2.5 px-3 text-right font-black ${s.netPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatExactCurrency(s.netPnl)}</td>
@@ -460,15 +468,14 @@ export function renderCapitalView() {
           <span class="text-[10px] text-blue-400 font-semibold block">${f.date} &bull; ${f.note}</span>
         </div>
       </div>
-      <!-- BOTONES DE EDITAR Y ELIMINAR CAPITAL RESTAURADOS -->
       <div class="flex items-center space-x-2">
         <span class="font-black text-xs ${isDep ? 'text-emerald-400' : 'text-rose-400'}">
           ${isDep ? '+' : '-'}${formatExactCurrency(f.amount).replace('-', '').replace('+', '')}
         </span>
-        <button onclick="${editCall}" type="button" class="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800 cursor-pointer" title="Editar movimiento">
+        <button onclick="${editCall}" type="button" class="p-1.5 text-slate-400 hover:text-blue-400 rounded-lg hover:bg-slate-800 cursor-pointer" title="Editar">
           <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
         </button>
-        <button onclick="window.removeCapitalFlow(${f.id})" type="button" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 cursor-pointer" title="Eliminar movimiento">
+        <button onclick="window.removeCapitalFlow(${f.id})" type="button" class="p-1.5 text-slate-400 hover:text-rose-400 rounded-lg hover:bg-slate-800 cursor-pointer" title="Eliminar">
           <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
         </button>
       </div>

@@ -318,7 +318,7 @@ function setupEventListeners() {
       if (pYear) pYear.value = String(state.currentYear);
     }
     renderAccountSelector();
-    refreshActiveView();
+    refreshActiveView(); // Refresca calendarios, métricas y contadores al instante
   });
 
   // GESTIÓN DE CUENTAS

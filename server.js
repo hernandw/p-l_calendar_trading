@@ -83,9 +83,14 @@ app.post('/api/backup', async (req, res) => {
   try {
     const raw = await fs.readFile(DATA_FILE, 'utf-8');
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const backupPath = path.join(__dirname, 'data', `backup_${timestamp}.json`);
+    const backupFilename = `backup_${timestamp}.json`;
+    const backupPath = path.join(__dirname, 'data', backupFilename);
     await fs.writeFile(backupPath, raw, 'utf-8');
-    res.json({ status: 'ok', backupPath });
+    res.json({ 
+      status: 'ok', 
+      backupPath: `data/${backupFilename}`,
+      absolutePath: backupPath 
+    });
   } catch (error) {
     res.status(500).json({ error: 'Error al generar backup', details: error.message });
   }
