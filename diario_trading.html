@@ -4,202 +4,1881 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>P&amp;L Calendar &amp; Trading Journal Multicuenta</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- PapaParse CDN para CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif']
+          },
           colors: {
             darkCard: '#131B2E',
             darkBg: '#090D16',
             darkBorder: '#1E293B',
             darkSubtle: '#0F172A',
-            pnlGreen: { bg: '#EAF7EE', text: '#12834E', border: '#BFE7CB', darkBg: 'rgba(16, 185, 129, 0.12)', darkText: '#34D399' },
-            pnlRed: { bg: '#FDECEF', text: '#DE2F51', border: '#F8B6C3', darkBg: 'rgba(239, 68, 68, 0.12)', darkText: '#F87171' }
+            pnlGreen: {
+              bg: '#EAF7EE',
+              text: '#12834E',
+              border: '#BFE7CB',
+              sub: '#2CA368',
+              darkBg: 'rgba(16, 185, 129, 0.12)',
+              darkText: '#34D399',
+              darkBorder: 'rgba(16, 185, 129, 0.28)'
+            },
+            pnlRed: {
+              bg: '#FDECEF',
+              text: '#DE2F51',
+              border: '#F8B6C3',
+              sub: '#EA4C6D',
+              darkBg: 'rgba(239, 68, 68, 0.12)',
+              darkText: '#F87171',
+              darkBorder: 'rgba(239, 68, 68, 0.28)'
+            }
           }
         }
       }
     }
   </script>
+  <style>
+    body {
+      transition: background-color 0.25s ease, color 0.25s ease;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      opacity: 0.8;
+      filter: invert(0.4);
+    }
+    .dark input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.9);
+    }
+  </style>
 </head>
-<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-start bg-[#EBF1F6] dark:bg-darkBg text-slate-800 dark:text-slate-100 font-sans">
+<body class="min-h-screen py-8 px-4 flex flex-col items-center justify-start bg-[#EBF1F6] dark:bg-darkBg text-slate-800 dark:text-slate-100">
 
-  <!-- BARRA EXTERIOR -->
+  <!-- BARRA EXTERIOR SUPERIOR -->
   <div class="w-full max-w-xl flex items-center justify-between mb-3 px-1">
-    <div class="flex items-center space-x-1.5 text-slate-400 text-xs font-bold tracking-wider uppercase">
+    <div class="flex items-center space-x-1.5 text-slate-400 dark:text-slate-500 text-xs font-bold tracking-wider uppercase">
       <i data-lucide="trending-up" class="w-4 h-4 text-blue-500"></i>
       <span>Options &amp; Stocks Trading Journal</span>
     </div>
     
     <div class="flex items-center gap-1.5">
-      <button id="themeToggleBtn" type="button" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl shadow-sm"><i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i></button>
-      <button id="downloadBackupBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-semibold"><i data-lucide="download" class="w-3.5 h-3.5"></i><span>Backup</span></button>
-      <label class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800 rounded-xl text-xs font-semibold cursor-pointer"><i data-lucide="upload" class="w-3.5 h-3.5"></i><span>Restaurar</span><input type="file" id="restoreBackupInput" accept=".json" class="hidden"></label>
-      <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-xl text-xs font-semibold"><i data-lucide="file-up" class="w-3.5 h-3.5"></i><span>CSV</span></button>
+      <!-- Conmutador Dark/Light -->
+      <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95">
+        <i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i>
+      </button>
+
+      <!-- Botón Descargar Backup -->
+      <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad completa (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
+        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+        <span>Backup</span>
+      </button>
+
+      <!-- Botón Restaurar Backup -->
+      <label title="Restaurar copia de seguridad desde un archivo JSON" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
+        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+        <span>Restaurar</span>
+        <input type="file" id="restoreBackupInput" accept=".json" class="hidden">
+      </label>
+
+      <!-- Botón Importar CSV -->
+      <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
+        <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
+        <span>CSV</span>
+      </button>
+      
+      <!-- Botón Vaciar Cuenta Activa -->
+      <button id="clearAllBtn" type="button" title="Vaciar datos de la cuenta activa" class="p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60 rounded-xl transition active:scale-95">
+        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+      </button>
     </div>
   </div>
 
-  <!-- TARJETA PRINCIPAL -->
-  <main class="w-full max-w-xl bg-white dark:bg-darkCard rounded-3xl shadow-xl border border-slate-100 dark:border-darkBorder p-6 md:p-8 flex flex-col">
+  <!-- TARJETA PRINCIPAL DEL CALENDARIO -->
+  <main class="w-full max-w-xl bg-white dark:bg-darkCard rounded-3xl shadow-xl shadow-slate-200/60 dark:shadow-black/40 border border-slate-100 dark:border-darkBorder p-6 md:p-8 flex flex-col transition-all">
+    
+    <!-- BARRA DE SELECCIÓN Y GESTIÓN DE CUENTAS -->
     <div class="mb-4 pb-3.5 border-b border-slate-100 dark:border-darkBorder">
       <div class="flex items-center justify-between gap-2">
         <div class="flex-1">
-          <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Cuenta Activa</label>
-          <select id="accountSelect" class="w-full text-xs font-bold bg-slate-50 dark:bg-darkSubtle px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder"></select>
+          <label class="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+            <i data-lucide="credit-card" class="w-3 h-3 text-blue-500"></i>
+            <span>Cuenta Activa</span>
+          </label>
+          <div class="relative">
+            <select id="accountSelect" class="w-full appearance-none text-xs font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-darkSubtle hover:bg-slate-100 dark:hover:bg-slate-800/60 px-3 py-2 pr-8 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none cursor-pointer">
+              <!-- Cuentas -->
+            </select>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          </div>
+        </div>
+
+        <div class="flex items-end gap-1.5 pt-4">
+          <button id="openNewAccountBtn" type="button" class="px-2.5 py-2 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition shadow-sm active:scale-95 flex items-center gap-1" title="Crear nueva cuenta">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Nueva</span>
+          </button>
+          <button id="editActiveAccountBtn" type="button" class="p-2 border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl transition" title="Editar detalles de cuenta">
+            <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+          </button>
         </div>
       </div>
-      <div class="flex items-center gap-2 mt-2 text-[11px] font-semibold text-slate-500">
-        <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900" id="badgeBrokerName">Interactive Brokers</span>
-        <span class="px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-900" id="badgeAccountType">Margin</span>
+
+      <div class="flex items-center gap-2 mt-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+        <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-900/40" id="badgeBrokerName">Interactive Brokers</span>
+        <span class="px-2 py-0.5 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200/60 dark:border-purple-900/40" id="badgeAccountType">Margin</span>
         <span class="font-mono text-[10px]" id="badgeAccountNumber">Nro: U24279702</span>
       </div>
     </div>
 
+    <!-- Header Principal -->
     <header class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-darkBorder">
       <div class="flex items-center space-x-2">
-        <h1 class="text-2xl font-black text-slate-900 dark:text-white">P&amp;L Calendar</h1>
-        <button id="helpBtn" class="text-slate-400 hover:text-slate-600 p-0.5"><i data-lucide="info" class="w-4 h-4"></i></button>
+        <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">P&amp;L Calendar</h1>
+        <button id="helpBtn" type="button" title="Información" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition p-0.5 rounded-full">
+          <i data-lucide="info" class="w-4 h-4"></i>
+        </button>
       </div>
-      <span id="totalTradesPill" class="text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-darkSubtle px-2.5 py-1 rounded-full">0 trades</span>
+
+      <div class="flex items-center gap-2">
+        <span id="totalTradesPill" class="text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-darkSubtle border border-slate-200/60 dark:border-darkBorder px-2.5 py-1 rounded-full">
+          0 trades en total
+        </span>
+      </div>
     </header>
 
-    <!-- Pestañas -->
+    <!-- Controles de Periodo y Pestañas -->
     <div class="flex flex-wrap items-center justify-between gap-2 mt-4 mb-4">
-      <div class="bg-slate-100 dark:bg-darkSubtle p-0.5 rounded-xl flex items-center text-xs font-semibold border border-slate-200 dark:border-darkBorder w-full justify-between">
-        <button id="viewMonthBtn" class="px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1"><i data-lucide="calendar-days" class="w-3.5 h-3.5"></i><span>Month</span></button>
-        <button id="viewYearBtn" class="px-2.5 py-1.5 rounded-lg font-semibold flex items-center gap-1"><i data-lucide="calendar-range" class="w-3.5 h-3.5"></i><span>Year</span></button>
-        <button id="viewTickersBtn" class="px-2.5 py-1.5 rounded-lg font-semibold flex items-center gap-1"><i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i><span>Tickers</span></button>
-        <button id="viewCommissionsBtn" class="px-2.5 py-1.5 rounded-lg font-semibold flex items-center gap-1"><i data-lucide="receipt" class="w-3.5 h-3.5"></i><span>Comisiones</span></button>
-        <button id="viewCapitalBtn" class="px-2.5 py-1.5 rounded-lg font-semibold flex items-center gap-1"><i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-500"></i><span>Capital</span></button>
+      <div class="flex items-center space-x-2">
+        <div class="relative" id="yearSelectorContainer">
+          <select id="periodYearSelect" class="appearance-none text-base font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-darkSubtle hover:bg-slate-100 dark:hover:bg-slate-800/60 px-3.5 py-1.5 pr-8 rounded-xl border border-slate-200/80 dark:border-darkBorder focus:outline-none cursor-pointer">
+            <option value="2027">2027</option>
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+          </select>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+        </div>
+
+        <div class="flex items-center bg-slate-100/80 dark:bg-darkSubtle p-0.5 rounded-xl border border-slate-200/60 dark:border-darkBorder" id="monthNavArrows">
+          <button id="prevPeriodBtn" type="button" class="p-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+          </button>
+          <button id="nextPeriodBtn" type="button" class="p-1 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition">
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pestañas con ICONOS CENTRADOS -->
+      <div class="bg-slate-100 dark:bg-darkSubtle p-0.5 rounded-xl flex items-center text-xs font-semibold text-slate-600 dark:text-slate-400 border border-slate-200/60 dark:border-darkBorder overflow-x-auto max-w-full">
+        <button id="viewMonthBtn" type="button" class="px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5">
+          <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i>
+          <span>Month</span>
+        </button>
+        <button id="viewYearBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5">
+          <i data-lucide="calendar-range" class="w-3.5 h-3.5"></i>
+          <span>Year</span>
+        </button>
+        <button id="viewTickersBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5">
+          <i data-lucide="bar-chart-2" class="w-3.5 h-3.5"></i>
+          <span>Tickers</span>
+        </button>
+        <button id="viewCommissionsBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5">
+          <i data-lucide="receipt" class="w-3.5 h-3.5"></i>
+          <span>Comisiones</span>
+        </button>
+        <button id="viewCapitalBtn" type="button" class="px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5">
+          <i data-lucide="wallet" class="w-3.5 h-3.5 text-emerald-500"></i>
+          <span>Capital</span>
+        </button>
       </div>
     </div>
 
-    <div class="flex items-center justify-between text-xs font-bold text-slate-400 uppercase tracking-wider pb-2">
+    <!-- Barra de Subtítulo -->
+    <div class="flex items-center justify-between text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase pb-2">
       <span id="sectionSubTitle">Mes Actual</span>
+      <span id="sectionHint" class="text-[11px] font-normal text-slate-400 dark:text-slate-500 lowercase first-letter:uppercase">Haz clic en un día para registrar o modificar trades</span>
     </div>
 
     <!-- 1. VISTA MENSUAL -->
     <section id="monthView" class="w-full">
-      <div class="grid grid-cols-5 text-center text-xs font-bold text-slate-400 py-2 uppercase bg-slate-50/70 dark:bg-darkSubtle rounded-xl mb-2 border border-slate-100 dark:border-darkBorder">
+      <div class="grid grid-cols-5 text-center text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wider py-2 uppercase bg-slate-50/70 dark:bg-darkSubtle rounded-xl mb-2 border border-slate-100 dark:border-darkBorder">
         <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div>
       </div>
       <div id="calendarGrid" class="grid grid-cols-5 gap-2"></div>
     </section>
 
-    <!-- 2. VISTA YEAR -->
-    <section id="yearView" class="hidden w-full"><div id="yearMonthsGrid" class="grid grid-cols-3 gap-3 py-1"></div></section>
+    <!-- 2. VISTA ANUAL -->
+    <section id="yearView" class="hidden w-full">
+      <div id="yearMonthsGrid" class="grid grid-cols-3 gap-3 py-1"></div>
+    </section>
 
     <!-- 3. VISTA TICKERS -->
-    <section id="tickersView" class="hidden w-full"><div id="tickersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto"></div></section>
+    <section id="tickersView" class="hidden w-full space-y-3">
+      <div class="flex items-center justify-between gap-2 pb-1">
+        <div class="relative flex-1">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="tickerSearchInput" placeholder="Buscar por ticker (PXLW, SMX, SPY...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50/60 dark:bg-darkSubtle text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <select id="tickerSortSelect" class="text-xs font-semibold px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
+          <option value="pnl-desc">Mayor P&amp;L</option>
+          <option value="pnl-asc">Menor P&amp;L</option>
+          <option value="trades-desc">Más Trades</option>
+          <option value="winrate-desc">Mayor Win Rate</option>
+        </select>
+      </div>
+      <div id="tickersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto custom-scrollbar pr-1"></div>
+    </section>
 
     <!-- 4. VISTA COMISIONES -->
     <section id="commissionsView" class="hidden w-full space-y-3">
+      <div class="p-3 bg-slate-50 dark:bg-darkSubtle rounded-2xl border border-slate-200/80 dark:border-darkBorder flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="receipt" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
+          <span class="font-bold text-slate-700 dark:text-slate-300">Comisión estimada por contrato/trade (Opciones):</span>
+        </div>
+        <div class="flex items-center space-x-1.5">
+          <span class="text-xs font-bold text-slate-400">$</span>
+          <input type="number" id="feePerContractInput" step="0.05" min="0" value="1.30" class="w-16 px-2 py-1 text-xs font-bold rounded-lg border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-800 text-slate-800 dark:text-white text-center focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+      </div>
+
       <div class="grid grid-cols-3 gap-2 text-center">
         <div class="p-2.5 bg-slate-50 dark:bg-darkSubtle rounded-xl border border-slate-100 dark:border-darkBorder">
-          <span class="text-[10px] font-bold text-slate-400 uppercase block">Total Operaciones</span>
-          <span id="commTotalContracts" class="text-sm font-extrabold">0 ops</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Operaciones</span>
+          <span id="commTotalContracts" class="text-sm font-extrabold text-slate-800 dark:text-slate-100">0 ops</span>
         </div>
         <div class="p-2.5 bg-slate-50 dark:bg-darkSubtle rounded-xl border border-slate-100 dark:border-darkBorder">
-          <span class="text-[10px] font-bold text-slate-400 uppercase block">Total Comisiones</span>
-          <span id="commTotalFees" class="text-sm font-extrabold text-rose-500">-$0.00</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Comisiones</span>
+          <span id="commTotalFees" class="text-sm font-extrabold text-rose-600 dark:text-rose-400">-$0.00</span>
         </div>
         <div class="p-2.5 bg-slate-50 dark:bg-darkSubtle rounded-xl border border-slate-100 dark:border-darkBorder">
-          <span class="text-[10px] font-bold text-slate-400 uppercase block">Impacto en P&amp;L</span>
-          <span id="commTotalImpact" class="text-sm font-extrabold">0%</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Impacto en P&amp;L</span>
+          <span id="commTotalImpact" class="text-sm font-extrabold text-slate-700 dark:text-slate-200">0%</span>
         </div>
       </div>
-      <div class="rounded-2xl border border-slate-200 dark:border-darkBorder overflow-hidden bg-white dark:bg-darkCard">
-        <table class="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr class="bg-slate-50 dark:bg-darkSubtle border-b border-slate-200 dark:border-darkBorder text-[10px] font-bold text-slate-400 uppercase">
-              <th class="py-2 px-3">Ticker</th><th class="py-2 text-center">Ops</th><th class="py-2 text-right">Comisión Real</th><th class="py-2 text-right">P&amp;L Bruto</th><th class="py-2 px-3 text-right">P&amp;L Neto</th>
-            </tr>
-          </thead>
-          <tbody id="commissionsTableBody"></tbody>
-        </table>
+
+      <div class="max-h-[380px] overflow-y-auto custom-scrollbar pr-1">
+        <div class="rounded-2xl border border-slate-200/80 dark:border-darkBorder overflow-hidden bg-white dark:bg-darkCard">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-50 dark:bg-darkSubtle border-b border-slate-200/80 dark:border-darkBorder text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <th class="py-2.5 px-3">Ticker</th>
+                <th class="py-2.5 px-2 text-center">Operaciones</th>
+                <th class="py-2.5 px-2 text-right">Comisión</th>
+                <th class="py-2.5 px-2 text-right">P&amp;L Bruto</th>
+                <th class="py-2.5 px-3 text-right">P&amp;L Neto</th>
+              </tr>
+            </thead>
+            <tbody id="commissionsTableBody" class="divide-y divide-slate-100 dark:divide-darkBorder font-medium"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
-    <!-- 5. VISTA CAPITAL -->
+    <!-- 5. PESTAÑA CAPITAL REAL -->
     <section id="capitalView" class="hidden w-full space-y-4">
-      <div class="p-5 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-3xl border border-slate-700/60 shadow-lg">
-        <div class="flex justify-between text-xs text-slate-300 font-bold uppercase">
-          <span>Saldo Real Actual en Broker</span>
-          <span id="accountRoiBadge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300">0.0% ROI</span>
+      <div class="p-5 bg-gradient-to-br from-slate-900 to-slate-800 dark:from-darkSubtle dark:to-darkCard text-white rounded-3xl border border-slate-700/60 shadow-lg flex flex-col justify-between">
+        <div class="flex items-center justify-between text-xs text-slate-300 font-bold uppercase tracking-wider">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="wallet" class="w-4 h-4 text-emerald-400"></i>
+            <span>Saldo Real Actual en Broker</span>
+          </span>
+          <span id="accountRoiBadge" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            0.0% ROI
+          </span>
         </div>
-        <div id="accountCurrentBalance" class="text-3xl font-black my-2">$0.00</div>
-        <div class="text-[11px] text-slate-400 flex gap-2">
-          <span>Depósitos: <strong id="accountTotalDeposits" class="text-emerald-400">$0.00</strong></span>
-          <span>&bull;</span>
-          <span>Retiros: <strong id="accountTotalWithdrawals" class="text-rose-400">$0.00</strong></span>
+
+        <div class="my-3">
+          <div id="accountCurrentBalance" class="text-3xl font-black tracking-tight text-white">$0.00</div>
+          <div class="text-[11px] text-slate-400 font-medium mt-1 flex flex-wrap items-center gap-2">
+            <span>Depósitos: <strong id="accountTotalDeposits" class="text-emerald-400 font-bold">$0.00</strong></span>
+            <span>&bull;</span>
+            <span>Retiros/Salidas: <strong id="accountTotalWithdrawals" class="text-rose-400 font-bold">$0.00</strong></span>
+            <span>&bull;</span>
+            <span>Capital Neto: <strong id="accountNetCapitalInflow" class="text-slate-200 font-bold">$0.00</strong></span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2 pt-3 border-t border-slate-700/60 text-xs">
+          <div>
+            <span class="text-[10px] text-slate-400 block font-semibold uppercase">P&amp;L Neto de Trading:</span>
+            <span id="accountNetOperatingPnl" class="font-extrabold text-sm text-emerald-400">+$0.00</span>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-slate-400 block font-semibold uppercase">Pico Histórico (Peak):</span>
+            <span id="accountPeakBalance" class="font-extrabold text-sm text-slate-200">$0.00</span>
+          </div>
         </div>
       </div>
-      <div id="capitalFlowsList" class="space-y-1.5 max-h-[260px] overflow-y-auto"></div>
+
+      <div id="transferButtonContainer" class="hidden">
+        <button id="openTransferModalBtn" type="button" class="w-full py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/60 rounded-2xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm active:scale-95">
+          <i data-lucide="arrow-left-right" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+          <span>Transferir Capital entre Cuentas</span>
+        </button>
+      </div>
+
+      <form id="capitalFlowForm" class="p-3.5 bg-slate-50 dark:bg-darkSubtle rounded-2xl border border-slate-200/80 dark:border-darkBorder space-y-2.5 text-xs transition duration-200">
+        <div class="flex items-center justify-between font-bold text-slate-700 dark:text-slate-200">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5 text-blue-500"></i>
+            <span id="capitalFormActionLabel">Registrar Movimiento Externo (Banco / Fondeo)</span>
+          </span>
+          <button type="button" id="cancelCapitalEditBtn" class="hidden text-xs text-rose-500 hover:text-rose-600 font-bold flex items-center gap-0.5">
+            <i data-lucide="x" class="w-3 h-3"></i> Cancelar edición
+          </button>
+        </div>
+
+        <input type="hidden" id="capitalEditId" value="">
+
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Tipo</label>
+            <select id="capitalFlowType" class="w-full px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-900 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <option value="deposit">Depósito Bancario (+)</option>
+              <option value="withdrawal">Retiro a Banco (-)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5 flex items-center justify-between">
+              <span>Fecha</span>
+              <span class="text-[9px] text-blue-500 cursor-pointer font-normal flex items-center gap-0.5" onclick="document.getElementById('capitalFlowDate').showPicker?.() || document.getElementById('capitalFlowDate').focus()">
+                <i data-lucide="calendar" class="w-2.5 h-2.5"></i> Calendario
+              </span>
+            </label>
+            <div class="relative flex items-center">
+              <input type="date" id="capitalFlowDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-900 text-slate-800 dark:text-white font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer">
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-0.5">
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Monto ($)</label>
+              <span id="flowAvailableHint" class="text-[9px] font-semibold text-slate-400"></span>
+            </div>
+            <input type="number" step="0.01" min="0.01" id="capitalFlowAmount" placeholder="1000.00" required class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-900 text-slate-800 dark:text-white font-bold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <span id="flowAmountErrorMsg" class="hidden text-[10px] text-rose-500 font-bold block mt-0.5"></span>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Concepto</label>
+            <input type="text" id="capitalFlowNote" placeholder="Aporte bancario / ACH" class="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-900 text-slate-800 dark:text-white font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          </div>
+        </div>
+
+        <button type="submit" id="capitalSubmitBtn" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5">
+          <i data-lucide="plus" id="capitalSubmitIcon" class="w-3.5 h-3.5"></i>
+          <span id="capitalSubmitText">Agregar Movimiento Externo</span>
+        </button>
+      </form>
+
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          <span>Movimientos Registrados (Depósitos, Retiros y Transferencias)</span>
+          <span id="capitalCountLabel" class="text-[10px] font-normal lowercase">0 movimientos</span>
+        </div>
+        <div id="capitalFlowsList" class="space-y-1.5 max-h-[260px] overflow-y-auto custom-scrollbar pr-1"></div>
+      </div>
     </section>
 
-    <!-- MÉTRICAS INFERIORES -->
+    <!-- TARJETAS DE MÉTRICAS -->
     <footer class="mt-6 pt-5 border-t border-slate-100 dark:border-darkBorder grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder">
-        <div class="text-[10px] font-bold uppercase text-slate-400">Ganancia Neta</div>
-        <div id="metricTotalVal" class="text-base font-extrabold mt-0.5">$0.00</div>
+      <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder flex flex-col justify-between">
+        <div id="metricTotalTitle" class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ganancia Neta</div>
+        <div id="metricTotalVal" class="text-base font-extrabold text-slate-800 dark:text-white mt-0.5">$0.00</div>
       </div>
-      <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder">
-        <div class="text-[10px] font-bold uppercase text-slate-400">Relación G/P</div>
-        <div id="metricSchwabRatio" class="text-base font-extrabold text-emerald-500 mt-0.5">0.00%</div>
+
+      <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder flex flex-col justify-between">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Relación G/P</div>
+        <div id="metricSchwabRatio" class="text-base font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5">0.00%</div>
       </div>
-      <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder">
-        <div class="text-[10px] font-bold uppercase text-slate-400">Totales G / P</div>
-        <div class="text-xs font-bold mt-0.5"><span id="metricGrossGains" class="text-emerald-500">+$0.00</span><br><span id="metricGrossLosses" class="text-rose-500">-$0.00</span></div>
+
+      <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder flex flex-col justify-between">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Totales G / P</div>
+        <div class="text-xs font-bold mt-0.5 leading-snug">
+          <span id="metricGrossGains" class="text-pnlGreen-text dark:text-pnlGreen-darkText">+$0.00</span><br>
+          <span id="metricGrossLosses" class="text-pnlRed-text dark:text-pnlRed-darkText">-$0.00</span>
+        </div>
       </div>
-      <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder">
-        <div class="text-[10px] font-bold uppercase text-slate-400">Acierto Trades</div>
-        <div id="metricTradesWinRate" class="text-xs font-bold mt-0.5"><span id="metricTradesPct" class="text-sm font-extrabold">0%</span> <span id="metricTradesCount" class="text-[10px] text-slate-400 block">(0/0)</span></div>
+
+      <div class="bg-slate-50 dark:bg-darkSubtle p-3 rounded-2xl border border-slate-100 dark:border-darkBorder flex flex-col justify-between">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Acierto Trades</div>
+        <div id="metricTradesWinRate" class="text-xs font-bold text-slate-700 dark:text-slate-200 mt-0.5">
+          <span id="metricTradesPct" class="text-sm font-extrabold">0%</span>
+          <span id="metricTradesCount" class="text-[10px] text-slate-400 block font-semibold">(0 / 0)</span>
+        </div>
       </div>
     </footer>
   </main>
 
-  <!-- MODALES -->
+  <!-- MODAL: DETALLE DEL DÍA -->
   <div id="dayModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
-      <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-darkBorder">
-        <h2 id="modalDateTitle" class="text-base font-bold">Detalle del Día</h2>
-        <button id="closeModalBtn"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+    <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder max-h-[90vh] flex flex-col transform transition-all">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
+        <div>
+          <h2 id="modalDateTitle" class="text-lg font-bold text-slate-900 dark:text-white">Operaciones del Día</h2>
+          <div class="flex items-center gap-3 mt-0.5">
+            <span id="modalDailyTotal" class="text-sm font-bold text-slate-500 dark:text-slate-300">P&amp;L Neto: $0.00</span>
+            <span id="modalDailyInvested" class="text-xs font-semibold text-slate-400 dark:text-slate-500">Inversión: $0.00</span>
+          </div>
+        </div>
+        <button id="closeModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
       </div>
-      <div id="tradesListContainer" class="mt-4 space-y-2 max-h-[300px] overflow-y-auto"></div>
+
+      <form id="tradeForm" class="mt-4 bg-slate-50/80 dark:bg-darkSubtle p-3.5 rounded-2xl border border-slate-200/70 dark:border-darkBorder space-y-3 transition">
+        <div class="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+          <span class="flex items-center gap-1.5">
+            <i data-lucide="plus-circle" id="tradeFormIcon" class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400"></i>
+            <span id="tradeFormTitle">Nuevo Trade Manual</span>
+          </span>
+          <button type="button" id="cancelTradeEditBtn" class="hidden text-xs text-rose-500 hover:text-rose-600 lowercase font-bold flex items-center gap-0.5">
+            <i data-lucide="x" class="w-3 h-3"></i> cancelar edición
+          </button>
+        </div>
+
+        <input type="hidden" id="editTradeIndex" value="">
+
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Ticker</label>
+            <input type="text" id="tradeTicker" placeholder="PXLW / SPY" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Cantidad</label>
+            <input type="number" min="1" id="tradeQty" value="10" required class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Strike (o -)</label>
+            <input type="text" id="tradeStrike" placeholder="340.00" value="-" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Tipo</label>
+            <select id="tradeType" class="w-full text-xs font-semibold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+              <option value="CALL">CALL</option>
+              <option value="PUT">PUT</option>
+              <option value="STK" selected>STK (Acciones)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">DTE / Plazo</label>
+            <input type="text" id="tradeDteInput" placeholder="0DTE / -" value="-" class="w-full text-xs font-bold px-2 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white uppercase">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Precio Compra ($)</label>
+            <input type="number" step="0.01" min="0" id="tradeUnitCost" placeholder="6.22" required class="w-full text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-0.5">Precio Venta ($)</label>
+            <input type="number" step="0.01" min="0" id="tradeUnitProceeds" placeholder="6.80" required class="w-full text-xs font-bold px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+          </div>
+          <div class="flex items-end">
+            <button type="submit" id="tradeSubmitBtn" class="w-full py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1">
+              <i data-lucide="plus" id="tradeSubmitIcon" class="w-3.5 h-3.5"></i>
+              <span id="tradeSubmitText">Guardar Trade</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
+        <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Detalle de Operaciones</div>
+        <div id="tradesListContainer" class="space-y-2"></div>
+      </div>
     </div>
   </div>
 
-  <div id="csvModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col text-xs">
-      <div class="flex justify-between items-center pb-3 border-b border-slate-100 dark:border-darkBorder">
-        <h2 class="text-base font-bold">Importar Archivo CSV</h2>
-        <button id="closeCsvModalBtn"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+  <!-- MODAL: TRANSFERENCIA ENTRE CUENTAS -->
+  <div id="transferModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
+        <div class="flex items-center gap-2">
+          <i data-lucide="arrow-left-right" class="w-5 h-5 text-emerald-500"></i>
+          <h2 id="transferModalTitle" class="text-base font-black text-slate-900 dark:text-white">Transferencia de Fondos entre Brokers</h2>
+        </div>
+        <button id="closeTransferModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
       </div>
-      <div class="mt-4 space-y-3">
-        <label class="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50 dark:bg-darkSubtle">
-          <i data-lucide="upload" class="w-8 h-8 text-slate-400 mb-2"></i>
-          <span>Selecciona o arrastra tu archivo CSV</span>
+
+      <form id="transferForm" class="mt-4 space-y-3 text-xs">
+        <input type="hidden" id="editTransferId" value="">
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block font-bold text-slate-600 dark:text-slate-300">Cuenta Origen (Sale)</label>
+            </div>
+            <select id="transferFromAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <!-- Cuentas -->
+            </select>
+            <span id="transferFromAvailableLabel" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block mt-1">Disponible: $0.00</span>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Cuenta Destino (Entra)</label>
+            <select id="transferToAccount" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <!-- Cuentas -->
+            </select>
+            <span id="transferToCurrentLabel" class="text-[10px] text-slate-400 font-medium block mt-1">Saldo actual: $0.00</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1 flex items-center justify-between">
+              <span>Fecha</span>
+              <span class="text-[9px] text-blue-500 cursor-pointer font-normal flex items-center gap-0.5" onclick="document.getElementById('transferDate').showPicker?.() || document.getElementById('transferDate').focus()">
+                <i data-lucide="calendar" class="w-2.5 h-2.5"></i> Elegir
+              </span>
+            </label>
+            <input type="date" id="transferDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block font-bold text-slate-600 dark:text-slate-300">Monto a Transferir ($)</label>
+            </div>
+            <input type="number" step="0.01" min="0.01" id="transferAmount" placeholder="500.00" required class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <span id="transferAmountErrorMsg" class="hidden text-[10px] text-rose-500 font-bold block mt-1"></span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nota / Concepto</label>
+          <input type="text" id="transferNote" placeholder="Transferencia de capital entre brokers" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-[11px] text-blue-700 dark:text-blue-300">
+          <i data-lucide="info" class="w-3.5 h-3.5 inline mr-1 -mt-0.5"></i>
+          Este movimiento se registrará como <strong>Transferencia de Fondos</strong> entre brokers (no como un retiro externo a banco). No se permite transferir más del saldo disponible en la cuenta de origen.
+        </div>
+
+        <div class="flex items-center justify-between pt-2 gap-2">
+          <button type="button" id="deleteTransferBtn" class="hidden px-3 py-2 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold rounded-xl hover:bg-rose-100 transition">
+            Eliminar Transferencia
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" id="cancelTransferBtn" class="px-3.5 py-2 border border-slate-200 dark:border-darkBorder rounded-xl text-slate-600 dark:text-slate-400">Cancelar</button>
+            <button type="submit" id="submitTransferBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition flex items-center gap-1.5">
+              <i data-lucide="check" class="w-3.5 h-3.5"></i>
+              <span id="submitTransferText">Confirmar Transferencia</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: GESTOR Y CREADOR DE CUENTAS -->
+  <div id="accountModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
+        <div class="flex items-center gap-2">
+          <i data-lucide="building-2" class="w-5 h-5 text-blue-500"></i>
+          <h2 id="accountModalTitle" class="text-base font-black text-slate-900 dark:text-white">Nueva Cuenta de Broker</h2>
+        </div>
+        <button id="closeAccountModalBtn" type="button" class="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <form id="accountForm" class="mt-4 space-y-3 text-xs">
+        <input type="hidden" id="editAccountId" value="">
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Broker / Plataforma</label>
+          <input type="text" id="accBrokerInput" placeholder="Ej. Interactive Brokers, Charles Schwab, Webull" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Nro. o Identificador de Cuenta</label>
+          <input type="text" id="accNumberInput" placeholder="Ej. U24279702 / XXXX7484" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Tipo de Cuenta</label>
+          <select id="accTypeInput" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="Margin">Margin (Apalancada / Opciones)</option>
+            <option value="Cash">Cash (Efectivo)</option>
+            <option value="IRA / Retiro">IRA / Retiro</option>
+            <option value="Fondeo">Cuenta de Fondeo</option>
+          </select>
+        </div>
+
+        <div class="flex items-center justify-between pt-3 gap-2">
+          <button type="button" id="deleteAccountBtn" class="hidden px-3 py-2 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 font-bold rounded-xl hover:bg-rose-100 transition">
+            Eliminar
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" id="cancelAccountBtn" class="px-3 py-2 border border-slate-200 dark:border-darkBorder rounded-xl text-slate-600 dark:text-slate-400">Cancelar</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition">Guardar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETALLE DE TICKER -->
+  <div id="tickerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
+        <div>
+          <h2 id="tickerModalTitle" class="text-lg font-black text-slate-900 dark:text-white">Historial Ticker</h2>
+          <p id="tickerModalSub" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5"></p>
+        </div>
+        <button id="closeTickerModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="mt-4 flex-1 overflow-y-auto custom-scrollbar pr-1">
+        <div id="tickerModalList" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INFORMACIÓN -->
+  <div id="infoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col items-center text-center">
+      <div class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center mb-4 text-blue-600 dark:text-blue-400">
+        <i data-lucide="layers" class="w-7 h-7 stroke-[1.8]"></i>
+      </div>
+      <h3 class="text-lg font-black text-slate-900 dark:text-white tracking-tight mb-4">Soporte Multicuenta &amp; Capital</h3>
+      <div class="text-left text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed mb-6">
+        <div>
+          <span class="font-bold text-slate-800 dark:text-white">&bull; Cuentas Separadas &amp; Transferencias:</span>
+          <span class="text-slate-500 dark:text-slate-400"> Administra cuentas independientes (Charles Schwab, Interactive Brokers, Webull). Si tienes 2 o más cuentas, puedes transferir saldo entre ellas con validación estricta de fondos.</span>
+        </div>
+        <div>
+          <span class="font-bold text-slate-800 dark:text-white">&bull; Control de Sobregiros:</span>
+          <span class="text-slate-500 dark:text-slate-400"> El sistema bloquea transferencias o retiros que excedan el saldo disponible en tu cuenta.</span>
+        </div>
+        <div>
+          <span class="font-bold text-slate-800 dark:text-white">&bull; Importador Inteligente CSV:</span>
+          <span class="text-slate-500 dark:text-slate-400"> Evita duplicar operaciones ya existentes y permite procesar tanto reportes de operaciones como de resumen de efectivo de IBKR.</span>
+        </div>
+      </div>
+      <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500 text-white rounded-2xl text-xs font-bold tracking-wide transition active:scale-95 shadow-md shadow-slate-900/10">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORTADOR CSV FLEXIBLE (SCHWAB & IBKR) -->
+  <div id="csvModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 dark:border-darkBorder flex flex-col">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-darkBorder">
+        <div class="flex items-center gap-2">
+          <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-white">Importar Archivo CSV</h2>
+        </div>
+        <button id="closeCsvModalBtn" type="button" class="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4 text-xs text-slate-600 dark:text-slate-300">
+        <p>Sube tu reporte de <strong>Charles Schwab</strong> o <strong>Interactive Brokers</strong>. Se cargará en la cuenta: <strong id="csvTargetAccountLabel" class="text-blue-500">...</strong></p>
+        
+        <label id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-slate-50/60 dark:bg-darkSubtle hover:bg-blue-50/40 dark:hover:bg-slate-900/40 transition">
+          <i data-lucide="upload" class="w-8 h-8 text-slate-400 dark:text-slate-500 mb-2"></i>
+          <span class="font-semibold text-slate-700 dark:text-slate-200">Arrastra tu archivo CSV aquí</span>
+          <span class="text-[11px] text-slate-400 mt-1">o haz clic para examinar</span>
           <input type="file" id="csvFileInput" accept=".csv" class="hidden">
         </label>
-        <div id="csvPreviewBox" class="hidden p-3 bg-slate-50 dark:bg-darkSubtle rounded-xl border border-slate-200 dark:border-darkBorder">
-          <div id="csvFileName" class="font-bold"></div>
-          <div id="csvTradesFound" class="text-blue-500 font-bold"></div>
+
+        <div id="csvPreviewBox" class="hidden bg-slate-50 dark:bg-darkSubtle p-3 rounded-xl border border-slate-200 dark:border-darkBorder">
+          <div class="font-bold text-slate-800 dark:text-white flex items-center justify-between">
+            <span id="csvFileName">archivo.csv</span>
+            <span id="csvTradesFound" class="text-blue-600 dark:text-blue-400 font-bold">0 registros</span>
+          </div>
+          <div id="csvSummaryText" class="text-[11px] text-slate-500 dark:text-slate-400 mt-1"></div>
         </div>
-        <div id="csvModeSelection" class="hidden space-y-1">
-          <label class="flex items-center gap-2"><input type="radio" name="csvImportMode" value="merge" checked><span>Combinar (Solo nuevos)</span></label>
-          <label class="flex items-center gap-2"><input type="radio" name="csvImportMode" value="replace"><span>Reemplazar todo</span></label>
+
+        <div id="csvModeSelection" class="hidden bg-slate-50/80 dark:bg-darkSubtle p-3 rounded-xl border border-slate-200 dark:border-darkBorder space-y-2">
+          <div class="font-bold text-slate-700 dark:text-slate-200 text-[11px]">¿Cómo deseas procesar los datos en esta cuenta?</div>
+          <div class="space-y-1.5">
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
+              <input type="radio" name="csvImportMode" value="merge" checked class="text-blue-600 focus:ring-blue-500">
+              <span><strong>Combinar (Solo nuevos)</strong> - Omite operaciones ya registradas.</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
+              <input type="radio" name="csvImportMode" value="replace_range" class="text-amber-600 focus:ring-amber-500">
+              <span class="text-amber-700 dark:text-amber-300"><strong>Sustituir período del archivo</strong> - Reemplaza los días de este CSV y conserva los demás.</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
+              <input type="radio" name="csvImportMode" value="replace" class="text-rose-600 focus:ring-rose-500">
+              <span class="text-rose-600 dark:text-rose-400"><strong>Reemplazar cuenta completa</strong> - Borra todo el historial previo de esta cuenta.</span>
+            </label>
+          </div>
         </div>
-        <button id="processCsvBtn" disabled class="w-full py-2 bg-blue-600 disabled:opacity-40 text-white font-bold rounded-xl">Procesar Datos</button>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button id="cancelCsvBtn" type="button" class="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-darkBorder text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Cancelar</button>
+          <button id="processCsvBtn" type="button" disabled class="px-4 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-semibold shadow-sm transition">Cargar a la Cuenta</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <script type="module">
-    import { initApp } from './app.js';
-    initApp();
+  <!-- SCRIPT DEFINITIVO AUTÓNOMO (SIN MÓDULOS EXTERNOS) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_V21';
+      const ACTIVE_ACCOUNT_KEY = 'TRADING_ACTIVE_ACCOUNT_ID_V21';
+      const THEME_KEY = 'TRADING_PNL_THEME_MODE_V21';
+
+      let isDarkMode = localStorage.getItem(THEME_KEY) === 'dark';
+      function applyTheme() {
+        const htmlEl = document.documentElement;
+        const themeIcon = document.getElementById('themeIcon');
+        if (isDarkMode) {
+          htmlEl.classList.add('dark');
+          if (themeIcon) themeIcon.setAttribute('data-lucide', 'sun');
+        } else {
+          htmlEl.classList.remove('dark');
+          if (themeIcon) themeIcon.setAttribute('data-lucide', 'moon');
+        }
+        safeIcons();
+      }
+
+      function safeIcons() {
+        try {
+          if (window.lucide && typeof lucide.createIcons === 'function') {
+            lucide.createIcons();
+          }
+        } catch (e) {
+          console.warn('Lucide:', e);
+        }
+      }
+
+      document.getElementById('themeToggleBtn')?.addEventListener('click', () => {
+        isDarkMode = !isDarkMode;
+        localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
+        applyTheme();
+        refreshActiveView();
+      });
+
+      function getTickerBadgeClass(ticker) {
+        const sym = (ticker || '').toUpperCase().trim();
+        switch(sym) {
+          case 'SPY': return 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30';
+          case 'QQQ': return 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30';
+          case 'TSLA': return 'bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/30';
+          case 'NVDA': return 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
+          case 'AMD': return 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30';
+          case 'AAPL': return 'bg-slate-500/15 text-slate-800 dark:text-slate-200 border border-slate-500/30';
+          case 'PXLW': return 'bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30';
+          case 'SMX': return 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30';
+          default: return 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border border-slate-400/20';
+        }
+      }
+
+      let accounts = [];
+      let activeAccountId = null;
+      let currentView = 'Month';
+      let currentYear = new Date().getFullYear();
+      let currentMonth = new Date().getMonth();
+      let selectedDateKey = null;
+      let parsedCsvTrades = null;
+      let parsedCsvFlows = null;
+      let csvFileType = 'trades';
+      let csvMinDate = null;
+      let csvMaxDate = null;
+
+      function getDefaultAccounts() {
+        return [
+          {
+            id: 'acc_ibkr_main',
+            broker: 'Interactive Brokers',
+            number: 'U24279702',
+            type: 'Margin',
+            currency: 'USD',
+            appData: {},
+            capitalFlows: []
+          }
+        ];
+      }
+
+      function getAccountBalance(accountId, excludeFlowId = null, excludeTransferId = null) {
+        const acc = accounts.find(a => a.id === accountId);
+        if (!acc) return 0;
+
+        let totalDeposited = 0;
+        let totalWithdrawn = 0;
+
+        (acc.capitalFlows || []).forEach(flow => {
+          if (excludeTransferId && flow.transferId && String(flow.transferId) === String(excludeTransferId)) return;
+          if (excludeFlowId && (flow.id === excludeFlowId || String(flow.id) === String(excludeFlowId))) return;
+
+          const amt = Number(flow.amount || 0);
+          if (flow.type === 'deposit') {
+            totalDeposited += amt;
+          } else if (flow.type === 'withdrawal') {
+            totalWithdrawn += amt;
+          }
+        });
+
+        const netCapitalInflow = totalDeposited - totalWithdrawn;
+
+        let cumulativeNetOperatingPnl = 0;
+        const appData = acc.appData || {};
+        Object.keys(appData).forEach(k => {
+          (appData[k] || []).forEach(t => {
+            cumulativeNetOperatingPnl += Number(t.pnl || 0);
+          });
+        });
+
+        return netCapitalInflow + cumulativeNetOperatingPnl;
+      }
+
+      function getSystemTodayKey() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function calculateExactDte(openedDateStr, expDateStr) {
+        if (!openedDateStr || !expDateStr) return '0DTE';
+        try {
+          const pOpen = openedDateStr.includes('/') ? openedDateStr.split('/') : openedDateStr.split('-');
+          const pExp = expDateStr.includes('/') ? expDateStr.split('/') : expDateStr.split('-');
+          
+          let dOpen = new Date(parseInt(pOpen[0], 10), parseInt(pOpen[1], 10) - 1, parseInt(pOpen[2], 10));
+          let dExp = new Date(parseInt(pExp[0], 10), parseInt(pExp[1], 10) - 1, parseInt(pExp[2], 10));
+
+          const diffTime = dExp.getTime() - dOpen.getTime();
+          const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+          return diffDays <= 0 ? '0DTE' : `${diffDays}DTE`;
+        } catch (e) {
+          return '0DTE';
+        }
+      }
+
+      function formatDteBadge(dteVal) {
+        if (!dteVal || dteVal === '-') return '-';
+        const clean = String(dteVal).trim().toUpperCase();
+        if (clean.endsWith('DTE')) return clean;
+        if (!isNaN(parseInt(clean, 10))) return `${parseInt(clean, 10)}DTE`;
+        return clean;
+      }
+
+      function updateTotalTradesHeader() {
+        const active = getActiveAccount();
+        const appData = active.appData || {};
+        let count = 0;
+        Object.keys(appData).forEach(k => {
+          if (k.startsWith(`${currentYear}`)) {
+            count += (appData[k] || []).length;
+          }
+        });
+        const pill = document.getElementById('totalTradesPill');
+        if (pill) pill.textContent = `${count} trades en total`;
+      }
+
+      function formatMoney(val) {
+        if (val === undefined || isNaN(val)) return '$0.00';
+        const sign = val > 0 ? '+' : (val < 0 ? '-' : '');
+        const absVal = Math.abs(val);
+        if (absVal >= 1000) return `${sign}${(absVal / 1000).toFixed(2)}K`;
+        return `${sign}${absVal.toFixed(2)}`;
+      }
+
+      function formatExactCurrency(val) {
+        if (val === undefined || isNaN(val)) return '$0.00';
+        const sign = val > 0 ? '+' : (val < 0 ? '-' : '');
+        return `${sign}$${Math.abs(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+
+      function getDayPnL(dateKey) {
+        const active = getActiveAccount();
+        const appData = active.appData || {};
+        if (!appData[dateKey] || appData[dateKey].length === 0) return null;
+        return appData[dateKey].reduce((sum, t) => sum + Number(t.pnl || 0), 0);
+      }
+
+      function cleanStrike(val) {
+        if (!val || val === '-') return '-';
+        return String(val).replace(/\$/g, '').trim();
+      }
+
+      function loadAccountsData() {
+        try {
+          const saved = localStorage.getItem(STORAGE_KEY_MULTI);
+          if (saved !== null) {
+            accounts = JSON.parse(saved);
+            if (!Array.isArray(accounts) || accounts.length === 0) {
+              accounts = getDefaultAccounts();
+              saveAccountsData();
+            }
+          } else {
+            accounts = getDefaultAccounts();
+            saveAccountsData();
+          }
+        } catch(e) {
+          accounts = getDefaultAccounts();
+        }
+
+        const savedActive = localStorage.getItem(ACTIVE_ACCOUNT_KEY);
+        if (savedActive && accounts.some(a => a.id === savedActive)) {
+          activeAccountId = savedActive;
+        } else {
+          activeAccountId = accounts[0].id;
+          localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+        }
+      }
+
+      function saveAccountsData() {
+        localStorage.setItem(STORAGE_KEY_MULTI, JSON.stringify(accounts));
+      }
+
+      function getActiveAccount() {
+        return accounts.find(a => a.id === activeAccountId) || accounts[0] || { appData: {}, capitalFlows: [] };
+      }
+
+      function renderAccountSelector() {
+        const select = document.getElementById('accountSelect');
+        if (!select) return;
+        select.innerHTML = '';
+        accounts.forEach(acc => {
+          const opt = document.createElement('option');
+          opt.value = acc.id;
+          opt.textContent = `${acc.broker} (${acc.number}) - ${acc.type}`;
+          if (acc.id === activeAccountId) opt.selected = true;
+          select.appendChild(opt);
+        });
+
+        const active = getActiveAccount();
+        document.getElementById('badgeBrokerName').textContent = active.broker || 'Broker';
+        document.getElementById('badgeAccountType').textContent = active.type || 'Margin';
+        document.getElementById('badgeAccountNumber').textContent = `Nro: ${active.number || '-'}`;
+        document.getElementById('csvTargetAccountLabel').textContent = `${active.broker} (${active.number})`;
+
+        const transferBtnCont = document.getElementById('transferButtonContainer');
+        if (transferBtnCont) {
+          transferBtnCont.classList.toggle('hidden', accounts.length < 2);
+        }
+      }
+
+      document.getElementById('accountSelect')?.addEventListener('change', (e) => {
+        activeAccountId = e.target.value;
+        localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+        renderAccountSelector();
+        refreshActiveView();
+      });
+
+      function refreshActiveView() {
+        renderAccountSelector();
+        updateTotalTradesHeader();
+        if (currentView === 'Month') renderMonthView();
+        else if (currentView === 'Year') renderYearView();
+        else if (currentView === 'Tickers') renderTickersView();
+        else if (currentView === 'Commissions') renderCommissionsView();
+        else renderCapitalView();
+        safeIcons();
+      }
+
+      // BACKUP Y RESTAURACIÓN
+      document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
+        const backupData = {
+          version: '1.0',
+          exportedAt: new Date().toISOString(),
+          activeAccountId: activeAccountId,
+          isDarkMode: isDarkMode,
+          accounts: accounts
+        };
+        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trading_journal_backup_${getSystemTodayKey()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById('restoreBackupInput')?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          try {
+            const parsed = JSON.parse(event.target.result);
+            if (!parsed.accounts || !Array.isArray(parsed.accounts)) {
+              alert("El archivo no tiene un formato de respaldo válido.");
+              return;
+            }
+            if (confirm(`¿Restaurar respaldo? Se reemplazarán las cuentas actuales por las ${parsed.accounts.length} del archivo.`)) {
+              accounts = parsed.accounts;
+              activeAccountId = parsed.activeAccountId || accounts[0].id;
+              saveAccountsData();
+              localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+              if (parsed.isDarkMode !== undefined) {
+                isDarkMode = parsed.isDarkMode;
+                localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
+                applyTheme();
+              }
+              refreshActiveView();
+              alert("¡Copia de seguridad restaurada!");
+            }
+          } catch(err) {
+            alert("Error al leer JSON: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      // MODAL DE CUENTAS
+      const accountModal = document.getElementById('accountModal');
+      const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+
+      document.getElementById('openNewAccountBtn')?.addEventListener('click', () => {
+        document.getElementById('editAccountId').value = '';
+        document.getElementById('accountModalTitle').textContent = 'Nueva Cuenta de Broker';
+        document.getElementById('accBrokerInput').value = '';
+        document.getElementById('accNumberInput').value = '';
+        document.getElementById('accTypeInput').value = 'Margin';
+        deleteAccountBtn?.classList.add('hidden');
+        accountModal.classList.remove('hidden');
+        accountModal.classList.add('flex');
+        safeIcons();
+      });
+
+      document.getElementById('editActiveAccountBtn')?.addEventListener('click', () => {
+        const active = getActiveAccount();
+        document.getElementById('editAccountId').value = active.id;
+        document.getElementById('accountModalTitle').textContent = 'Editar Cuenta Activa';
+        document.getElementById('accBrokerInput').value = active.broker;
+        document.getElementById('accNumberInput').value = active.number;
+        document.getElementById('accTypeInput').value = active.type;
+        deleteAccountBtn?.classList.toggle('hidden', accounts.length <= 1);
+        accountModal.classList.remove('hidden');
+        accountModal.classList.add('flex');
+        safeIcons();
+      });
+
+      function closeAccountModal() {
+        accountModal.classList.add('hidden');
+        accountModal.classList.remove('flex');
+      }
+      document.getElementById('closeAccountModalBtn')?.addEventListener('click', closeAccountModal);
+      document.getElementById('cancelAccountBtn')?.addEventListener('click', closeAccountModal);
+
+      document.getElementById('accountForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('editAccountId').value;
+        const broker = document.getElementById('accBrokerInput').value.trim();
+        const number = document.getElementById('accNumberInput').value.trim();
+        const type = document.getElementById('accTypeInput').value;
+
+        if (!broker || !number) return;
+
+        if (editId) {
+          const acc = accounts.find(a => a.id === editId);
+          if (acc) {
+            acc.broker = broker;
+            acc.number = number;
+            acc.type = type;
+          }
+        } else {
+          const newAcc = {
+            id: 'acc_' + Date.now(),
+            broker,
+            number,
+            type,
+            currency: 'USD',
+            appData: {},
+            capitalFlows: []
+          };
+          accounts.push(newAcc);
+          activeAccountId = newAcc.id;
+          localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+        }
+
+        saveAccountsData();
+        closeAccountModal();
+        refreshActiveView();
+      });
+
+      deleteAccountBtn?.addEventListener('click', () => {
+        const active = getActiveAccount();
+        if (confirm(`¿Eliminar la cuenta "${active.broker} (${active.number})"?`)) {
+          accounts = accounts.filter(a => a.id !== active.id);
+          activeAccountId = accounts[0].id;
+          localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+          saveAccountsData();
+          closeAccountModal();
+          refreshActiveView();
+        }
+      });
+
+      // TRANSFERENCIAS ENTRE CUENTAS
+      const transferModal = document.getElementById('transferModal');
+      const deleteTransferBtn = document.getElementById('deleteTransferBtn');
+
+      function updateTransferBalanceHelp(fromId, toId, currentTransferId = null) {
+        const fromLabel = document.getElementById('transferFromAvailableLabel');
+        const toLabel = document.getElementById('transferToCurrentLabel');
+        if (fromLabel && fromId) {
+          const avail = getAccountBalance(fromId, null, currentTransferId);
+          fromLabel.textContent = `Disponible: ${formatExactCurrency(avail)}`;
+          fromLabel.className = `text-[10px] font-bold block mt-1 ${avail > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`;
+        }
+        if (toLabel && toId) {
+          const cur = getAccountBalance(toId, null, currentTransferId);
+          toLabel.textContent = `Saldo actual: ${formatExactCurrency(cur)}`;
+        }
+      }
+
+      function populateTransferDropdowns(fromId = null, toId = null, currentTransferId = null) {
+        const fromSelect = document.getElementById('transferFromAccount');
+        const toSelect = document.getElementById('transferToAccount');
+        if (!fromSelect || !toSelect) return;
+        fromSelect.innerHTML = '';
+        toSelect.innerHTML = '';
+
+        accounts.forEach(acc => {
+          const text = `${acc.broker} (${acc.number}) - ${acc.type}`;
+          const optFrom = document.createElement('option');
+          optFrom.value = acc.id;
+          optFrom.textContent = text;
+          fromSelect.appendChild(optFrom);
+
+          const optTo = document.createElement('option');
+          optTo.value = acc.id;
+          optTo.textContent = text;
+          toSelect.appendChild(optTo);
+        });
+
+        fromSelect.value = fromId || activeAccountId;
+        toSelect.value = toId || (accounts.find(a => a.id !== fromSelect.value)?.id || accounts[0].id);
+        updateTransferBalanceHelp(fromSelect.value, toSelect.value, currentTransferId);
+      }
+
+      document.getElementById('transferFromAccount')?.addEventListener('change', (e) => {
+        const editId = document.getElementById('editTransferId').value || null;
+        const toSelect = document.getElementById('transferToAccount');
+        if (toSelect.value === e.target.value) {
+          const alt = accounts.find(a => a.id !== e.target.value);
+          if (alt) toSelect.value = alt.id;
+        }
+        updateTransferBalanceHelp(e.target.value, toSelect.value, editId);
+      });
+
+      document.getElementById('openTransferModalBtn')?.addEventListener('click', () => {
+        if (accounts.length < 2) return alert("Se requieren al menos 2 cuentas para transferir.");
+        document.getElementById('editTransferId').value = '';
+        document.getElementById('transferModalTitle').textContent = 'Transferencia entre Brokers';
+        document.getElementById('submitTransferText').textContent = 'Confirmar Transferencia';
+        deleteTransferBtn?.classList.add('hidden');
+        populateTransferDropdowns();
+        document.getElementById('transferDate').value = getSystemTodayKey();
+        document.getElementById('transferAmount').value = '';
+        document.getElementById('transferNote').value = '';
+        transferModal.classList.remove('hidden');
+        transferModal.classList.add('flex');
+        safeIcons();
+      });
+
+      function closeTransferModal() {
+        transferModal.classList.add('hidden');
+        transferModal.classList.remove('flex');
+      }
+      document.getElementById('closeTransferModalBtn')?.addEventListener('click', closeTransferModal);
+      document.getElementById('cancelTransferBtn')?.addEventListener('click', closeTransferModal);
+
+      document.getElementById('transferForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const editTransferId = document.getElementById('editTransferId').value;
+        const fromId = document.getElementById('transferFromAccount').value;
+        const toId = document.getElementById('transferToAccount').value;
+        const date = document.getElementById('transferDate').value;
+        const amount = parseFloat(document.getElementById('transferAmount').value);
+        const note = document.getElementById('transferNote').value.trim();
+
+        if (fromId === toId) return alert("Origen y destino no pueden ser la misma cuenta.");
+        if (isNaN(amount) || amount <= 0 || !date) return;
+
+        const available = getAccountBalance(fromId, null, editTransferId || null);
+        if (amount > available + 0.0001) {
+          return alert(`Saldo insuficiente: disponible ${formatExactCurrency(available)}`);
+        }
+
+        const accFrom = accounts.find(a => a.id === fromId);
+        const accTo = accounts.find(a => a.id === toId);
+
+        if (editTransferId) {
+          accounts.forEach(acc => {
+            acc.capitalFlows = (acc.capitalFlows || []).filter(f => String(f.transferId) !== String(editTransferId));
+          });
+        }
+
+        const finalTransferId = editTransferId || ('TRF_' + Date.now());
+        if (!accFrom.capitalFlows) accFrom.capitalFlows = [];
+        if (!accTo.capitalFlows) accTo.capitalFlows = [];
+
+        accFrom.capitalFlows.push({
+          id: Date.now() + 1,
+          transferId: finalTransferId,
+          type: 'withdrawal',
+          category: 'transfer',
+          sourceAccountId: fromId,
+          targetAccountId: toId,
+          date,
+          amount,
+          note: `Transferencia a ${accTo.broker} (${accTo.number})${note ? ' - ' + note : ''}`
+        });
+
+        accTo.capitalFlows.push({
+          id: Date.now() + 2,
+          transferId: finalTransferId,
+          type: 'deposit',
+          category: 'transfer',
+          sourceAccountId: fromId,
+          targetAccountId: toId,
+          date,
+          amount,
+          note: `Transferencia desde ${accFrom.broker} (${accFrom.number})${note ? ' - ' + note : ''}`
+        });
+
+        saveAccountsData();
+        closeTransferModal();
+        refreshActiveView();
+      });
+
+      // RENDERIZADO MENSUAL
+      function renderMonthView() {
+        const grid = document.getElementById('calendarGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        document.getElementById('sectionSubTitle').textContent = `Mes: ${monthNames[currentMonth]} ${currentYear}`;
+
+        const firstOfMonth = new Date(currentYear, currentMonth, 1);
+        const startDay = new Date(firstOfMonth);
+        let dow = startDay.getDay();
+        let diff = (dow === 0 ? 1 : (dow === 6 ? 2 : 1 - dow));
+        startDay.setDate(startDay.getDate() + diff);
+
+        const days = [];
+        const cursor = new Date(startDay);
+        while (days.length < 25) {
+          if (cursor.getDay() >= 1 && cursor.getDay() <= 5) days.push(new Date(cursor));
+          cursor.setDate(cursor.getDate() + 1);
+        }
+
+        const todayStr = getSystemTodayKey();
+        const active = getActiveAccount();
+
+        days.forEach(dObj => {
+          const y = dObj.getFullYear();
+          const m = String(dObj.getMonth() + 1).padStart(2, '0');
+          const d = String(dObj.getDate()).padStart(2, '0');
+          const dateKey = `${y}-${m}-${d}`;
+          const pnl = getDayPnL(dateKey);
+          const trades = active.appData?.[dateKey] || [];
+          const isToday = dateKey === todayStr;
+
+          let bg = "bg-slate-50/40 dark:bg-darkSubtle/40 border border-slate-200/80 dark:border-darkBorder";
+          let textCls = "text-slate-400";
+          let pnlDisplay = "0.00";
+
+          if (pnl !== null) {
+            if (pnl > 0) {
+              bg = "bg-pnlGreen-bg dark:bg-pnlGreen-darkBg border border-pnlGreen-border dark:border-pnlGreen-darkBorder";
+              textCls = "text-pnlGreen-text dark:text-pnlGreen-darkText";
+              pnlDisplay = formatMoney(pnl);
+            } else if (pnl < 0) {
+              bg = "bg-pnlRed-bg dark:bg-pnlRed-darkBg border border-pnlRed-border dark:border-pnlRed-darkBorder";
+              textCls = "text-pnlRed-text dark:text-pnlRed-darkText";
+              pnlDisplay = formatMoney(pnl);
+            }
+          }
+
+          const cell = document.createElement('div');
+          cell.className = `min-h-[74px] p-2.5 rounded-2xl flex flex-col justify-between cursor-pointer select-none ${bg}`;
+          cell.innerHTML = `
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-bold ${isToday ? 'text-blue-600 bg-blue-50 dark:bg-blue-950 px-2 rounded' : 'text-slate-700 dark:text-slate-300'}">${isToday ? 'Today' : dObj.getDate()}</span>
+              ${trades.length > 0 ? `<span class="px-1 text-[10px] font-bold rounded bg-slate-200 dark:bg-slate-800">${trades.length}t</span>` : ''}
+            </div>
+            <div class="text-right text-xs font-extrabold ${textCls}">${pnl !== null ? pnlDisplay : '-'}</div>
+          `;
+          cell.onclick = () => openDayModal(dateKey, dObj);
+          grid.appendChild(cell);
+        });
+
+        updateSchwabMetrics();
+      }
+
+      // RENDERIZADO COMISIONES
+      function renderCommissionsView() {
+        const tbody = document.getElementById('commissionsTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        const active = getActiveAccount();
+        const fallbackRate = parseFloat(document.getElementById('feePerContractInput')?.value) || 1.30;
+        const tickerStats = {};
+        let totalComms = 0;
+        let totalOps = 0;
+        let totalNet = 0;
+
+        Object.keys(active.appData || {}).forEach(dKey => {
+          if (dKey.startsWith(`${currentYear}`)) {
+            (active.appData[dKey] || []).forEach(t => {
+              const sym = (t.ticker || 'OTHER').toUpperCase().trim();
+              const qty = parseInt(t.qty, 10) || 1;
+              const pnl = Number(t.pnl || 0);
+              const comm = (t.commission !== undefined && t.commission > 0) ? t.commission : (t.type === 'STK' ? 1.00 : fallbackRate);
+
+              if (!tickerStats[sym]) {
+                tickerStats[sym] = { ticker: sym, ops: 0, netPnl: 0, commission: 0 };
+              }
+              tickerStats[sym].ops += qty;
+              tickerStats[sym].netPnl += pnl;
+              tickerStats[sym].commission += comm;
+
+              totalOps += qty;
+              totalNet += pnl;
+              totalComms += comm;
+            });
+          }
+        });
+
+        document.getElementById('commTotalContracts').textContent = `${totalOps} ops`;
+        document.getElementById('commTotalFees').textContent = `-${formatExactCurrency(totalComms)}`;
+        const gross = totalNet + totalComms;
+        const impact = gross > 0 ? ((totalComms / gross) * 100).toFixed(1) : 0;
+        document.getElementById('commTotalImpact').textContent = `${impact}%`;
+
+        Object.values(tickerStats).forEach(s => {
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-50 dark:hover:bg-darkSubtle transition text-xs";
+          tr.innerHTML = `
+            <td class="py-2.5 px-3 font-bold">${s.ticker}</td>
+            <td class="py-2.5 px-2 text-center font-semibold">${s.ops}</td>
+            <td class="py-2.5 px-2 text-right text-rose-500 font-bold">-${formatExactCurrency(s.commission)}</td>
+            <td class="py-2.5 px-2 text-right font-medium">${formatExactCurrency(s.netPnl + s.commission)}</td>
+            <td class="py-2.5 px-3 text-right font-bold ${s.netPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(s.netPnl)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // RENDERIZADO CAPITAL REAL
+      function renderCapitalView() {
+        const active = getActiveAccount();
+        const currentBal = getAccountBalance(active.id);
+        let dep = 0, wth = 0;
+        (active.capitalFlows || []).forEach(f => {
+          if (f.type === 'deposit') dep += Number(f.amount || 0);
+          else wth += Number(f.amount || 0);
+        });
+
+        document.getElementById('accountCurrentBalance').textContent = formatExactCurrency(currentBal);
+        document.getElementById('accountTotalDeposits').textContent = formatExactCurrency(dep);
+        document.getElementById('accountTotalWithdrawals').textContent = formatExactCurrency(wth);
+        document.getElementById('accountNetCapitalInflow').textContent = formatExactCurrency(dep - wth);
+
+        let pnl = 0;
+        Object.keys(active.appData || {}).forEach(k => {
+          (active.appData[k] || []).forEach(t => pnl += Number(t.pnl || 0));
+        });
+        document.getElementById('accountNetOperatingPnl').textContent = formatExactCurrency(pnl);
+
+        const netInflow = dep - wth;
+        const roi = netInflow > 0 ? ((pnl / netInflow) * 100).toFixed(1) : 0;
+        const roiBadge = document.getElementById('accountRoiBadge');
+        roiBadge.textContent = `${pnl >= 0 ? '+' : ''}${roi}% ROI`;
+        roiBadge.className = `px-2 py-0.5 rounded-full text-[10px] font-black ${pnl >= 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}`;
+
+        const list = document.getElementById('capitalFlowsList');
+        if (!list) return;
+        list.innerHTML = '';
+        (active.capitalFlows || []).forEach(f => {
+          const item = document.createElement('div');
+          item.className = "p-2.5 rounded-xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/60 flex items-center justify-between text-xs";
+          item.innerHTML = `
+            <div>
+              <span class="font-bold text-slate-800 dark:text-slate-200">${f.note}</span>
+              <span class="text-[10px] text-blue-500 block">${f.date}</span>
+            </div>
+            <span class="font-bold ${f.type === 'deposit' ? 'text-emerald-500' : 'text-rose-500'}">${f.type === 'deposit' ? '+' : '-'}${formatExactCurrency(f.amount)}</span>
+          `;
+          list.appendChild(item);
+        });
+      }
+
+      // FORMULARIO MANUAL CAPITAL EXTERNO
+      document.getElementById('capitalFlowForm')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const active = getActiveAccount();
+        const type = document.getElementById('capitalFlowType').value;
+        const date = document.getElementById('capitalFlowDate').value;
+        const amount = parseFloat(document.getElementById('capitalFlowAmount').value);
+        const note = document.getElementById('capitalFlowNote').value.trim() || (type === 'deposit' ? 'Depósito bancario' : 'Retiro');
+
+        if (isNaN(amount) || amount <= 0 || !date) return;
+
+        if (type === 'withdrawal') {
+          const avail = getAccountBalance(active.id);
+          if (amount > avail + 0.0001) return alert(`Saldo insuficiente: disponible ${formatExactCurrency(avail)}`);
+        }
+
+        if (!active.capitalFlows) active.capitalFlows = [];
+        active.capitalFlows.push({
+          id: Date.now(),
+          type,
+          category: 'external',
+          date,
+          amount,
+          note
+        });
+
+        saveAccountsData();
+        document.getElementById('capitalFlowAmount').value = '';
+        document.getElementById('capitalFlowNote').value = '';
+        renderCapitalView();
+      });
+
+      function updateSchwabMetrics() {
+        const active = getActiveAccount();
+        let gains = 0, losses = 0, wins = 0, total = 0;
+        const prefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+
+        Object.keys(active.appData || {}).forEach(k => {
+          if (k.startsWith(prefix)) {
+            (active.appData[k] || []).forEach(t => {
+              const p = Number(t.pnl || 0);
+              total++;
+              if (p > 0) { gains += p; wins++; }
+              else if (p < 0) { losses += Math.abs(p); }
+            });
+          }
+        });
+
+        document.getElementById('metricTotalVal').textContent = formatExactCurrency(gains - losses);
+        document.getElementById('metricGrossGains').textContent = `+${formatExactCurrency(gains)}`;
+        document.getElementById('metricGrossLosses').textContent = `-${formatExactCurrency(losses)}`;
+        const vol = gains + losses;
+        document.getElementById('metricSchwabRatio').textContent = vol > 0 ? `${((gains / vol) * 100).toFixed(1)}%` : '0.00%';
+        document.getElementById('metricTradesPct').textContent = total > 0 ? `${Math.round((wins / total) * 100)}%` : '0%';
+        document.getElementById('metricTradesCount').textContent = `(${wins} / ${total} ops)`;
+      }
+
+      function renderYearView() {}
+      function renderTickersView() {}
+
+      function openDayModal(dateKey, dObj) {
+        selectedDateKey = dateKey;
+        document.getElementById('modalDateTitle').textContent = `Operaciones de ${dateKey}`;
+        document.getElementById('dayModal').classList.remove('hidden');
+        document.getElementById('dayModal').classList.add('flex');
+        renderDayTradesList();
+        safeIcons();
+      }
+
+      function renderDayTradesList() {
+        const container = document.getElementById('tradesListContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        const active = getActiveAccount();
+        const trades = active.appData?.[selectedDateKey] || [];
+
+        trades.forEach(t => {
+          const item = document.createElement('div');
+          item.className = "p-2.5 rounded-xl border border-slate-200 dark:border-darkBorder flex items-center justify-between text-xs";
+          item.innerHTML = `
+            <div>
+              <span class="font-bold">${t.ticker}</span>
+              <span class="text-slate-400 text-[10px] ml-1">(${t.qty} ${t.type})</span>
+              ${t.commission ? `<span class="text-rose-400 text-[9px] block">Comisión real: -$${t.commission.toFixed(2)}</span>` : ''}
+            </div>
+            <div class="font-black ${t.pnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(t.pnl)}</div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      // MODAL CSV
+      const csvModal = document.getElementById('csvModal');
+      document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
+        csvModal.classList.remove('hidden');
+        csvModal.classList.add('flex');
+        document.getElementById('processCsvBtn').disabled = true;
+        document.getElementById('csvPreviewBox').classList.add('hidden');
+        document.getElementById('csvModeSelection').classList.add('hidden');
+        safeIcons();
+      });
+
+      document.getElementById('closeCsvModalBtn')?.addEventListener('click', () => {
+        csvModal.classList.add('hidden');
+        csvModal.classList.remove('flex');
+      });
+      document.getElementById('cancelCsvBtn')?.addEventListener('click', () => {
+        csvModal.classList.add('hidden');
+        csvModal.classList.remove('flex');
+      });
+
+      function parseFlexibleDate(dateStr) {
+        if (!dateStr) return null;
+        const clean = String(dateStr).trim().split(';')[0].split(' ')[0].split('T')[0];
+        if (clean.includes('/')) {
+          const parts = clean.split('/');
+          if (parts.length === 3) return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`;
+        }
+        if (clean.includes('-')) {
+          const parts = clean.split('-');
+          if (parts.length === 3) return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        }
+        if (/^\d{8}$/.test(clean)) {
+          return `${clean.substring(0, 4)}-${clean.substring(4, 6)}-${clean.substring(6, 8)}`;
+        }
+        return null;
+      }
+
+      document.getElementById('csvFileInput')?.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        Papa.parse(file, {
+          header: false,
+          skipEmptyLines: true,
+          complete: function(results) {
+            const rows = results.data;
+            if (!rows || rows.length === 0) return alert("Archivo vacío");
+
+            let headerRowIndex = -1;
+            let isTransactionsFile = false;
+            let isIbkrCashSummary = false;
+            let brokerDetected = 'Schwab';
+
+            for (let i = 0; i < Math.min(rows.length, 30); i++) {
+              const rowStr = rows[i].map(c => String(c).trim().toLowerCase());
+              
+              if (rowStr.some(c => c === 'startingcash' || c === 'depositsmtd')) {
+                headerRowIndex = i;
+                isTransactionsFile = true;
+                isIbkrCashSummary = true;
+                brokerDetected = 'IBKR';
+                break;
+              }
+
+              const hasAction = rowStr.some(c => c.includes('action') || c.includes('type'));
+              const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto'));
+              if (hasAction && hasAmount) {
+                headerRowIndex = i;
+                isTransactionsFile = true;
+                brokerDetected = 'IBKR';
+                break;
+              }
+
+              const hasSymbol = rowStr.some(c => c === 'symbol' || c === 'description');
+              const hasPnl = rowStr.some(c => c.includes('gain/loss') || c.includes('fifopnlrealized'));
+              const hasIbkrCols = rowStr.some(c => c.includes('fifopnlrealized') || c.includes('tradedate'));
+
+              if ((hasSymbol && hasPnl) || hasIbkrCols) {
+                headerRowIndex = i;
+                isTransactionsFile = false;
+                if (hasIbkrCols || rowStr.some(c => c === 'assetclass')) brokerDetected = 'IBKR';
+                break;
+              }
+            }
+
+            if (headerRowIndex === -1) {
+              return alert("No se reconoció el formato de Schwab ni de Interactive Brokers.");
+            }
+
+            const headers = rows[headerRowIndex].map(h => String(h).trim());
+
+            // CASO A: FLUJOS DE EFECTIVO
+            if (isTransactionsFile) {
+              csvFileType = 'transactions';
+              const flows = [];
+              let minD = null, maxD = null;
+
+              if (isIbkrCashSummary) {
+                const fromDateIdx = headers.findIndex(h => /fromdate/i.test(h));
+                const startingCashIdx = headers.findIndex(h => /^startingcash$/i.test(h));
+                const depositsIdx = headers.findIndex(h => /^deposits$|^depositsmtd$/i.test(h));
+
+                for (let r = headerRowIndex + 1; r < rows.length; r++) {
+                  const row = rows[r];
+                  if (!row || row.length < 5) continue;
+                  const dateRaw = fromDateIdx !== -1 ? String(row[fromDateIdx] || '').trim() : '';
+                  const formattedDate = parseFlexibleDate(dateRaw) || getSystemTodayKey();
+
+                  const startCash = startingCashIdx !== -1 ? parseFloat(String(row[startingCashIdx] || '').replace(/[\$\,]/g, '')) : 0;
+                  const depAmount = depositsIdx !== -1 ? parseFloat(String(row[depositsIdx] || '').replace(/[\$\,]/g, '')) : 0;
+                  const netDeposit = depAmount > 0 ? depAmount : (startCash > 0 ? startCash : 0);
+
+                  if (netDeposit > 0) {
+                    flows.push({
+                      id: Date.now() + Math.random(),
+                      type: 'deposit',
+                      category: 'external',
+                      date: formattedDate,
+                      amount: netDeposit,
+                      note: 'Fondeo de Efectivo IBKR (Starting/Deposited Cash)'
+                    });
+                    if (!minD || formattedDate < minD) minD = formattedDate;
+                    if (!maxD || formattedDate > maxD) maxD = formattedDate;
+                  }
+                }
+              }
+
+              parsedCsvFlows = flows;
+              parsedCsvTrades = null;
+              csvMinDate = minD;
+              csvMaxDate = maxD;
+              document.getElementById('csvFileName').textContent = file.name;
+              document.getElementById('csvTradesFound').textContent = `${flows.length} movimiento(s) de capital (${brokerDetected})`;
+              document.getElementById('csvSummaryText').textContent = `Período: ${minD || '-'} al ${maxD || '-'}`;
+              document.getElementById('csvPreviewBox').classList.remove('hidden');
+              document.getElementById('csvModeSelection').classList.remove('hidden');
+              document.getElementById('processCsvBtn').disabled = false;
+              return;
+            }
+
+            // CASO B: TRADES (OPCIONES Y ACCIONES)
+            csvFileType = 'trades';
+            const symbolIdx = headers.findIndex(h => /^symbol$|description/i.test(h));
+            const closedDateIdx = headers.findIndex(h => /closed\s*date|^tradedate$|datetime|^date$/i.test(h));
+            const qtyIdx = headers.findIndex(h => /quantity|^qty$/i.test(h));
+            const priceIdx = headers.findIndex(h => /tradeprice|price/i.test(h));
+            const costBasisIdx = headers.findIndex(h => /cost\s*basis|^cost$|basis/i.test(h));
+            const proceedsIdx = headers.findIndex(h => /proceeds/i.test(h));
+            const gainLossIdx = headers.findIndex(h => /gain\/loss|fifopnlrealized/i.test(h));
+            const commIdx = headers.findIndex(h => /ibcommission|commission/i.test(h));
+            const assetClassIdx = headers.findIndex(h => /assetclass/i.test(h));
+
+            const buyCommissionsByTicker = {};
+            if (brokerDetected === 'IBKR' && commIdx !== -1) {
+              for (let r = headerRowIndex + 1; r < rows.length; r++) {
+                const row = rows[r];
+                if (!row) continue;
+                const rawPnl = parseFloat(String(row[gainLossIdx] || '').replace(/[\$\,]/g, ''));
+                const sym = String(row[symbolIdx] || '').trim();
+                const comm = Math.abs(parseFloat(String(row[commIdx] || '').replace(/[\$\,]/g, '')) || 0);
+                if (rawPnl === 0 && comm > 0) {
+                  buyCommissionsByTicker[sym] = (buyCommissionsByTicker[sym] || 0) + comm;
+                }
+              }
+            }
+
+            const trades = [];
+            let totalNet = 0, totalInvested = 0, minD = null, maxD = null;
+
+            for (let r = headerRowIndex + 1; r < rows.length; r++) {
+              const row = rows[r];
+              if (!row || row.length <= symbolIdx) continue;
+
+              const symbolRaw = String(row[symbolIdx] || '').trim();
+              const closedDateRaw = String(row[closedDateIdx] || '').trim();
+              const gainLossRaw = String(row[gainLossIdx] || '').trim();
+              if (!symbolRaw || !closedDateRaw || !gainLossRaw) continue;
+
+              const rawPnl = parseFloat(gainLossRaw.replace(/\$/g, '').replace(/,/g, '').trim());
+              if (isNaN(rawPnl)) continue;
+
+              if (brokerDetected === 'IBKR' && rawPnl === 0) continue;
+
+              const qty = (qtyIdx !== -1 && row[qtyIdx]) ? Math.abs(parseInt(String(row[qtyIdx]).trim(), 10) || 1) : 1;
+              const tradePrice = (priceIdx !== -1 && row[priceIdx]) ? Math.abs(parseFloat(String(row[priceIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
+              let proceedsVal = (proceedsIdx !== -1 && row[proceedsIdx]) ? Math.abs(parseFloat(String(row[proceedsIdx]).replace(/[\$\,]/g, '').trim()) || 0) : (qty * tradePrice);
+
+              let costBasis = (costBasisIdx !== -1 && row[costBasisIdx]) ? Math.abs(parseFloat(String(row[costBasisIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
+              if (costBasis === 0 && proceedsVal > 0) costBasis = Math.abs(proceedsVal - rawPnl);
+
+              let realCommission = 0;
+              if (commIdx !== -1 && row[commIdx]) {
+                realCommission = Math.abs(parseFloat(String(row[commIdx]).replace(/[\$\,]/g, '').trim()) || 0);
+                if (buyCommissionsByTicker[symbolRaw]) {
+                  realCommission += buyCommissionsByTicker[symbolRaw];
+                  delete buyCommissionsByTicker[symbolRaw];
+                }
+              }
+
+              const dateKey = parseFlexibleDate(closedDateRaw);
+              if (!dateKey) continue;
+
+              const assetClass = (assetClassIdx !== -1 && row[assetClassIdx]) ? String(row[assetClassIdx]).trim().toUpperCase() : '';
+              const isStock = assetClass === 'STK' || brokerDetected === 'IBKR';
+
+              trades.push({
+                dateKey,
+                trade: {
+                  ticker: symbolRaw,
+                  qty,
+                  strike: '-',
+                  type: isStock ? 'STK' : 'CALL',
+                  dte: '-',
+                  costBasis,
+                  proceeds: proceedsVal,
+                  pnl: rawPnl,
+                  commission: realCommission
+                }
+              });
+
+              totalNet += rawPnl;
+              totalInvested += costBasis;
+              if (!minD || dateKey < minD) minD = dateKey;
+              if (!maxD || dateKey > maxD) maxD = dateKey;
+            }
+
+            parsedCsvTrades = trades;
+            parsedCsvFlows = null;
+            csvMinDate = minD;
+            csvMaxDate = maxD;
+            document.getElementById('csvFileName').textContent = file.name;
+            document.getElementById('csvTradesFound').textContent = `${trades.length} operaciones (${brokerDetected})`;
+            document.getElementById('csvSummaryText').textContent = `Período: ${minD || '-'} al ${maxD || '-'} | Balance: ${formatExactCurrency(totalNet)}`;
+            document.getElementById('csvPreviewBox').classList.remove('hidden');
+            document.getElementById('csvModeSelection').classList.remove('hidden');
+            document.getElementById('processCsvBtn').disabled = false;
+          }
+        });
+      });
+
+      // PROCESAR DATOS CSV
+      document.getElementById('processCsvBtn')?.addEventListener('click', () => {
+        const mode = document.querySelector('input[name="csvImportMode"]:checked')?.value || 'merge';
+        const active = getActiveAccount();
+
+        if (csvFileType === 'transactions' && parsedCsvFlows) {
+          if (mode === 'replace') active.capitalFlows = [];
+          if (!active.capitalFlows) active.capitalFlows = [];
+
+          parsedCsvFlows.forEach(f => {
+            const isDup = active.capitalFlows.some(cf => cf.date === f.date && Math.abs(cf.amount - f.amount) < 0.05);
+            if (!isDup) active.capitalFlows.push(f);
+          });
+
+          saveAccountsData();
+          csvModal.classList.add('hidden');
+          csvModal.classList.remove('flex');
+          switchView('Capital');
+          return;
+        }
+
+        if (csvFileType === 'trades' && parsedCsvTrades) {
+          if (mode === 'replace') active.appData = {};
+          if (!active.appData) active.appData = {};
+
+          parsedCsvTrades.forEach(item => {
+            if (!active.appData[item.dateKey]) active.appData[item.dateKey] = [];
+            const isDup = active.appData[item.dateKey].some(ex => ex.ticker === item.trade.ticker && Math.abs(ex.pnl - item.trade.pnl) < 0.05);
+            if (!isDup) active.appData[item.dateKey].push(item.trade);
+          });
+
+          saveAccountsData();
+          csvModal.classList.add('hidden');
+          csvModal.classList.remove('flex');
+          refreshActiveView();
+        }
+      });
+
+      // PESTAÑAS
+      ['Month', 'Year', 'Tickers', 'Commissions', 'Capital'].forEach(v => {
+        document.getElementById('view' + v + 'Btn')?.addEventListener('click', () => switchView(v));
+      });
+
+      function switchView(view) {
+        currentView = view;
+        ['Month', 'Year', 'Tickers', 'Commissions', 'Capital'].forEach(s => {
+          document.getElementById(s.toLowerCase() + 'View')?.classList.toggle('hidden', s !== view);
+          const btn = document.getElementById('view' + s + 'Btn');
+          if (btn) {
+            btn.className = s === view
+              ? "px-2.5 py-1.5 rounded-lg bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm transition font-bold whitespace-nowrap flex items-center justify-center gap-1.5"
+              : "px-2.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition font-semibold whitespace-nowrap flex items-center justify-center gap-1.5";
+          }
+        });
+
+        if (view === 'Month') renderMonthView();
+        else if (view === 'Year') renderYearView();
+        else if (view === 'Tickers') renderTickersView();
+        else if (view === 'Commissions') renderCommissionsView();
+        else if (view === 'Capital') renderCapitalView();
+        safeIcons();
+      }
+
+      document.getElementById('prevPeriodBtn')?.addEventListener('click', () => {
+        currentMonth--;
+        if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+        document.getElementById('periodYearSelect').value = String(currentYear);
+        renderMonthView();
+      });
+
+      document.getElementById('nextPeriodBtn')?.addEventListener('click', () => {
+        currentMonth++;
+        if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+        document.getElementById('periodYearSelect').value = String(currentYear);
+        renderMonthView();
+      });
+
+      document.getElementById('periodYearSelect')?.addEventListener('change', (e) => {
+        currentYear = parseInt(e.target.value, 10);
+        refreshActiveView();
+      });
+
+      document.getElementById('closeModalBtn')?.addEventListener('click', () => {
+        document.getElementById('dayModal').classList.add('hidden');
+        document.getElementById('dayModal').classList.remove('flex');
+      });
+
+      document.getElementById('helpBtn')?.addEventListener('click', () => {
+        document.getElementById('infoModal').classList.remove('hidden');
+        document.getElementById('infoModal').classList.add('flex');
+      });
+
+      document.getElementById('closeInfoModalBtn')?.addEventListener('click', () => {
+        document.getElementById('infoModal').classList.add('hidden');
+        document.getElementById('infoModal').classList.remove('flex');
+      });
+
+      document.getElementById('clearAllBtn')?.addEventListener('click', () => {
+        const active = getActiveAccount();
+        if (confirm(`¿Vaciar todas las operaciones y movimientos de la cuenta "${active.broker} (${active.number})"?`)) {
+          active.appData = {};
+          active.capitalFlows = [];
+          saveAccountsData();
+          refreshActiveView();
+        }
+      });
+
+      // INICIALIZACIÓN
+      applyTheme();
+      loadAccountsData();
+      document.getElementById('periodYearSelect').value = String(currentYear);
+      renderAccountSelector();
+      switchView('Month');
+      safeIcons();
+    });
   </script>
 </body>
 </html>
