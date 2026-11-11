@@ -79,31 +79,26 @@
     </div>
     
     <div class="flex items-center gap-1.5">
-      <!-- Conmutador Dark/Light -->
       <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95">
         <i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i>
       </button>
 
-      <!-- Botón Descargar Backup -->
       <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad completa (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span>Backup</span>
       </button>
 
-      <!-- Botón Restaurar Backup -->
       <label title="Restaurar copia de seguridad desde un archivo JSON" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
         <span>Restaurar</span>
         <input type="file" id="restoreBackupInput" accept=".json" class="hidden">
       </label>
 
-      <!-- Botón Importar CSV -->
       <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
         <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
         <span>CSV</span>
       </button>
       
-      <!-- Botón Vaciar Cuenta Activa -->
       <button id="clearAllBtn" type="button" title="Vaciar datos de la cuenta activa" class="p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60 rounded-xl transition active:scale-95">
         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
       </button>
@@ -211,7 +206,6 @@
       </div>
     </div>
 
-    <!-- Barra de Subtítulo -->
     <div class="flex items-center justify-between text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase pb-2">
       <span id="sectionSubTitle">Mes Actual</span>
       <span id="sectionHint" class="text-[11px] font-normal text-slate-400 dark:text-slate-500 lowercase first-letter:uppercase">Haz clic en un día para ver operaciones</span>
@@ -230,7 +224,7 @@
       <div id="yearMonthsGrid" class="grid grid-cols-3 gap-3 py-1"></div>
     </section>
 
-    <!-- 3. VISTA TICKERS (DISEÑO EXACTO RESTAURADO A TU IMAGEN 3) -->
+    <!-- 3. VISTA TICKERS (DISEÑO RESTAURADO A TU IMAGEN 3) -->
     <section id="tickersView" class="hidden w-full space-y-3">
       <div class="flex items-center justify-between gap-2 pb-1">
         <div class="relative flex-1">
@@ -247,7 +241,7 @@
       <div id="tickersGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[460px] overflow-y-auto custom-scrollbar pr-1"></div>
     </section>
 
-    <!-- 4. VISTA COMISIONES (DISEÑO EXACTO RESTAURADO A TU IMAGEN 2) -->
+    <!-- 4. VISTA COMISIONES (DISEÑO RESTAURADO A TU IMAGEN 2) -->
     <section id="commissionsView" class="hidden w-full space-y-3">
       <div id="commissionsNoticeBox" class="p-3.5 bg-slate-900/60 dark:bg-[#0d1424] rounded-2xl border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-white">
         <div class="flex items-center space-x-2">
@@ -294,7 +288,7 @@
       </div>
     </section>
 
-    <!-- 5. PESTAÑA CAPITAL REAL (DISEÑO EXACTO RESTAURADO A TU IMAGEN 1) -->
+    <!-- 5. PESTAÑA CAPITAL REAL (DISEÑO RESTAURADO A TU IMAGEN 1) -->
     <section id="capitalView" class="hidden w-full space-y-4">
       <div class="p-5 bg-[#0d1424] text-white rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
         <div class="flex items-center justify-between text-xs text-slate-300 font-bold uppercase tracking-wider">
@@ -321,7 +315,7 @@
         <div class="grid grid-cols-2 gap-2 pt-3 border-t border-slate-800 text-xs">
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-600/30 text-blue-300 border border-blue-500/40 inline-block mb-1">P&amp;L NETO DE TRADING:</span>
-            <div id="accountNetOperatingPnl" class="font-extrabold text-sm text-emerald-400">+$0.00</div>
+            <div id="accountNetOperatingPnl" class="font-extrabold text-sm text-emerald-400">$0.00</div>
           </div>
           <div class="text-right">
             <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 inline-block mb-1">PICO HISTÓRICO (PEAK):</span>
@@ -438,6 +432,7 @@
         </button>
       </div>
 
+      <!-- FORMULARIO MANUAL DE TRADE COMPLETO -->
       <form id="tradeForm" class="mt-4 bg-[#0d1424] p-3.5 rounded-2xl border border-slate-800 space-y-3">
         <input type="hidden" id="editTradeIndex" value="">
 
@@ -748,24 +743,35 @@
         }];
       }
 
-      // RUTINA DE DESDUPLICACIÓN Y PURGA PROFUNDA
+      // RUTINA DE DESDUPLICACIÓN Y PURGA PROFUNDA (ELIMINA CLONES EXISTENTES)
       function deduplicateAccountData(acc) {
         if (!acc || !acc.appData) return;
         Object.keys(acc.appData).forEach(dKey => {
           const trades = acc.appData[dKey] || [];
-          const seen = new Set();
+          const seen = new Map();
           const cleanTrades = [];
 
           trades.forEach(t => {
-            // Normalizar Ticker raíz eliminando fechas y strikes pegados
+            // Normalizar ticker raíz
             const cleanTicker = (t.ticker || 'OTHER').split(' ')[0].toUpperCase().trim();
             t.ticker = cleanTicker;
+            const strk = cleanStrike(t.strike);
+            const pnlVal = Number(t.pnl || 0).toFixed(2);
+            const qtyVal = parseInt(t.qty, 10) || 1;
 
-            // Clave única inmutable de la operación
-            const sig = `${dKey}_${cleanTicker}_${t.type}_${t.qty}_${cleanStrike(t.strike)}_${Number(t.pnl).toFixed(2)}_${Number(t.costBasis).toFixed(2)}`;
+            // Clave única basada en la operación real, no en el formato de costo
+            const sig = `${cleanTicker}_${t.type}_${qtyVal}_${strk}_${pnlVal}`;
+
             if (!seen.has(sig)) {
-              seen.add(sig);
+              seen.set(sig, t);
               cleanTrades.push(t);
+            } else {
+              // Si ya existe pero el nuevo tiene un costo de compra más lógico (ej. mayor a $10 vs $1), actualizarlo
+              const existing = seen.get(sig);
+              if (Number(t.costBasis || 0) > Number(existing.costBasis || 0)) {
+                existing.costBasis = t.costBasis;
+                existing.proceeds = t.proceeds;
+              }
             }
           });
 
@@ -844,21 +850,6 @@
       function cleanStrike(val) {
         if (!val || val === '-') return '-';
         return String(val).replace(/\$/g, '').trim();
-      }
-
-      function getTickerBadgeClass(ticker) {
-        const sym = (ticker || '').split(' ')[0].toUpperCase().trim();
-        switch(sym) {
-          case 'NVDA': return 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40';
-          case 'SPY': return 'bg-blue-950/80 text-blue-400 border border-blue-500/40';
-          case 'TSLA': return 'bg-rose-950/80 text-rose-400 border border-rose-500/40';
-          case 'AAPL': return 'bg-slate-800 text-slate-200 border border-slate-600';
-          case 'AMD': return 'bg-amber-950/80 text-amber-400 border border-amber-500/40';
-          case 'QQQ': return 'bg-purple-950/80 text-purple-400 border border-purple-500/40';
-          case 'PXLW': return 'bg-cyan-950/80 text-cyan-400 border border-cyan-500/40';
-          case 'SMX': return 'bg-indigo-950/80 text-indigo-400 border border-indigo-500/40';
-          default: return 'bg-slate-800 text-slate-300 border border-slate-700';
-        }
       }
 
       function getAccountBalance(accountId, excludeFlowId = null, excludeTransferId = null) {
@@ -1079,7 +1070,7 @@
         }
       }
 
-      // 3. RENDERIZADO TICKERS (AUDITADO, SIN DUPLICADOS Y EXACTO A TU IMAGEN 3)
+      // 3. RENDERIZADO TICKERS (AUDITADO Y EXACTO A TU IMAGEN 3)
       function renderTickersView() {
         const grid = document.getElementById('tickersGrid');
         if (!grid) return;
@@ -1092,7 +1083,6 @@
         Object.keys(active.appData || {}).forEach(k => {
           if (k.startsWith(`${currentYear}`)) {
             (active.appData[k] || []).forEach(t => {
-              // Extraer Ticker raíz limpio
               const sym = (t.ticker || 'OTHER').split(' ')[0].toUpperCase().trim();
               if (!tickerStats[sym]) {
                 tickerStats[sym] = { ticker: sym, total: 0, pnl: 0, wins: 0, losses: 0, cost: 0, tradesList: [] };
@@ -1106,7 +1096,6 @@
               tickerStats[sym].cost += cost;
               tickerStats[sym].tradesList.push({ ...t, dateKey: k });
 
-              // Clasificación precisa de Win / Loss
               if (p > 0.005) {
                 tickerStats[sym].wins++;
               } else if (p < -0.005) {
@@ -1143,7 +1132,6 @@
           const roi = data.cost > 0 ? ((data.pnl / data.cost) * 100).toFixed(1) : 0;
           const tickerBadgeStyle = getTickerBadgeClass(data.ticker);
 
-          // Píldora de Win Rate: verde esmeralda si es ganador (>=50%), roja si es perdedor (<50%)
           const winPillStyle = winRate >= 50 
             ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40' 
             : 'bg-rose-950/80 text-rose-400 border border-rose-500/40';
@@ -1178,7 +1166,6 @@
         });
       }
 
-      // MODAL DE AUDITORÍA INDIVIDUAL POR TICKER
       function openTickerDetailsModal(data) {
         document.getElementById('tickerDetailsModalTitle').textContent = `Auditoría: ${data.ticker} (${currentYear})`;
         document.getElementById('tickerDetailsModalSub').textContent = `${data.total} trades registrados | Inversión: ${formatExactCurrency(data.cost)} | Balance: ${formatExactCurrency(data.pnl)}`;
@@ -1212,7 +1199,7 @@
         document.getElementById('tickerDetailsModal').classList.remove('flex');
       });
 
-      // 4. RENDERIZADO COMISIONES (IDÉNTICO A TU IMAGEN 2)
+      // 4. RENDERIZADO COMISIONES (UNIFICADO Y SIN DOBLE CÁLCULO)
       function renderCommissionsView() {
         const tbody = document.getElementById('commissionsTableBody');
         if (!tbody) return;
@@ -1230,6 +1217,7 @@
               const qty = parseInt(t.qty, 10) || 1;
               const pnl = Number(t.pnl || 0);
 
+              // Si tiene comisión explícita (IBKR), usarla. Si es Schwab/TOS, calcular qty * 1.30 exactamente una sola vez
               let comm = 0;
               if (t.commission !== undefined && t.commission > 0) {
                 comm = t.commission;
@@ -1273,7 +1261,7 @@
         });
       }
 
-      // 5. RENDERIZADO CAPITAL REAL (IDÉNTICO A TU IMAGEN 1)
+      // 5. RENDERIZADO CAPITAL REAL
       function renderCapitalView() {
         const active = getActiveAccount();
         const currentBal = getAccountBalance(active.id);
@@ -1461,7 +1449,7 @@
         renderCapitalView();
       });
 
-      // 6. DETALLE DEL DÍA (IDÉNTICO A TU IMAGEN 4)
+      // 6. DETALLE DEL DÍA (SIN SIGNOS DUPLICADOS)
       function openDayModal(dateKey) {
         selectedDateKey = dateKey;
         document.getElementById('modalDateTitle').textContent = `Operaciones de ${dateKey}`;
@@ -1525,14 +1513,14 @@
               </div>
               <div class="text-[11px] text-slate-400">
                 Cto Compra: <strong class="text-white">$${unitCost}</strong> &rarr; Cto Venta: <strong class="text-white">$${unitProceeds}</strong> | 
-                <span class="text-[10px]">Total: <span class="text-slate-300">+${formatExactCurrency(cost).replace('$', '$')}</span> &rarr; <span class="text-slate-300">+${formatExactCurrency(proceeds).replace('$', '$')}</span></span>
+                <span class="text-[10px]">Total: <span class="text-slate-300">${formatExactCurrency(cost)}</span> &rarr; <span class="text-slate-300">${formatExactCurrency(proceeds)}</span></span>
               </div>
             </div>
 
             <div class="flex items-center space-x-2 text-right">
               <div>
                 <span class="font-extrabold text-sm block ${isWin ? 'text-emerald-400' : 'text-rose-400'}">
-                  ${isWin ? '+' : ''}${formatExactCurrency(pnl)}
+                  ${formatExactCurrency(pnl)}
                 </span>
                 <span class="text-[10px] font-bold ${isWin ? 'text-emerald-400' : 'text-rose-400'}">${isWin ? '+' : ''}${roi}%</span>
               </div>
@@ -1744,62 +1732,6 @@
         }
       });
 
-      // RESTAURACIÓN DE BACKUP ROBUSTA
-      document.getElementById('restoreBackupInput')?.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          try {
-            const parsed = JSON.parse(event.target.result);
-            if (!parsed.accounts || !Array.isArray(parsed.accounts)) {
-              alert("El archivo no tiene un formato de respaldo válido.");
-              return;
-            }
-            if (confirm(`¿Restaurar respaldo con ${parsed.accounts.length} cuenta(s)?`)) {
-              accounts = parsed.accounts;
-              // Purgar duplicados que vengan dentro del propio archivo de respaldo
-              accounts.forEach(acc => deduplicateAccountData(acc));
-              activeAccountId = parsed.activeAccountId || accounts[0].id;
-              saveAccountsData();
-              localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
-              if (parsed.isDarkMode !== undefined) {
-                isDarkMode = parsed.isDarkMode;
-                localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
-                applyTheme();
-              }
-              renderAccountSelector();
-              refreshActiveView();
-              alert("¡Copia de seguridad restaurada con éxito!");
-            }
-          } catch(err) {
-            alert("Error al leer JSON: " + err.message);
-          }
-        };
-        reader.readAsText(file);
-        e.target.value = '';
-      });
-
-      // BACKUP
-      document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
-        const backupData = {
-          version: '1.0',
-          exportedAt: new Date().toISOString(),
-          activeAccountId: activeAccountId,
-          isDarkMode: isDarkMode,
-          accounts: accounts
-        };
-        const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `trading_journal_backup_${getSystemTodayKey()}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      });
-
       // MODAL CSV (COMPATIBLE CON SCHWAB E IBKR CON DEDUPLICACIÓN INMUTABLE)
       const csvModal = document.getElementById('csvModal');
       document.getElementById('openCsvModalBtn')?.addEventListener('click', () => {
@@ -1928,8 +1860,6 @@
 
               parsedCsvFlows = flows;
               parsedCsvTrades = null;
-              csvMinDate = minD;
-              csvMaxDate = maxD;
               document.getElementById('csvFileName').textContent = file.name;
               document.getElementById('csvTradesFound').textContent = `${flows.length} movimiento(s) de capital (${brokerDetected})`;
               document.getElementById('csvSummaryText').textContent = `Período: ${minD || '-'} al ${maxD || '-'}`;
@@ -2033,7 +1963,7 @@
         });
       });
 
-      // PROCESAMIENTO SIN DUPLICADOS (CON FIRMA INMUTABLE DE TRADE)
+      // PROCESAMIENTO SIN DUPLICADOS (CON FIRMA INMUTABLE)
       document.getElementById('processCsvBtn')?.addEventListener('click', () => {
         const mode = document.querySelector('input[name="csvImportMode"]:checked')?.value || 'merge';
         const active = getActiveAccount();
@@ -2065,19 +1995,32 @@
           parsedCsvTrades.forEach(item => {
             if (!active.appData[item.dateKey]) active.appData[item.dateKey] = [];
             
-            // Verificación estricta por ticker, P&L, costo y cantidad
+            // Deduplicación basada en la operación real (Ticker + Tipo + Contratos + Strike + P&L)
             const isDup = active.appData[item.dateKey].some(ex => {
               const sameTicker = (ex.ticker || '').split(' ')[0].toUpperCase().trim() === (item.trade.ticker || '').split(' ')[0].toUpperCase().trim();
-              const samePnl = Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.05;
-              const sameCost = Math.abs(Number(ex.costBasis || 0) - Number(item.trade.costBasis || 0)) < 0.05;
+              const samePnl = Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.20;
               const sameQty = parseInt(ex.qty, 10) === parseInt(item.trade.qty, 10);
-              return sameTicker && samePnl && sameCost && sameQty;
+              const sameType = (ex.type || '').toUpperCase() === (item.trade.type || '').toUpperCase();
+              const sameStrike = cleanStrike(ex.strike) === cleanStrike(item.trade.strike);
+              return sameTicker && samePnl && sameQty && sameType && sameStrike;
             });
 
-            if (!isDup) active.appData[item.dateKey].push(item.trade);
+            if (!isDup) {
+              active.appData[item.dateKey].push(item.trade);
+            } else {
+              // Si ya existía, actualizarlo con el costo base y proceeds más completos
+              const existing = active.appData[item.dateKey].find(ex => 
+                (ex.ticker || '').split(' ')[0].toUpperCase().trim() === (item.trade.ticker || '').split(' ')[0].toUpperCase().trim() &&
+                Math.abs(Number(ex.pnl || 0) - Number(item.trade.pnl || 0)) < 0.20
+              );
+              if (existing && Number(item.trade.costBasis || 0) > Number(existing.costBasis || 0)) {
+                existing.costBasis = item.trade.costBasis;
+                existing.proceeds = item.trade.proceeds;
+              }
+            }
           });
 
-          // Purgar y consolidar la cuenta antes de guardar
+          // Purgar duplicados antes de guardar
           deduplicateAccountData(active);
           saveAccountsData();
 
