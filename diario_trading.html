@@ -4,8 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>P&amp;L Calendar &amp; Trading Journal Multicuenta</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- PapaParse CDN para CSV -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <script>
@@ -76,26 +79,31 @@
     </div>
     
     <div class="flex items-center gap-1.5">
+      <!-- Conmutador Dark/Light -->
       <button id="themeToggleBtn" type="button" title="Cambiar Tema Dark/Light" class="p-1.5 bg-white dark:bg-darkCard text-slate-600 dark:text-amber-400 border border-slate-200 dark:border-darkBorder rounded-xl transition shadow-sm active:scale-95">
         <i data-lucide="moon" id="themeIcon" class="w-3.5 h-3.5"></i>
       </button>
 
+      <!-- Botón Descargar Backup -->
       <button id="downloadBackupBtn" type="button" title="Descargar copia de seguridad completa (JSON)" class="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:hover:bg-emerald-900/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
         <i data-lucide="download" class="w-3.5 h-3.5"></i>
         <span>Backup</span>
       </button>
 
+      <!-- Botón Restaurar Backup -->
       <label title="Restaurar copia de seguridad desde un archivo JSON" class="flex items-center gap-1 px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 dark:bg-purple-950/60 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-400 border border-purple-200/80 dark:border-purple-800/60 rounded-xl text-xs font-semibold transition active:scale-95 cursor-pointer">
         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
         <span>Restaurar</span>
         <input type="file" id="restoreBackupInput" accept=".json" class="hidden">
       </label>
 
+      <!-- Botón Importar CSV -->
       <button id="openCsvModalBtn" type="button" class="flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/60 rounded-xl text-xs font-semibold transition active:scale-95">
         <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
         <span>CSV</span>
       </button>
       
+      <!-- Botón Vaciar Cuenta Activa -->
       <button id="clearAllBtn" type="button" title="Vaciar datos de la cuenta activa" class="p-1.5 bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-500 dark:text-rose-400 border border-rose-200/80 dark:border-rose-800/60 rounded-xl transition active:scale-95">
         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
       </button>
@@ -206,7 +214,7 @@
     <!-- Barra de Subtítulo -->
     <div class="flex items-center justify-between text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase pb-2">
       <span id="sectionSubTitle">Mes Actual</span>
-      <span id="sectionHint" class="text-[11px] font-normal text-slate-400 dark:text-slate-500 lowercase first-letter:uppercase">Haz clic en un día para registrar o modificar trades</span>
+      <span id="sectionHint" class="text-[11px] font-normal text-slate-400 dark:text-slate-500 lowercase first-letter:uppercase">Haz clic en un día para ver operaciones</span>
     </div>
 
     <!-- 1. VISTA MENSUAL -->
@@ -227,7 +235,7 @@
       <div class="flex items-center justify-between gap-2 pb-1">
         <div class="relative flex-1">
           <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          <input type="text" id="tickerSearchInput" placeholder="Buscar por ticker (PXLW, SMX, SPY...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50/60 dark:bg-darkSubtle text-slate-800 dark:text-white focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <input type="text" id="tickerSearchInput" placeholder="Buscar ticker (PXLW, SMX, SPY, TSLA...)" class="w-full text-xs pl-8 pr-3 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50/60 dark:bg-darkSubtle text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <select id="tickerSortSelect" class="text-xs font-semibold px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer">
           <option value="pnl-desc">Mayor P&amp;L</option>
@@ -241,14 +249,15 @@
 
     <!-- 4. VISTA COMISIONES -->
     <section id="commissionsView" class="hidden w-full space-y-3">
-      <div class="p-3 bg-slate-50 dark:bg-darkSubtle rounded-2xl border border-slate-200/80 dark:border-darkBorder flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div id="commissionsNoticeBox" class="p-3 bg-slate-50 dark:bg-darkSubtle rounded-2xl border border-slate-200/80 dark:border-darkBorder flex flex-wrap items-center justify-between gap-2 text-xs">
         <div class="flex items-center space-x-2">
           <i data-lucide="receipt" class="w-4 h-4 text-amber-600 dark:text-amber-400"></i>
-          <span class="font-bold text-slate-700 dark:text-slate-300">Tarifa estimada para opciones (Schwab):</span>
+          <span id="commissionsNoticeLabel" class="font-bold text-slate-700 dark:text-slate-300">Comisiones de operaciones:</span>
         </div>
-        <div class="flex items-center space-x-1.5">
+        <div id="commissionsFallbackContainer" class="flex items-center space-x-1.5">
           <span class="text-xs font-bold text-slate-400">$</span>
           <input type="number" id="feePerContractInput" step="0.05" min="0" value="1.30" class="w-16 px-2 py-1 text-xs font-bold rounded-lg border border-slate-200 dark:border-darkBorder bg-white dark:bg-slate-800 text-slate-800 dark:text-white text-center focus:ring-2 focus:ring-blue-500 focus:outline-none">
+          <span class="text-[10px] text-slate-400 font-semibold">(estimado para Schwab)</span>
         </div>
       </div>
 
@@ -477,7 +486,7 @@
               <span>Fecha</span>
               <span class="text-[9px] text-blue-500 cursor-pointer font-normal" onclick="document.getElementById('transferDate').showPicker?.()">Elegir</span>
             </label>
-            <input type="date" id="transferDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:ring-2 focus:ring-blue-500 cursor-pointer">
+            <input type="date" id="transferDate" required onclick="this.showPicker?.()" class="w-full px-2.5 py-2 rounded-xl border border-slate-200 dark:border-darkBorder bg-slate-50 dark:bg-darkSubtle text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
           </div>
           <div>
             <label class="block font-bold text-slate-600 dark:text-slate-300 mb-1">Monto a Transferir ($)</label>
@@ -495,7 +504,7 @@
             Eliminar Transferencia
           </button>
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="cancelTransferBtn" class="px-3.5 py-2 border border-slate-200 dark:border-darkBorder rounded-xl text-slate-600 dark:text-slate-400">Cancelar</button>
+            <button type="button" id="cancelTransferBtn" class="px-3.5 py-2 border border-slate-200 dark:border-darkBorder rounded-xl text-slate-600">Cancelar</button>
             <button type="submit" id="submitTransferBtn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-sm transition">
               <span id="submitTransferText">Confirmar Transferencia</span>
             </button>
@@ -563,7 +572,7 @@
       <div class="text-left text-xs text-slate-600 dark:text-slate-300 space-y-3 mb-6">
         <div><strong class="text-slate-800 dark:text-white">&bull; Cuentas Separadas:</strong> Administra balances independientes en Charles Schwab e Interactive Brokers.</div>
         <div><strong class="text-slate-800 dark:text-white">&bull; Control de Sobregiros:</strong> Bloquea traspasos o retiros mayores a los fondos disponibles.</div>
-        <div><strong class="text-slate-800 dark:text-white">&bull; Comisiones Reales:</strong> Extrae la comisión exacta registrada en la columna IBCommission.</div>
+        <div><strong class="text-slate-800 dark:text-white">&bull; Comisiones Reales:</strong> Extrae la comisión exacta registrada en la columna IBCommission sin multiplicadores forzados.</div>
       </div>
       <button id="closeInfoModalBtn" type="button" class="w-full py-3 bg-slate-900 hover:bg-slate-800 dark:bg-blue-600 text-white rounded-2xl text-xs font-bold transition">
         Entendido
@@ -608,7 +617,7 @@
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="radio" name="csvImportMode" value="replace" class="text-rose-600">
-            <span class="text-rose-600"><strong>Reemplazar cuenta completa</strong> - Borra el historial previo.</span>
+            <span class="text-rose-600"><strong>Reemplazar cuenta completa</strong> - Borra el historial previo de esta cuenta.</span>
           </label>
         </div>
 
@@ -620,7 +629,7 @@
     </div>
   </div>
 
-  <!-- SCRIPT DEFINITIVO ROBUSTO Y AUTÓNOMO -->
+  <!-- SCRIPT DEFINITIVO AUTÓNOMO -->
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const STORAGE_KEY_MULTI = 'TRADING_MULTI_ACCOUNTS_STABLE';
@@ -640,6 +649,16 @@
       let csvMinDate = null;
       let csvMaxDate = null;
 
+      function safeIcons() {
+        try {
+          if (window.lucide && typeof lucide.createIcons === 'function') {
+            lucide.createIcons();
+          }
+        } catch (e) {
+          console.warn('Lucide:', e);
+        }
+      }
+
       function applyTheme() {
         const htmlEl = document.documentElement;
         const themeIcon = document.getElementById('themeIcon');
@@ -651,16 +670,6 @@
           if (themeIcon) themeIcon.setAttribute('data-lucide', 'moon');
         }
         safeIcons();
-      }
-
-      function safeIcons() {
-        try {
-          if (window.lucide && typeof lucide.createIcons === 'function') {
-            lucide.createIcons();
-          }
-        } catch (e) {
-          console.warn('Lucide:', e);
-        }
       }
 
       function getDefaultAccounts() {
@@ -825,7 +834,7 @@
         document.getElementById('metricTradesCount').textContent = `(${wins} / ${total} ops)`;
       }
 
-      // 1. VISTA MES
+      // 1. RENDERIZADO MES
       function renderMonthView() {
         const grid = document.getElementById('calendarGrid');
         if (!grid) return;
@@ -891,7 +900,7 @@
         updateSchwabMetrics();
       }
 
-      // 2. VISTA AÑO
+      // 2. RENDERIZADO AÑO COMPLETO
       function renderYearView() {
         const grid = document.getElementById('yearMonthsGrid');
         if (!grid) return;
@@ -912,11 +921,11 @@
           });
 
           const card = document.createElement('div');
-          card.className = "p-3.5 rounded-2xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/50 flex flex-col justify-between cursor-pointer";
+          card.className = "p-3.5 rounded-2xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/50 flex flex-col justify-between cursor-pointer hover:border-blue-400 transition";
           card.innerHTML = `
             <div class="flex justify-between text-xs font-bold">
               <span>${monthsShort[m]}</span>
-              <span class="text-slate-400 text-[10px]">${mTrades} trades</span>
+              <span class="text-slate-400 text-[10px] bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">${mTrades} trades</span>
             </div>
             <div class="text-sm font-black my-2 ${mPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(mPnl)}</div>
           `;
@@ -928,48 +937,83 @@
         }
       }
 
-      // 3. VISTA TICKERS
+      // 3. RENDERIZADO TICKERS COMPLETO
       function renderTickersView() {
         const grid = document.getElementById('tickersGrid');
         if (!grid) return;
         grid.innerHTML = '';
         const active = getActiveAccount();
+        const searchVal = (document.getElementById('tickerSearchInput')?.value || '').toUpperCase().trim();
+        const sortBy = document.getElementById('tickerSortSelect')?.value || 'pnl-desc';
         const tickerStats = {};
 
         Object.keys(active.appData || {}).forEach(k => {
           if (k.startsWith(`${currentYear}`)) {
             (active.appData[k] || []).forEach(t => {
               const sym = (t.ticker || 'OTHER').toUpperCase().trim();
-              if (!tickerStats[sym]) tickerStats[sym] = { ticker: sym, total: 0, pnl: 0, wins: 0 };
+              if (!tickerStats[sym]) tickerStats[sym] = { ticker: sym, total: 0, pnl: 0, wins: 0, cost: 0 };
               tickerStats[sym].total++;
               tickerStats[sym].pnl += Number(t.pnl || 0);
+              tickerStats[sym].cost += Number(t.costBasis || 0);
               if (Number(t.pnl || 0) > 0) tickerStats[sym].wins++;
             });
           }
         });
 
-        Object.values(tickerStats).forEach(data => {
+        let list = Object.values(tickerStats);
+        if (searchVal) list = list.filter(i => i.ticker.includes(searchVal));
+
+        list.sort((a, b) => {
+          if (sortBy === 'pnl-desc') return b.pnl - a.pnl;
+          if (sortBy === 'pnl-asc') return a.pnl - b.pnl;
+          if (sortBy === 'trades-desc') return b.total - a.total;
+          if (sortBy === 'winrate-desc') return (b.wins / b.total) - (a.wins / a.total);
+          return 0;
+        });
+
+        if (list.length === 0) {
+          grid.innerHTML = `<div class="col-span-full text-center py-8 text-slate-400 text-xs">No hay operaciones registradas en ${currentYear}.</div>`;
+          return;
+        }
+
+        list.forEach(data => {
+          const winRate = data.total > 0 ? Math.round((data.wins / data.total) * 100) : 0;
           const card = document.createElement('div');
           card.className = "p-3 rounded-2xl border border-slate-200 dark:border-darkBorder bg-white dark:bg-darkSubtle/50 flex justify-between items-center text-xs";
           card.innerHTML = `
             <div>
               <span class="font-bold text-sm block">${data.ticker}</span>
-              <span class="text-[10px] text-slate-400">${data.total} ops &bull; ${Math.round((data.wins / data.total) * 100)}% Win</span>
+              <span class="text-[10px] text-slate-400">${data.total} ops &bull; ${winRate}% Win</span>
             </div>
-            <div class="font-black text-sm ${data.pnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(data.pnl)}</div>
+            <div class="text-right">
+              <span class="font-black text-sm block ${data.pnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}">${formatExactCurrency(data.pnl)}</span>
+              <span class="text-[10px] text-slate-400">Inv: ${formatExactCurrency(data.cost)}</span>
+            </div>
           `;
           grid.appendChild(card);
         });
       }
 
-      // 4. VISTA COMISIONES (COMISIÓN REAL DE IBKR O ESTIMADA)
+      // 4. RENDERIZADO COMISIONES (REALES DEL CSV O ESTIMADAS)
       function renderCommissionsView() {
         const tbody = document.getElementById('commissionsTableBody');
         if (!tbody) return;
         tbody.innerHTML = '';
 
         const active = getActiveAccount();
+        const isIbkr = (active.broker || '').toLowerCase().includes('interactive');
         const fallbackRate = parseFloat(document.getElementById('feePerContractInput')?.value) || 1.30;
+        
+        // Ajuste de texto del recuadro informativo según el broker
+        const noticeLabel = document.getElementById('commissionsNoticeLabel');
+        const fallbackCont = document.getElementById('commissionsFallbackContainer');
+        if (noticeLabel) {
+          noticeLabel.textContent = isIbkr ? "Comisiones reales leídas de Interactive Brokers:" : "Tarifa estimada para opciones (Schwab):";
+        }
+        if (fallbackCont) {
+          fallbackCont.style.display = isIbkr ? 'none' : 'flex';
+        }
+
         const tickerStats = {};
         let totalComms = 0, totalOps = 0, totalNet = 0;
 
@@ -979,7 +1023,14 @@
               const sym = (t.ticker || 'OTHER').toUpperCase().trim();
               const qty = parseInt(t.qty, 10) || 1;
               const pnl = Number(t.pnl || 0);
-              const comm = (t.commission !== undefined && t.commission > 0) ? t.commission : (t.type === 'STK' ? 1.00 : fallbackRate);
+
+              // Si tiene comisión explícita del CSV, usar el 100% real.
+              let comm = 0;
+              if (t.commission !== undefined && t.commission > 0) {
+                comm = t.commission;
+              } else {
+                comm = (t.type === 'STK' ? 1.00 : fallbackRate);
+              }
 
               if (!tickerStats[sym]) {
                 tickerStats[sym] = { ticker: sym, ops: 0, netPnl: 0, commission: 0 };
@@ -1015,7 +1066,7 @@
         });
       }
 
-      // 5. VISTA CAPITAL CON BOTONES DE EDITAR Y BORRAR
+      // 5. RENDERIZADO CAPITAL REAL CON BOTONES DE EDITAR Y BORRAR
       function renderCapitalView() {
         const active = getActiveAccount();
         const currentBal = getAccountBalance(active.id);
@@ -1282,7 +1333,15 @@
         safeIcons();
       }
 
-      // RESTAURACIÓN CORREGIDA
+      // CAMBIAR DE CUENTA ACTIVA: ACTUALIZACIÓN EN VIVO DE TODO EL DASHBOARD
+      document.getElementById('accountSelect')?.addEventListener('change', (e) => {
+        activeAccountId = e.target.value;
+        localStorage.setItem(ACTIVE_ACCOUNT_KEY, activeAccountId);
+        renderAccountSelector();
+        refreshActiveView();
+      });
+
+      // RESTAURACIÓN CORREGIDA Y ROBUSTA
       document.getElementById('restoreBackupInput')?.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1304,6 +1363,7 @@
                 localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
                 applyTheme();
               }
+              renderAccountSelector();
               refreshActiveView();
               alert("¡Copia de seguridad restaurada con éxito!");
             }
@@ -1315,7 +1375,7 @@
         e.target.value = '';
       });
 
-      // BACKUP
+      // BACKUP COMPLETO
       document.getElementById('downloadBackupBtn')?.addEventListener('click', () => {
         const backupData = {
           version: '1.0',
@@ -1611,7 +1671,7 @@
         }
       });
 
-      // EVENTOS DE NAVEGACIÓN Y PERÍODO
+      // EVENTOS DE PESTAÑAS
       ['Month', 'Year', 'Tickers', 'Commissions', 'Capital'].forEach(v => {
         document.getElementById('view' + v + 'Btn')?.addEventListener('click', () => switchView(v));
       });
@@ -1620,14 +1680,14 @@
         currentMonth--;
         if (currentMonth < 0) { currentMonth = 11; currentYear--; }
         document.getElementById('periodYearSelect').value = String(currentYear);
-        renderMonthView();
+        refreshActiveView();
       });
 
       document.getElementById('nextPeriodBtn')?.addEventListener('click', () => {
         currentMonth++;
         if (currentMonth > 11) { currentMonth = 0; currentYear++; }
         document.getElementById('periodYearSelect').value = String(currentYear);
-        renderMonthView();
+        refreshActiveView();
       });
 
       document.getElementById('periodYearSelect')?.addEventListener('change', (e) => {
@@ -1648,6 +1708,13 @@
       document.getElementById('closeInfoModalBtn')?.addEventListener('click', () => {
         document.getElementById('infoModal').classList.add('hidden');
         document.getElementById('infoModal').classList.remove('flex');
+      });
+
+      document.getElementById('themeToggleBtn')?.addEventListener('click', () => {
+        isDarkMode = !isDarkMode;
+        localStorage.setItem(THEME_KEY, isDarkMode ? 'dark' : 'light');
+        applyTheme();
+        refreshActiveView();
       });
 
       document.getElementById('clearAllBtn')?.addEventListener('click', () => {
