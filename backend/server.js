@@ -16,23 +16,27 @@ const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 
 const allowedOrigins = [
-  'http://localhost:5173', // Para pruebas locales de Vite
-  'https://hernandw.github.io/p-l_calendar_trading/' // Tu URL oficial de GitHub Pages
+  'http://localhost:5173',          // Para desarrollo local con Vite
+  'http://localhost:3000',          // Local alternativo
+  'https://hernandw.github.io'      // Tu frontend oficial en GitHub Pages
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Permitir solicitudes sin origen (como Postman o apps móviles) o si están en la lista blanca
+    // Permitir solicitudes sin origen (como Postman o curl) o si están en la lista blanca
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      callback(new Error('Bloqueado por política CORS'));
+      callback(new Error('Bloqueado por política CORS de Express'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
+// Vital para responder de forma automática a las peticiones de pre-vuelo (OPTIONS)
+app.options('*', cors());
 
 app.use(express.json({ limit: '50mb' }));
 
