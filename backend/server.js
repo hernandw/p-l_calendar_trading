@@ -15,11 +15,25 @@ const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 
+const allowedOrigins = [
+  'http://localhost:5173', // Para pruebas locales de Vite
+  'https://hernandw.github.io/p-l_calendar_trading/' // Tu URL oficial de GitHub Pages
+];
+
 app.use(cors({
-  origin: '*', // O la URL de tu GitHub Pages en producción
+  origin: function (origin, callback) {
+    // Permitir solicitudes sin origen (como Postman o apps móviles) o si están en la lista blanca
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqueado por política CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+
 app.use(express.json({ limit: '50mb' }));
 
 // Asegurar carpeta de datos y registro de usuarios
@@ -167,6 +181,6 @@ app.post('/api/backup', authMiddleware, async (req, res) => {
 
 initStorage().then(() => {
   app.listen(PORT, () => {
-    console.log(`🚀 Backend corriendo en puerto ${PORT}`);
+    console.log(`🚀 Backend corriendo en puerto https://localhost:${PORT}`);
   });
 });

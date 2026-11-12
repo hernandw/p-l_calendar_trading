@@ -5,7 +5,7 @@ import {
   BarChart2, Receipt, Wallet, ChevronDown, ChevronLeft, ChevronRight, X, ArrowLeftRight, LogOut 
 } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://tu-backend.onrender.com';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -41,21 +41,37 @@ export default function App() {
   }, [token]);
 
   const fetchData = async () => {
-    setBackendLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/api/data`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) throw new Error('Sesión expirada o inválida');
-      const json = await res.json();
-      setData(json);
-      setIsDarkMode(json.isDarkMode ?? true);
-    } catch (err) {
-      handleLogout();
-    } finally {
-      setBackendLoading(false);
+  const token = localStorage.getItem('token'); // Recuperar el token guardado en el login
+  
+  if (!token) {
+    console.error("No hay token de sesión disponible.");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/api/data`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // <--- ESTO ES VITAL PARA EVITAR EL 401
+      }
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        alert("Su sesión ha expirado o no está autorizado.");
+        localStorage.removeItem('token');
+        // Redirigir al login
+      }
+      throw new Error('Error al obtener datos');
     }
-  };
+
+    const json = await res.json();
+    setData(json);
+  } catch (err) {
+    console.error("Error en fetchData:", err);
+  }
+};
 
   const saveData = async (newData) => {
     setData(newData);

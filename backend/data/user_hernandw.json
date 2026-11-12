@@ -1,0 +1,15 @@
+{
+  "activeAccountId": "acc_default",
+  "isDarkMode": true,
+  "accounts": [
+    {
+      "id": "acc_default",
+      "broker": "Interactive Brokers",
+      "number": "U000000",
+      "type": "Margin",
+      "currency": "USD",
+      "appData": {},
+      "capitalFlows": []
+    }
+  ]
+}
