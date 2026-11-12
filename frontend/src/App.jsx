@@ -274,7 +274,7 @@ export default function App() {
         </div>
       </div>
 
-      <main className="w-full max-w-xl bg-white dark:bg-[#131B2E] rounded-3xl shadow-xl border border-slate-100 dark:border-[#1E293B] p-6 md:p-8 flex flex-col space-y-6">
+      <main className="w-full max-w-4xl bg-white dark:bg-[#131B2E] rounded-3xl shadow-xl border border-slate-100 dark:border-[#1E293B] p-6 md:p-8 flex flex-col space-y-6">
         {/* PESTAÑAS DE NAVEGACIÓN */}
         <div className="flex bg-slate-100 dark:bg-[#0F172A] p-1 rounded-2xl gap-1 text-xs font-bold overflow-x-auto">
           <button
@@ -339,15 +339,15 @@ export default function App() {
             </div>
 
             <div className="w-full">
-  {/* Cabecera de días de la semana */}
-  <div className="grid grid-cols-5 gap-2 mb-2">
+  {/* Cabecera de días */}
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))' }} className="gap-2 mb-2">
     {['Lun', 'Mar', 'Mié', 'Jue', 'Vie'].map(d => (
-      <div key={d} className="text-center text-[11px] font-bold text-slate-500 uppercase">{d}</div>
+      <div key={d} className="text-center text-xs font-bold text-slate-500 uppercase">{d}</div>
     ))}
   </div>
 
-  {/* Cuadrícula de celdas del mes */}
-  <div className="grid grid-cols-5 gap-2">
+  {/* Celdas del calendario en 5 columnas fijas */}
+  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))' }} className="gap-2">
     {days.map((dObj, idx) => {
       const y = dObj.getFullYear();
       const m = String(dObj.getMonth() + 1).padStart(2, '0');
@@ -374,74 +374,23 @@ export default function App() {
       }
 
       return (
-        <div key={idx} className={`min-h-[74px] p-2 rounded-2xl border flex flex-col justify-between ${bg}`}>
+        <div key={idx} className={`min-h-[85px] p-2.5 rounded-2xl border flex flex-col justify-between ${bg}`}>
           <div className="flex items-center justify-between w-full">
             <span className={`text-xs font-bold ${isToday ? 'text-blue-400 bg-blue-950 px-1.5 rounded' : 'text-slate-400'}`}>
               {isToday ? 'Today' : dObj.getDate()}
             </span>
             {trades.length > 0 && (
-              <span className="px-1 text-[10px] font-bold rounded bg-slate-800 text-slate-300">{trades.length}t</span>
+              <span className="px-1.5 text-[10px] font-bold rounded bg-slate-800 text-slate-300">{trades.length}t</span>
             )}
           </div>
-          <div className={`text-right text-xs font-extrabold truncate ${textCls}`}>
+          <div className={`text-right text-xs font-extrabold ${textCls}`}>
             {pnl !== null ? pnlDisplay : '-'}
           </div>
         </div>
       );
     })}
   </div>
-              
-              {days.map((dObj, idx) => {
-                const y = dObj.getFullYear();
-                const m = String(dObj.getMonth() + 1).padStart(2, "0");
-                const d = String(dObj.getDate()).padStart(2, "0");
-                const dateKey = `${y}-${m}-${d}`;
-                const pnl = getDayPnL(activeAccount, dateKey);
-                const trades = activeAccount.appData?.[dateKey] || [];
-                const isToday = dateKey === todayStr;
-
-                let bg = "bg-slate-900/40 border-slate-800";
-                let textCls = "text-slate-500";
-                let pnlDisplay = "0.00";
-
-                if (pnl !== null) {
-                  if (pnl > 0) {
-                    bg = "bg-emerald-950/40 border-emerald-500/30";
-                    textCls = "text-emerald-400";
-                    pnlDisplay = formatMoney(pnl);
-                  } else if (pnl < 0) {
-                    bg = "bg-rose-950/40 border-rose-500/30";
-                    textCls = "text-rose-400";
-                    pnlDisplay = formatMoney(pnl);
-                  }
-                }
-
-                return (
-                  <div
-                    key={idx}
-                    className={`min-h-[74px] p-2.5 rounded-2xl border flex flex-col justify-between ${bg}`}
-                  >
-                    <div className="flex items-center justify-between w-full">
-                      <span
-                        className={`text-xs font-bold ${isToday ? "text-blue-400 bg-blue-950 px-1.5 rounded" : "text-slate-400"}`}
-                      >
-                        {isToday ? "Today" : dObj.getDate()}
-                      </span>
-                      {trades.length > 0 && (
-                        <span className="px-1 text-[10px] font-bold rounded bg-slate-800 text-slate-300">
-                          {trades.length}t
-                        </span>
-                      )}
-                    </div>
-                    <div
-                      className={`text-right text-xs font-extrabold ${textCls}`}
-                    >
-                      {pnl !== null ? pnlDisplay : "-"}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+</div>
           </div>
         )}
 
