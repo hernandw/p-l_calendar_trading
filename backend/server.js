@@ -18,7 +18,7 @@ const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const allowedOrigins = [
   'http://localhost:5173',          // Para desarrollo local con Vite
   'http://localhost:3000',          // Local alternativo
-  'https://hernandw.github.io'      // Tu frontend oficial en GitHub Pages
+  'https://hernandw.github.io/p-l_calendar_trading/'      // Tu frontend oficial en GitHub Pages
 ];
 
 app.use(cors({
