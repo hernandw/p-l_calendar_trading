@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUp, Moon, Sun, Download, Upload, FileUp, Trash2, 
-  CreditCard, Plus, Settings, Info, CalendarDays, CalendarRange, 
-  BarChart2, Receipt, Wallet, ChevronDown, ChevronLeft, ChevronRight, X, ArrowLeftRight, LogOut 
+  TrendingUp, Moon, Sun, LogOut 
 } from 'lucide-react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://p-l-calendar-trading.onrender.com';
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem('token') || null);
@@ -21,7 +18,7 @@ export default function App() {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [isDarkMode, setIsDarkMode] = useState(true);
 
-  // Temporizador de sesión de 3 minutos
+  // Temporizador de sesión de 3 minutos por seguridad
   useEffect(() => {
     if (!token) return;
     const interval = setInterval(() => {
@@ -34,7 +31,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, [token]);
 
-  // Cargar datos de usuario
+  // Cargar datos de usuario del backend
   useEffect(() => {
     if (token) {
       fetchData();
@@ -42,37 +39,21 @@ export default function App() {
   }, [token]);
 
   const fetchData = async () => {
-  const token = localStorage.getItem('token'); // Recuperar el token guardado en el login
-  
-  if (!token) {
-    console.error("No hay token de sesión disponible.");
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API_URL}/api/data`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` // <--- ESTO ES VITAL PARA EVITAR EL 401
-      }
-    });
-
-    if (!res.ok) {
-      if (res.status === 401) {
-        alert("Su sesión ha expirado o no está autorizado.");
-        localStorage.removeItem('token');
-        // Redirigir al login
-      }
-      throw new Error('Error al obtener datos');
+    setBackendLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/data`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error('Sesión expirada o inválida');
+      const json = await res.json();
+      setData(json);
+      setIsDarkMode(json.isDarkMode ?? true);
+    } catch (err) {
+      handleLogout();
+    } finally {
+      setBackendLoading(false);
     }
-
-    const json = await res.json();
-    setData(json);
-  } catch (err) {
-    console.error("Error en fetchData:", err);
-  }
-};
+  };
 
   const saveData = async (newData) => {
     setData(newData);
@@ -86,7 +67,7 @@ export default function App() {
         body: JSON.stringify(newData)
       });
     } catch (err) {
-      console.error("Error guardando:", err);
+      console.error("Error guardando datos:", err);
     }
   };
 
@@ -105,10 +86,10 @@ export default function App() {
 
       if (authMode === 'login') {
         localStorage.setItem('token', json.token);
-        localStorage.setItem('username', json.username);
+        localStorage.setItem('username', authForm.username);
         localStorage.setItem('loginTime', Date.now().toString());
         setToken(json.token);
-        setUsername(json.username);
+        setUsername(authForm.username);
       } else {
         alert("¡Registro exitoso! Ahora inicie sesión.");
         setAuthMode('login');
@@ -220,7 +201,6 @@ export default function App() {
       </div>
 
       <main className="w-full max-w-xl bg-white dark:bg-[#131B2E] rounded-3xl shadow-xl border border-slate-100 dark:border-[#1E293B] p-6 md:p-8 flex flex-col">
-        {/* Aquí renderizarías tus pestañas, calendario, métricas con los colores estrictos verde/rojo solicitados */}
         <div className="text-center py-12 text-slate-400 text-xs">
           Diario cargado correctamente para la cuenta: <strong className="text-white">{activeAccount?.broker}</strong>
         </div>

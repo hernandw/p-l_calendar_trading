@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
+const getUserFile = (username) => path.join(DATA_DIR, `user_${username}.json`);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -142,25 +143,31 @@ const authMiddleware = async (req, res, next) => {
 };
 
 // 3. OBTENER DATOS DE TRADING DEL USUARIO
-app.get('/api/data', authMiddleware, async (req, res) => {
+app.get('/api/data', async (req, res) => {
   try {
-    const userFile = await getUserDataFile(req.username);
-    try {
-      const raw = await fs.readFile(userFile, 'utf-8');
-      res.json(JSON.parse(raw));
-    } catch {
-      res.json({ accounts: [], activeAccountId: null, isDarkMode: true });
-    }
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: 'No autorizado' });
+    const tokenParts = authHeader.split(' ');
+    const username = tokenParts[1]?.split('_')[1];
+    
+    const userFile = getUserFile(username);
+    const content = await fs.readFile(userFile, 'utf8');
+    res.json(JSON.parse(content));
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(401).json({ error: 'Sesión inválida' });
   }
 });
 
 // 4. GUARDAR DATOS DE TRADING DEL USUARIO
-app.post('/api/data', authMiddleware, async (req, res) => {
+app.post('/api/data', async (req, res) => {
   try {
-    const userFile = await getUserDataFile(req.username);
-    await fs.writeFile(userFile, JSON.stringify(req.body, null, 2), 'utf-8');
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: 'No autorizado' });
+    const tokenParts = authHeader.split(' ');
+    const username = tokenParts[1]?.split('_')[1];
+
+    const userFile = getUserFile(username);
+    await fs.writeFile(userFile, JSON.stringify(req.body, null, 2));
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
