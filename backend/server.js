@@ -35,8 +35,7 @@ app.use(cors({
   credentials: true
 }));
 
-// Vital para responder de forma automática a las peticiones de pre-vuelo (OPTIONS)
-app.options('*', cors());
+
 
 app.use(express.json({ limit: '50mb' }));
 
