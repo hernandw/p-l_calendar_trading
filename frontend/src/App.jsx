@@ -418,7 +418,9 @@ export default function App() {
               />
               <label htmlFor="remember" className="text-slate-400 cursor-pointer">Recordar mis datos</label>
             </div>
-            <button type="submit" className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition">Entrar al Diario</button>
+            <button type="submit" className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition">
+              {authMode === 'login' ? 'Iniciar Sesión' : 'Registrarse'}
+            </button>
           </form>
         </div>
       </div>
