@@ -24,6 +24,7 @@ export default function App() {
   const [username, setUsername] = useState(localStorage.getItem('username') || '');
   const [authMode, setAuthMode] = useState('login');
   const [authForm, setAuthForm] = useState({ username: '', password: '' });
+  const [rememberMe, setRememberMe] = useState(false); // <--- Correctamente dentro del componente
   
   const [backendLoading, setBackendLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -36,6 +37,7 @@ export default function App() {
   const [showNewAccountModal, setShowNewAccountModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [newAccountForm, setNewAccountForm] = useState({ broker: 'Interactive Brokers', number: '', type: 'Margin' });
+  const [editAccountForm, setEditAccountForm] = useState({ broker: '', number: '', type: 'Margin' });
 
   const [pendingCsvResult, setPendingCsvResult] = useState(null);
   const [pendingFileName, setPendingFileName] = useState('');
@@ -43,18 +45,42 @@ export default function App() {
   
   const fileInputRef = useRef(null);
 
-  // Sesión de 3 minutos
+  // Temporizador de sesión de 5 minutos por inactividad real (mouse, teclado, clics)
   useEffect(() => {
     if (!token) return;
-    const interval = setInterval(() => {
-      const loginTime = localStorage.getItem('loginTime');
-      if (loginTime && Date.now() - parseInt(loginTime, 10) > 3 * 60 * 1000) {
+    
+    let inactivityTimer;
+    const resetTimer = () => {
+      clearTimeout(inactivityTimer);
+      localStorage.setItem('loginTime', Date.now().toString());
+      inactivityTimer = setTimeout(() => {
         handleLogout();
-        alert("Su sesión ha expirado (3 minutos de inactividad). Inicie sesión nuevamente.");
-      }
-    }, 5000);
-    return () => clearInterval(interval);
+        alert("Su sesión ha expirado (5 minutos de inactividad). Inicie sesión nuevamente.");
+      }, 5 * 60 * 1000); // 5 minutos
+    };
+
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('keypress', resetTimer);
+    window.addEventListener('click', resetTimer);
+
+    resetTimer();
+
+    return () => {
+      clearTimeout(inactivityTimer);
+      window.removeEventListener('mousemove', resetTimer);
+      window.removeEventListener('keypress', resetTimer);
+      window.removeEventListener('click', resetTimer);
+    };
   }, [token]);
+
+  // Al cargar el componente, recuperar usuario guardado si existe
+  useEffect(() => {
+    const savedUser = localStorage.getItem('rememberedUsername');
+    if (savedUser) {
+      setAuthForm(prev => ({ ...prev, username: savedUser }));
+      setRememberMe(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (token) fetchData();
@@ -110,6 +136,13 @@ export default function App() {
         localStorage.setItem('token', json.token);
         localStorage.setItem('username', authForm.username);
         localStorage.setItem('loginTime', Date.now().toString());
+        
+        if (rememberMe) {
+          localStorage.setItem('rememberedUsername', authForm.username);
+        } else {
+          localStorage.removeItem('rememberedUsername');
+        }
+
         setToken(json.token);
         setUsername(authForm.username);
       } else {
@@ -144,7 +177,7 @@ export default function App() {
       id: `acc_${Date.now()}`,
       broker: newAccountForm.broker,
       number: newAccountForm.number || `U${Math.floor(Math.random() * 1000000)}`,
-      type: newAccountForm.type,
+      type: newAccountForm.type || 'Margin',
       appData: {},
       capitalFlows: []
     };
@@ -156,6 +189,28 @@ export default function App() {
     saveData(updated);
     setShowNewAccountModal(false);
     setNewAccountForm({ broker: 'Interactive Brokers', number: '', type: 'Margin' });
+  };
+
+  const handleUpdateActiveAccount = (e) => {
+    e.preventDefault();
+    const activeAccount = data.accounts.find(a => a.id === data.activeAccountId);
+    if (!activeAccount) return;
+
+    const updatedAccounts = data.accounts.map(acc => {
+      if (acc.id === activeAccount.id) {
+        return {
+          ...acc,
+          broker: editAccountForm.broker || acc.broker,
+          number: editAccountForm.number || acc.number,
+          type: editAccountForm.type || acc.type
+        };
+      }
+      return acc;
+    });
+
+    saveData({ ...data, accounts: updatedAccounts });
+    setShowSettingsModal(false);
+    alert("¡Cuenta actualizada con éxito!");
   };
 
   const handleDeleteActiveAccount = () => {
@@ -182,7 +237,7 @@ export default function App() {
     parseCsvFile(file, {
       onSuccess: (result) => {
         setPendingCsvResult(result);
-        setShowImportModal(true); // Muestra el modal para elegir cómo importar
+        setShowImportModal(true);
       },
       onError: (err) => {
         alert("Error al procesar el archivo: " + err);
@@ -200,11 +255,6 @@ export default function App() {
         if (!newAppData[item.dateKey]) newAppData[item.dateKey] = [];
         
         if (strategy === 'merge') {
-          // Evita duplicados verificando si ya existe un trade idéntico (mismo ticker, pnl y costo)
-          item.trade.forEach(t => {
-            // asumiendo elementos individuales
-          });
-          // Filtramos por coincidencia exacta para no duplicar
           const existing = newAppData[item.dateKey];
           const isDuplicate = existing.some(e => 
             e.ticker === item.trade.ticker && 
@@ -244,6 +294,15 @@ export default function App() {
         saveData({ ...data, accounts: updatedAccounts });
         alert(`¡Importación exitosa (${strategy === 'merge' ? 'fusionado sin duplicados' : 'reemplazado'})!`);
       }
+    } else if (pendingCsvResult.type === 'transactions') {
+      // Si es archivo de transacciones / cash_balanced.csv de IBKR
+      if (!activeAccount.capitalFlows) activeAccount.capitalFlows = [];
+      pendingCsvResult.flows.forEach(f => {
+        const exists = activeAccount.capitalFlows.some(cf => cf.date === f.date && Math.abs(cf.amount - f.amount) < 0.01);
+        if (!exists) activeAccount.capitalFlows.push(f);
+      });
+      saveData({ ...data });
+      alert("¡Movimientos de capital importados desde el archivo de IBKR con éxito!");
     }
 
     setShowImportModal(false);
@@ -298,7 +357,6 @@ export default function App() {
     }
     
     saveData(newAccountData);
-    // Actualizar también el estado local del modal si está abierto
     const updatedTrades = newAccountData.accounts[accountIdx].appData[dateKey];
     const updatedPnl = updatedTrades.reduce((sum, t) => sum + Number(t.pnl || 0), 0);
     setModalDay(prev => prev ? { ...prev, trades: updatedTrades, pnl: updatedPnl } : null);
@@ -316,15 +374,6 @@ export default function App() {
     const updatedTrades = newAccountData.accounts[accountIdx].appData[dateKey];
     const updatedPnl = updatedTrades.length > 0 ? updatedTrades.reduce((sum, t) => sum + Number(t.pnl || 0), 0) : null;
     setModalDay(prev => prev ? { ...prev, trades: updatedTrades, pnl: updatedPnl } : null);
-  };
-
-  const handleDeleteCapitalFlow = (flowId) => {
-    if (!window.confirm("¿Estás seguro de borrar este movimiento?")) return;
-    const accountId = activeAccount.id;
-    const newAccountData = JSON.parse(JSON.stringify(data));
-    const accountIdx = newAccountData.accounts.findIndex(a => a.id === accountId);
-    newAccountData.accounts[accountIdx].capitalFlows = newAccountData.accounts[accountIdx].capitalFlows.filter(f => f.id !== flowId);
-    saveData(newAccountData);
   };
 
   if (backendLoading && !data && token) {
@@ -357,6 +406,16 @@ export default function App() {
               <label className="block font-bold text-slate-400 mb-1">Contraseña</label>
               <input type="password" required value={authForm.password} onChange={e => setAuthForm({...authForm, password: e.target.value})} className="w-full px-3 py-2 rounded-xl bg-[#090D16] border border-slate-700 text-white focus:outline-none" />
             </div>
+            <div className="flex items-center gap-2 py-1">
+              <input 
+                type="checkbox" 
+                id="remember" 
+                checked={rememberMe} 
+                onChange={e => setRememberMe(e.target.checked)} 
+                className="rounded bg-[#090D16] border-slate-700 cursor-pointer"
+              />
+              <label htmlFor="remember" className="text-slate-400 cursor-pointer">Recordar mis datos</label>
+            </div>
             <button type="submit" className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition">Entrar al Diario</button>
           </form>
         </div>
@@ -368,7 +427,6 @@ export default function App() {
 
   const activeAccount = data.accounts.find(a => a.id === data.activeAccountId) || data.accounts[0];
 
-  // Cálculos métricos inteligentes (Mes vs Año)
   let netGains = 0, grossGains = 0, grossLosses = 0, winCount = 0, totalTradesCount = 0;
   const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
 
@@ -388,7 +446,6 @@ export default function App() {
   const schwabRatio = totalVolume > 0 ? ((grossGains / totalVolume) * 100).toFixed(2) : '0.00';
   const winRatePct = totalTradesCount > 0 ? Math.round((winCount / totalTradesCount) * 100) : 0;
 
-  // Días del mes (Lunes a Viernes)
   const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
   const firstOfMonth = new Date(currentYear, currentMonth, 1);
   const startDay = new Date(firstOfMonth);
@@ -441,7 +498,10 @@ export default function App() {
           accounts={data.accounts}
           onSelectAccount={(accId) => saveData({...data, activeAccountId: accId})}
           onOpenNewAccount={() => setShowNewAccountModal(true)}
-          onOpenSettings={() => setShowSettingsModal(true)}
+          onOpenSettings={() => {
+            setEditAccountForm({ broker: activeAccount.broker, number: activeAccount.number, type: activeAccount.type || 'Margin' });
+            setShowSettingsModal(true);
+          }}
         />
 
         {/* ENCABEZADO */}
@@ -542,100 +602,73 @@ export default function App() {
         )}
 
         {activeTab === 'Year' && (
-          <div className="space-y-4">
-            <h2 className="text-sm font-black tracking-wide text-slate-200">Resumen Anual: {currentYear}</h2>
-            <div className="grid grid-cols-3 gap-2.5">
-              {["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"].map((mName, mIdx) => {
-                const monthPrefix = `${currentYear}-${String(mIdx + 1).padStart(2, '0')}`;
-                let mPnl = 0, mTrades = 0;
-                Object.keys(activeAccount.appData || {}).forEach(k => {
-                  if (k.startsWith(monthPrefix)) {
-                    (activeAccount.appData[k] || []).forEach(t => {
-                      mPnl += Number(t.pnl || 0);
-                      mTrades++;
-                    });
-                  }
-                });
-                return (
-                  <div key={mName} onClick={() => { setCurrentMonth(mIdx); setActiveTab('Month'); }} className="p-3.5 rounded-2xl border border-slate-800 bg-[#0d1424] cursor-pointer hover:border-blue-500 transition">
-                    <div className="flex justify-between text-xs font-bold">
-                      <span className="text-slate-300">{mName}</span>
-                      <span className="text-slate-400 text-[10px]">{mTrades} trades</span>
-                    </div>
-                    <div className={`text-sm font-black mt-2 ${mPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>{formatExactCurrency(mPnl)}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <YearView 
+            activeAccount={activeAccount} 
+            currentYear={currentYear} 
+            setCurrentMonth={setCurrentMonth} 
+            setActiveTab={setActiveTab} 
+          />
         )}
-{activeTab === 'Year' && (
-  <YearView 
-    activeAccount={activeAccount} 
-    currentYear={currentYear} 
-    setCurrentMonth={setCurrentMonth} 
-    setActiveTab={setActiveTab} 
-  />
-)}
+
         {activeTab === 'Tickers' && <TickersView activeAccount={activeAccount} currentYear={currentYear} />}
         {activeTab === 'Commissions' && <CommissionsView activeAccount={activeAccount} currentYear={currentYear} />}
         {activeTab === 'Capital' && (
-  <CapitalView 
-    activeAccount={activeAccount} 
-    allAccounts={data.accounts}
-    onSaveCapitalFlow={(flow, transferData) => {
-      const newAppData = JSON.parse(JSON.stringify(data));
-      const activeAccIdx = newAppData.accounts.findIndex(a => a.id === activeAccount.id);
-      
-      if (!newAppData.accounts[activeAccIdx].capitalFlows) {
-        newAppData.accounts[activeAccIdx].capitalFlows = [];
-      }
-      newAppData.accounts[activeAccIdx].capitalFlows.push(flow);
+          <CapitalView 
+            activeAccount={activeAccount} 
+            allAccounts={data.accounts}
+            onSaveCapitalFlow={(flow, transferData) => {
+              const newAppData = JSON.parse(JSON.stringify(data));
+              const activeAccIdx = newAppData.accounts.findIndex(a => a.id === activeAccount.id);
+              
+              if (!newAppData.accounts[activeAccIdx].capitalFlows) {
+                newAppData.accounts[activeAccIdx].capitalFlows = [];
+              }
+              newAppData.accounts[activeAccIdx].capitalFlows.push(flow);
 
-      if (transferData) {
-        const targetAccIdx = newAppData.accounts.findIndex(a => a.id === transferData.targetAccountId);
-        if (targetAccIdx !== -1) {
-          if (!newAppData.accounts[targetAccIdx].capitalFlows) {
-            newAppData.accounts[targetAccIdx].capitalFlows = [];
-          }
-          newAppData.accounts[targetAccIdx].capitalFlows.push(transferData.inFlow);
-        }
-      }
+              if (transferData) {
+                const targetAccIdx = newAppData.accounts.findIndex(a => a.id === transferData.targetAccountId);
+                if (targetAccIdx !== -1) {
+                  if (!newAppData.accounts[targetAccIdx].capitalFlows) {
+                    newAppData.accounts[targetAccIdx].capitalFlows = [];
+                  }
+                  newAppData.accounts[targetAccIdx].capitalFlows.push(transferData.inFlow);
+                }
+              }
 
-      saveData(newAppData);
-    }}
-    onUpdateCapitalFlow={(updatedFlow) => {
-      const newAppData = JSON.parse(JSON.stringify(data));
-      const activeAccIdx = newAppData.accounts.findIndex(a => a.id === activeAccount.id);
-      
-      const flows = newAppData.accounts[activeAccIdx].capitalFlows || [];
-      const idx = flows.findIndex(f => f.id === updatedFlow.id);
-      if (idx !== -1) {
-        flows[idx] = updatedFlow;
-        saveData(newAppData);
-      }
-    }}
-    onDeleteCapitalFlow={(flowId, transferId) => {
-      if (!window.confirm("¿Estás seguro de borrar este movimiento?")) return;
-      const newAppData = JSON.parse(JSON.stringify(data));
+              saveData(newAppData);
+            }}
+            onUpdateCapitalFlow={(updatedFlow) => {
+              const newAppData = JSON.parse(JSON.stringify(data));
+              const activeAccIdx = newAppData.accounts.findIndex(a => a.id === activeAccount.id);
+              
+              const flows = newAppData.accounts[activeAccIdx].capitalFlows || [];
+              const idx = flows.findIndex(f => f.id === updatedFlow.id);
+              if (idx !== -1) {
+                flows[idx] = updatedFlow;
+                saveData(newAppData);
+              }
+            }}
+            onDeleteCapitalFlow={(flowId, transferId) => {
+              if (!window.confirm("¿Estás seguro de borrar este movimiento?")) return;
+              const newAppData = JSON.parse(JSON.stringify(data));
 
-      if (transferId) {
-        newAppData.accounts.forEach(acc => {
-          if (acc.capitalFlows) {
-            acc.capitalFlows = acc.capitalFlows.filter(f => f.transferId !== transferId);
-          }
-        });
-      } else {
-        const activeAccIdx = newAppData.accounts.findIndex(a => a.id === activeAccount.id);
-        if (newAppData.accounts[activeAccIdx].capitalFlows) {
-          newAppData.accounts[activeAccIdx].capitalFlows = newAppData.accounts[activeAccIdx].capitalFlows.filter(f => f.id !== flowId);
-        }
-      }
+              if (transferId) {
+                newAppData.accounts.forEach(acc => {
+                  if (acc.capitalFlows) {
+                    acc.capitalFlows = acc.capitalFlows.filter(f => f.transferId !== transferId);
+                  }
+                });
+              } else {
+                const activeAccIdx = newAppData.accounts.findIndex(a => a.id === activeAccount.id);
+                if (newAppData.accounts[activeAccIdx].capitalFlows) {
+                  newAppData.accounts[activeAccIdx].capitalFlows = newAppData.accounts[activeAccIdx].capitalFlows.filter(f => f.id !== flowId);
+                }
+              }
 
-      saveData(newAppData);
-    }} 
-  />
-)}
+              saveData(newAppData);
+            }} 
+          />
+        )}
 
         {/* TARJETAS DE MÉTRICAS INFERIORES */}
         {(activeTab === 'Month' || activeTab === 'Year') && (
@@ -672,22 +705,50 @@ export default function App() {
               <label className="block font-bold text-slate-400 mb-1">Número de Cuenta</label>
               <input type="text" placeholder="Ej. U1234567" value={newAccountForm.number} onChange={e => setNewAccountForm({...newAccountForm, number: e.target.value})} className="w-full px-3 py-2 rounded-xl bg-[#090D16] border border-slate-700 text-white" />
             </div>
+            <div>
+              <label className="block font-bold text-slate-400 mb-1">Tipo de Cuenta</label>
+              <select value={newAccountForm.type} onChange={e => setNewAccountForm({...newAccountForm, type: e.target.value})} className="w-full px-3 py-2 rounded-xl bg-[#090D16] border border-slate-700 text-white">
+                <option value="Margin">Margin</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
             <button type="submit" className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition">Crear Cuenta</button>
           </form>
         </div>
       )}
 
-      {/* MODAL CONFIGURACIÓN CUENTA */}
+      {/* MODAL CONFIGURACIÓN / EDICIÓN DE CUENTA */}
       {showSettingsModal && (
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#131B2E] rounded-3xl w-full max-w-md p-6 border border-slate-700 shadow-2xl space-y-4 text-xs">
+          <form onSubmit={handleUpdateActiveAccount} className="bg-[#131B2E] rounded-3xl w-full max-w-md p-6 border border-slate-700 shadow-2xl space-y-4 text-xs">
             <div className="flex justify-between items-center pb-2 border-b border-slate-700">
-              <h3 className="text-sm font-black text-white">Configuración de Cuenta</h3>
-              <button onClick={() => setShowSettingsModal(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
+              <h3 className="text-sm font-black text-white">Configuración y Edición de Cuenta</h3>
+              <button type="button" onClick={() => setShowSettingsModal(false)} className="text-slate-400 hover:text-white"><X className="w-5 h-5"/></button>
             </div>
-            <p className="text-slate-400">Cuenta actual: <strong className="text-white">{activeAccount.broker} ({activeAccount.number})</strong></p>
-            <button onClick={handleDeleteActiveAccount} className="w-full py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-lg transition">Eliminar Cuenta Actual</button>
-          </div>
+            <div>
+              <label className="block font-bold text-slate-400 mb-1">Broker</label>
+              <select value={editAccountForm.broker} onChange={e => setEditAccountForm({...editAccountForm, broker: e.target.value})} className="w-full px-3 py-2 rounded-xl bg-[#090D16] border border-slate-700 text-white">
+                <option value="Interactive Brokers">Interactive Brokers</option>
+                <option value="Charles Schwab">Charles Schwab</option>
+                <option value="Thinkorswim">Thinkorswim</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-bold text-slate-400 mb-1">Número de Cuenta</label>
+              <input type="text" value={editAccountForm.number} onChange={e => setEditAccountForm({...editAccountForm, number: e.target.value})} className="w-full px-3 py-2 rounded-xl bg-[#090D16] border border-slate-700 text-white" />
+            </div>
+            <div>
+              <label className="block font-bold text-slate-400 mb-1">Tipo de Cuenta</label>
+              <select value={editAccountForm.type} onChange={e => setEditAccountForm({...editAccountForm, type: e.target.value})} className="w-full px-3 py-2 rounded-xl bg-[#090D16] border border-slate-700 text-white">
+                <option value="Margin">Margin</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
+            <div className="pt-2 flex gap-2">
+              <button type="submit" className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition">Guardar Cambios</button>
+              <button type="button" onClick={handleDeleteActiveAccount} className="py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-lg transition">Eliminar Cuenta</button>
+            </div>
+          </form>
         </div>
       )}
 

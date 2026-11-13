@@ -5,10 +5,12 @@ import { formatExactCurrency, getTickerBadgeClass } from '../renderers.jsx';
 export default function CommissionsView({ activeAccount, currentYear }) {
   const [commissionPerContract, setCommissionPerContract] = useState(1.30);
 
-  const isIbkr = (activeAccount.broker || '').toUpperCase().includes('IBKR') || (activeAccount.broker || '').toUpperCase().includes('INTERACTIVE');
+  const brokerName = (activeAccount.broker || '').toUpperCase();
+  const isIbkr = brokerName.includes('IBKR') || brokerName.includes('INTERACTIVE');
 
   let totalComms = 0;
-  let totalUnits = 0;
+  let totalContracts = 0;
+  let totalShares = 0;
   let grossPnlTotal = 0;
   const tickerStats = {};
 
@@ -18,9 +20,10 @@ export default function CommissionsView({ activeAccount, currentYear }) {
         const sym = (t.ticker || 'OTHER').split(' ')[0].toUpperCase().trim();
         const qty = parseInt(t.qty, 10) || 0;
         const pnlNet = Number(t.pnl || 0);
-        const isOption = ['CALL', 'PUT'].includes((t.type || '').toUpperCase());
+        const tType = (t.type || '').toUpperCase();
+        const isOption = ['CALL', 'PUT'].includes(tType);
 
-        // Comisión: Si es IBKR usa la real del trade; si es TOS u otro, calcula o usa la estimada
+        // Comisión real o estimada
         let comm = Number(t.commission || 0);
         if (!isIbkr && comm === 0 && isOption) {
           comm = qty * commissionPerContract;
@@ -29,13 +32,17 @@ export default function CommissionsView({ activeAccount, currentYear }) {
         const pnlBruto = pnlNet + comm;
 
         totalComms += comm;
-        totalUnits += qty;
+        if (isOption) totalContracts += qty;
+        else totalShares += qty;
+
         grossPnlTotal += pnlBruto;
 
         if (!tickerStats[sym]) {
-          tickerStats[sym] = { ticker: sym, units: 0, commission: 0, pnlBruto: 0, pnlNet: 0 };
+          tickerStats[sym] = { ticker: sym, contracts: 0, shares: 0, commission: 0, pnlBruto: 0, pnlNet: 0, isOptionTicker: isOption };
         }
-        tickerStats[sym].units += qty;
+        if (isOption) tickerStats[sym].contracts += qty;
+        else tickerStats[sym].shares += qty;
+
         tickerStats[sym].commission += comm;
         tickerStats[sym].pnlBruto += pnlBruto;
         tickerStats[sym].pnlNet += pnlNet;
@@ -49,7 +56,7 @@ export default function CommissionsView({ activeAccount, currentYear }) {
   return (
     <div className="space-y-4">
       <h2 className="text-sm font-black tracking-wide text-slate-200 uppercase">COMISIONES Y RENDIMIENTO NETO ({currentYear})</h2>
-      <p className="text-[10px] text-slate-500">Calculado según contratos y acciones operadas en esta cuenta</p>
+      <p className="text-[10px] text-slate-500">Desglose de comisiones y volumen operado por activo</p>
 
       {/* INPUT DE COMISIÓN ESTIMADA (SOLO SI NO ES IBKR) */}
       {!isIbkr && (
@@ -77,8 +84,13 @@ export default function CommissionsView({ activeAccount, currentYear }) {
       {/* TARJETAS DE RESUMEN SUPERIOR */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div className="p-4 rounded-2xl border border-slate-800 bg-[#0b101d] flex flex-col justify-between">
-          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">TOTAL CONTRATOS</span>
-          <span className="text-lg font-black text-white mt-2">{totalUnits} ctos</span>
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">VOLUMEN OPERADO</span>
+          <span className="text-sm font-black text-white mt-2">
+            {totalContracts > 0 ? `${totalContracts} ctos` : ''} 
+            {totalContracts > 0 && totalShares > 0 ? ' / ' : ''} 
+            {totalShares > 0 ? `${totalShares} acciones` : ''}
+            {totalContracts === 0 && totalShares === 0 ? '0 ops' : ''}
+          </span>
         </div>
         <div className="p-4 rounded-2xl border border-slate-800 bg-[#0b101d] flex flex-col justify-between">
           <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">TOTAL COMISIONES</span>
@@ -97,8 +109,8 @@ export default function CommissionsView({ activeAccount, currentYear }) {
             <thead className="bg-[#131B2E] text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
               <tr>
                 <th className="py-3 px-4">Ticker</th>
-                <th className="py-3 px-3 text-center">Contratos</th>
-                <th className="py-3 px-3 text-right">Comisión Est.</th>
+                <th className="py-3 px-3 text-center">Volumen / Unidades</th>
+                <th className="py-3 px-3 text-right">{isIbkr ? 'Comisión Real' : 'Comisión Est.'}</th>
                 <th className="py-3 px-3 text-right">P&amp;L Bruto</th>
                 <th className="py-3 px-4 text-right">P&amp;L Neto</th>
               </tr>
@@ -109,21 +121,24 @@ export default function CommissionsView({ activeAccount, currentYear }) {
                   <td colSpan="5" className="text-center py-8 text-slate-500">No hay operaciones registradas para calcular comisiones.</td>
                 </tr>
               ) : (
-                list.map(s => (
-                  <tr key={s.ticker} className="hover:bg-[#131B2E]/50 transition">
-                    <td className="py-3 px-4 font-bold">
-                      <span className={`px-2 py-0.5 rounded-lg font-black ${getTickerBadgeClass(s.ticker)}`}>
-                        {s.ticker}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 text-center font-semibold text-slate-300">{s.units} ctos</td>
-                    <td className="py-3 px-3 text-right font-bold text-rose-400">-{formatExactCurrency(s.commission)}</td>
-                    <td className="py-3 px-3 text-right font-semibold text-slate-300">{formatExactCurrency(s.pnlBruto)}</td>
-                    <td className={`py-3 px-4 text-right font-black ${s.pnlNet >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                      {formatExactCurrency(s.pnlNet)}
-                    </td>
-                  </tr>
-                ))
+                list.map(s => {
+                  const volDisplay = s.contracts > 0 ? `${s.contracts} ctos` : `${s.shares} acciones`;
+                  return (
+                    <tr key={s.ticker} className="hover:bg-[#131B2E]/50 transition">
+                      <td className="py-3 px-4 font-bold">
+                        <span className={`px-2 py-0.5 rounded-lg font-black ${getTickerBadgeClass(s.ticker)}`}>
+                          {s.ticker}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-center font-semibold text-slate-300">{volDisplay}</td>
+                      <td className="py-3 px-3 text-right font-bold text-rose-400">-{formatExactCurrency(s.commission)}</td>
+                      <td className="py-3 px-3 text-right font-semibold text-slate-300">{formatExactCurrency(s.pnlBruto)}</td>
+                      <td className={`py-3 px-4 text-right font-black ${s.pnlNet >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        {formatExactCurrency(s.pnlNet)}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

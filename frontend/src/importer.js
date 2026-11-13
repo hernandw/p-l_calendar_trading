@@ -39,8 +39,8 @@ export function parseCsvFile(file, callbacks) {
 
       for (let i = 0; i < Math.min(rows.length, 30); i++) {
         const rowStr = rows[i].map(c => String(c).trim().toLowerCase());
-        const hasAction = rowStr.some(c => c.includes('action') || c.includes('type'));
-        const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto'));
+        const hasAction = rowStr.some(c => c.includes('action') || c.includes('type') || c.includes('description'));
+        const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto') || c.includes('balance'));
         if (hasAction && hasAmount) {
           headerRowIndex = i;
           isTransactionsFile = true;
@@ -61,14 +61,42 @@ export function parseCsvFile(file, callbacks) {
       }
 
       if (headerRowIndex === -1) {
-        callbacks.onError("No se reconoció el formato de Schwab ni de Interactive Brokers.");
-        return;
+        // Fallback por defecto si es archivo de transacciones de IBKR
+        headerRowIndex = 0;
+        isTransactionsFile = true;
+        brokerDetected = 'IBKR';
       }
 
       const headers = rows[headerRowIndex].map(h => String(h).trim());
 
       if (isTransactionsFile) {
         const flows = [];
+        for (let r = headerRowIndex + 1; r < rows.length; r++) {
+          const row = rows[r];
+          if (!row || row.length <= 1) continue;
+          
+          const rowText = row.join(' ').toLowerCase();
+          const dateStr = row.find(c => /^\d{4}[-/]\d{2}[-/]\d{2}|\d{8}|\d{1,2}\/\d{1,2}\/\d{2,4}/.test(String(c).trim()));
+          const parsedDate = parseFlexibleDate(dateStr);
+          
+          if (!parsedDate) continue;
+
+          // Buscar columna con valor numérico de dinero
+          const amountCell = row.find(c => !isNaN(parseFloat(String(c).replace(/[\$,]/g, ''))) && Math.abs(parseFloat(String(c).replace(/[\$,]/g, ''))) > 0);
+          if (!amountCell) continue;
+
+          const rawAmt = parseFloat(String(amountCell).replace(/[\$,]/g, '').trim());
+          const isDeposit = rowText.includes('deposit') || rowText.includes('contrib') || rowText.includes('aporte') || rowText.includes('cash receipt') || rawAmt > 0;
+          
+          flows.push({
+            id: `flow_csv_${Date.now()}_${Math.random()}`,
+            type: isDeposit ? 'deposit' : 'withdrawal',
+            date: parsedDate,
+            amount: Math.abs(rawAmt),
+            description: row.slice(0, 4).join(' - ') || 'Transacción IBKR'
+          });
+        }
+
         callbacks.onSuccess({ type: 'transactions', broker: brokerDetected, flows });
         return;
       }
