@@ -4,9 +4,10 @@ export function formatMoney(val) {
 }
 
 export function formatExactCurrency(val) {
-  const num = Number(val || 0);
-  const formatted = Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  return num >= 0 ? `+$${formatted}` : `-$${formatted}`;
+  if (val === undefined || isNaN(val)) return '$0.00';
+  const num = Number(val);
+  const sign = num > 0 ? '+' : (num < 0 ? '-' : '');
+  return `${sign}$${Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function getSystemTodayKey() {

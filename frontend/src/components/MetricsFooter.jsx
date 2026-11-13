@@ -17,8 +17,8 @@ export default function MetricsFooter({ activeTab, netGains, grossGains, grossLo
       <div className="p-4 rounded-2xl border border-slate-800 bg-[#0b101d] flex flex-col justify-between">
         <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">TOTALES G / P</span>
         <div className="mt-2 text-xs font-bold space-y-0.5">
-          <div className="text-emerald-400">+{formatExactCurrency(grossGains)}</div>
-          <div className="text-rose-400">-{formatExactCurrency(grossLosses)}</div>
+          <div className="text-emerald-400">{formatExactCurrency(grossGains)}</div>
+          <div className="text-rose-400">{formatExactCurrency(grossLosses)}</div>
         </div>
       </div>
       <div className="p-4 rounded-2xl border border-slate-800 bg-[#0b101d] flex flex-col justify-between">

@@ -97,7 +97,7 @@ export default function CommissionsView({ activeAccount, currentYear }) {
         </div>
         <div className="p-4 rounded-2xl border border-slate-800 bg-[#0b101d] flex flex-col justify-between">
           <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">TOTAL COMISIONES</span>
-          <span className="text-lg font-black text-rose-400 mt-2">-{formatExactCurrency(totalComms)}</span>
+          <span className="text-lg font-black text-rose-400 mt-2">{formatExactCurrency(totalComms)}</span>
         </div>
         <div className="p-4 rounded-2xl border border-slate-800 bg-[#0b101d] flex flex-col justify-between">
           <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">IMPACTO EN P&amp;L</span>
@@ -134,7 +134,7 @@ export default function CommissionsView({ activeAccount, currentYear }) {
                         </span>
                       </td>
                       <td className="py-3 px-3 text-center font-semibold text-slate-300">{volDisplay}</td>
-                      <td className="py-3 px-3 text-right font-bold text-rose-400">-{formatExactCurrency(s.commission)}</td>
+                      <td className="py-3 px-3 text-right font-bold text-rose-400">{formatExactCurrency(s.commission)}</td>
                       <td className="py-3 px-3 text-right font-semibold text-slate-300">{formatExactCurrency(s.pnlBruto)}</td>
                       <td className={`py-3 px-4 text-right font-black ${s.pnlNet >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                         {formatExactCurrency(s.pnlNet)}

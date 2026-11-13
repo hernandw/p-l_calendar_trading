@@ -147,9 +147,9 @@ export default function CapitalView({ activeAccount, allAccounts = [], onSaveCap
         </div>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 pt-2 border-t border-slate-800/80 font-semibold">
-          <span>Depósitos: <strong className="text-emerald-400">+{formatExactCurrency(dep)}</strong></span>
+          <span>Depósitos: <strong className="text-emerald-400">{formatExactCurrency(dep)}</strong></span>
           <span>&bull;</span>
-          <span>Retiros/Salidas: <strong className="text-rose-400">-{formatExactCurrency(wth)}</strong></span>
+          <span>Retiros/Salidas: <strong className="text-rose-400">{formatExactCurrency(wth)}</strong></span>
           <span>&bull;</span>
           <span>Capital Neto: <strong className="text-slate-200">{formatExactCurrency(netInflow)}</strong></span>
         </div>
@@ -278,8 +278,7 @@ export default function CapitalView({ activeAccount, allAccounts = [], onSaveCap
                     {f.description || '-'}
                   </div>
 
-                  <div className={`col-span-2 text-right font-black ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {isPositive ? `+${formatExactCurrency(f.amount)}` : `-${formatExactCurrency(f.amount)}`}
+                  <div className={`col-span-2 text-right font-black ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>${formatExactCurrency(f.amount)}`
                   </div>
 
                   <div className="col-span-1 flex items-center justify-end gap-2">
