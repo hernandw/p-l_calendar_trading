@@ -6,7 +6,6 @@ export default function GainLossGauge({ activeAccount, activeTab, currentYear, c
 
   const monthPrefix = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
 
-  // Recorrer los trades filtrando según la pestaña activa (Month o Year)
   Object.keys(activeAccount.appData || {}).forEach(k => {
     const matchesPeriod = activeTab === 'Month' ? k.startsWith(monthPrefix) : k.startsWith(`${currentYear}`);
     if (matchesPeriod) {
@@ -19,16 +18,18 @@ export default function GainLossGauge({ activeAccount, activeTab, currentYear, c
   });
 
   const totalVolume = grossGains + grossLosses;
-  // Ratio de ganancia respecto al volumen total de P&L (o ganancia vs pérdidas)
   const ratio = totalVolume > 0 ? ((grossGains / totalVolume) * 100).toFixed(2) : '0.00';
   const numericRatio = parseFloat(ratio);
 
-  // Cálculos para el arco SVG semicircular (Tacómetro)
+  // Coeficiente del semicírculo (180 grados -> longitud de arco aprox 220)
   const radius = 70;
   const stroke = 14;
   const normalizedRadius = radius - stroke * 2;
-  const circumference = Math.PI * normalizedRadius; // Semicírculo (180 grados)
-  const strokeDashoffset = circumference - (numericRatio / 100) * circumference;
+  const circumference = Math.PI * normalizedRadius; 
+
+  // Longitudes proporcionales para el verde (ganancias) y rojo (pérdidas)
+  const greenLength = (numericRatio / 100) * circumference;
+  const redLength = circumference - greenLength;
 
   return (
     <div className="p-5 rounded-3xl border border-slate-800 bg-[#0b101d] flex flex-col items-center justify-between space-y-3 shadow-xl">
@@ -41,10 +42,10 @@ export default function GainLossGauge({ activeAccount, activeTab, currentYear, c
         </span>
       </div>
 
-      {/* TACÓMETRO / GAUGE SVG */}
+      {/* TACÓMETRO LIMPIO Y CONTINUO */}
       <div className="relative flex flex-col items-center justify-center py-2">
         <svg height={radius * 1.3} width={radius * 2.2} className="overflow-visible">
-          {/* Fondo del arco (Rojo / Pérdidas) */}
+          {/* Fondo / Segmento de Pérdidas (Rojo) */}
           <path
             d={`M ${stroke},${radius} A ${normalizedRadius},${normalizedRadius} 0 0,1 ${radius * 2 - stroke},${radius}`}
             fill="none"
@@ -52,20 +53,18 @@ export default function GainLossGauge({ activeAccount, activeTab, currentYear, c
             strokeWidth={stroke}
             strokeLinecap="round"
           />
-          {/* Arco activo (Verde / Ganancias) */}
+          {/* Segmento Proporcional de Ganancias (Verde sólido a un lado) */}
           <path
             d={`M ${stroke},${radius} A ${normalizedRadius},${normalizedRadius} 0 0,1 ${radius * 2 - stroke},${radius}`}
             fill="none"
             stroke="#10b981"
             strokeWidth={stroke}
             strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
-            style={{ transition: 'stroke-dashoffset 0.6s ease-in-out' }}
+            strokeDasharray={`${greenLength} ${circumference}`}
+            style={{ transition: 'stroke-dasharray 0.6s ease-in-out' }}
           />
         </svg>
 
-        {/* Texto central del medidor */}
         <div className="absolute bottom-1 flex flex-col items-center">
           <span className="text-xl font-black text-white tracking-tight">{numericRatio}%</span>
         </div>

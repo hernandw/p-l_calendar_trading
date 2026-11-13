@@ -10,9 +10,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'trading_journal_secret_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
 
-// Definir la carpeta data y la ruta del archivo database.json
+// Definir la carpeta data y la ruta del archivo database.json de forma absoluta
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'database.json');
 
@@ -59,7 +59,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// 1. Registro de usuario (ES6)
+// 1. Registro de usuario
 app.post('/api/register', (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -133,7 +133,7 @@ app.get('/api/data', authenticateToken, (req, res) => {
   res.json(userData);
 });
 
-// 4. Guardar / Sincronizar datos del journal (Modifica el JSON)
+// 4. Guardar / Sincronizar datos del journal
 app.post('/api/data', authenticateToken, (req, res) => {
   const db = readDB();
   db.userDatas[req.user.username] = req.body;
@@ -144,6 +144,7 @@ app.post('/api/data', authenticateToken, (req, res) => {
 // Servir frontend compilado si existe
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
 
+// Ruta comodín compatible con Express 5 para manejar el enrutamiento del frontend
 app.get(/(.*)/, (req, res) => {
   const indexPath = path.join(__dirname, 'frontend/dist', 'index.html');
   if (fs.existsSync(indexPath)) {
