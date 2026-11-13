@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ImportOptionsModal from './components/ImportOptionsModal.jsx';
+import PerformanceCharts from './components/PerformanceCharts.jsx';
+import GainLossGauge from './components/GainLossGauge.jsx';
 
 import { 
   TrendingUp, Moon, Sun, LogOut, CalendarDays, CalendarRange, 
@@ -672,16 +674,26 @@ export default function App() {
 
         {/* TARJETAS DE MÉTRICAS INFERIORES */}
         {(activeTab === 'Month' || activeTab === 'Year') && (
-          <MetricsFooter 
-            activeTab={activeTab}
-            netGains={netGains}
-            grossGains={grossGains}
-            grossLosses={grossLosses}
-            schwabRatio={schwabRatio}
-            winRatePct={winRatePct}
-            winCount={winCount}
-            totalTradesCount={totalTradesCount}
-          />
+          <div className="space-y-4">
+            <MetricsFooter 
+              activeTab={activeTab}
+              netGains={netGains}
+              grossGains={grossGains}
+              grossLosses={grossLosses}
+              schwabRatio={schwabRatio}
+              winRatePct={winRatePct}
+              winCount={winCount}
+              totalTradesCount={totalTradesCount}
+            />
+
+            {/* GRÁFICO TIPO GAUGE DE GANANCIA / PÉRDIDA */}
+            <GainLossGauge 
+              activeAccount={activeAccount}
+              activeTab={activeTab}
+              currentYear={currentYear}
+              currentMonth={currentMonth}
+            />
+          </div>
         )}
       </main>
 
