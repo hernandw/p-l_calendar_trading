@@ -117,7 +117,6 @@ export function parseCsvFile(file, callbacks) {
             });
           }
 
-          // Si no hay depósitos explícitos pero hay saldo inicial de caja significativo, se registra como aporte inicial
           if (depositsVal === 0 && withdrawalsVal === 0 && startingVal > 0) {
             flows.push({
               id: `flow_sum_start_${Date.now()}`,
@@ -176,6 +175,23 @@ export function parseCsvFile(file, callbacks) {
       const commIdx = headers.findIndex(h => /ibcommission|commission/i.test(h));
       const assetClassIdx = headers.findIndex(h => /assetclass/i.test(h));
 
+      // PRIMERA PASADA: Acumular comisiones de apertura (filas donde PnL es 0) por símbolo
+      const buyCommissionsByTicker = {};
+      if (brokerDetected === 'IBKR') {
+        for (let r = headerRowIndex + 1; r < rows.length; r++) {
+          const row = rows[r];
+          if (!row || row.length <= symbolIdx) continue;
+          const symbolRaw = String(row[symbolIdx] || '').trim().toUpperCase();
+          const gainLossRaw = String(row[gainLossIdx] || '').trim();
+          const rawPnl = parseFloat(gainLossRaw.replace(/\$/g, '').replace(/,/g, '').trim()) || 0;
+          const commVal = (commIdx !== -1 && row[commIdx]) ? Math.abs(parseFloat(String(row[commIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
+
+          if (rawPnl === 0 && commVal > 0 && symbolRaw) {
+            buyCommissionsByTicker[symbolRaw] = (buyCommissionsByTicker[symbolRaw] || 0) + commVal;
+          }
+        }
+      }
+
       const trades = [];
       let totalNet = 0, totalInvested = 0, minD = null, maxD = null;
 
@@ -191,6 +207,7 @@ export function parseCsvFile(file, callbacks) {
         const rawPnl = parseFloat(gainLossRaw.replace(/\$/g, '').replace(/,/g, '').trim());
         if (isNaN(rawPnl)) continue;
 
+        // Si es IBKR y la fila es de apertura (PnL = 0), la omitimos como trade cerrado individual pero su comisión ya fue acumulada
         if (brokerDetected === 'IBKR' && rawPnl === 0) continue;
 
         const qty = (qtyIdx !== -1 && row[qtyIdx]) ? Math.abs(parseInt(String(row[qtyIdx]).trim(), 10) || 1) : 1;
@@ -200,14 +217,22 @@ export function parseCsvFile(file, callbacks) {
         let costBasis = (costBasisIdx !== -1 && row[costBasisIdx]) ? Math.abs(parseFloat(String(row[costBasisIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
         if (costBasis === 0 && proceedsVal > 0) costBasis = Math.abs(proceedsVal - rawPnl);
 
-        let realCommission = commIdx !== -1 && row[commIdx] ? Math.abs(parseFloat(String(row[commIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
+        let realCommission = (commIdx !== -1 && row[commIdx]) ? Math.abs(parseFloat(String(row[commIdx]).replace(/[\$\,]/g, '').trim()) || 0) : 0;
+        
+        let ticker = symbolRaw.split(' ')[0].toUpperCase().trim();
+
+        // Sumar la comisión de apertura acumulada para este símbolo si existe
+        if (brokerDetected === 'IBKR' && buyCommissionsByTicker[ticker]) {
+          realCommission += buyCommissionsByTicker[ticker];
+          delete buyCommissionsByTicker[ticker]; // Evitar duplicar si hay varios trades del mismo ticker
+        }
+
         const dateKey = parseFlexibleDate(closedDateRaw);
         if (!dateKey) continue;
 
         const assetClass = (assetClassIdx !== -1 && row[assetClassIdx]) ? String(row[assetClassIdx]).trim().toUpperCase() : '';
         const isStock = assetClass === 'STK' || brokerDetected === 'IBKR';
 
-        let ticker = symbolRaw.split(' ')[0].toUpperCase().trim();
         let strike = "-";
         let type = isStock ? "STK" : "CALL";
         let dte = "-";
