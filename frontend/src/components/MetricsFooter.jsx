@@ -5,7 +5,9 @@ export default function MetricsFooter({ activeTab, netGains, grossGains, grossLo
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-4 border-t border-slate-800">
       <div className="p-4 rounded-2xl border border-slate-800 bg-[#0b101d] flex flex-col justify-between">
-        <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider">GANANCIA NETA ({activeTab === 'Month' ? 'MES' : 'AÑO'})</span>
+        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+  {netGains >= 0 ? 'Ganancia Neta (Mes)' : 'Pérdida Neta (Mes)'}
+</span>
         <span className={`text-base font-black mt-3 ${netGains >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
           {formatExactCurrency(netGains)}
         </span>
