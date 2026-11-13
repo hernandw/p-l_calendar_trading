@@ -4,9 +4,9 @@ import { formatExactCurrency } from '../renderers.jsx';
 
 export default function CapitalView({ activeAccount, allAccounts = [], onSaveCapitalFlow, onDeleteCapitalFlow, onUpdateCapitalFlow }) {
   const [showTransferModal, setShowTransferModal] = useState(false);
-  const [editingFlowId, setEditingFlowId] = useState(null); // ID del flujo en edición
+  const [editingFlowId, setEditingFlowId] = useState(null);
   
-  // Formulario de movimiento externo (inicializados siempre como strings para inputs controlados)
+  // Formulario de movimiento externo
   const [flowType, setFlowType] = useState('deposit');
   const [flowDate, setFlowDate] = useState(new Date().toISOString().split('T')[0]);
   const [flowAmount, setFlowAmount] = useState('');
@@ -49,7 +49,6 @@ export default function CapitalView({ activeAccount, allAccounts = [], onSaveCap
     if (!flowAmount || isNaN(flowAmount)) return;
 
     if (editingFlowId) {
-      // Actualizar movimiento existente
       const updated = {
         id: editingFlowId,
         type: flowType,
@@ -60,7 +59,6 @@ export default function CapitalView({ activeAccount, allAccounts = [], onSaveCap
       onUpdateCapitalFlow(updated);
       setEditingFlowId(null);
     } else {
-      // Crear nuevo movimiento
       const newFlow = {
         id: `flow_${Date.now()}`,
         type: flowType,
@@ -71,7 +69,6 @@ export default function CapitalView({ activeAccount, allAccounts = [], onSaveCap
       onSaveCapitalFlow(newFlow);
     }
 
-    // Resetear formulario con valores controlados seguros
     setFlowAmount('');
     setFlowConcept('Aporte bancario');
     setFlowType('deposit');
@@ -116,10 +113,12 @@ export default function CapitalView({ activeAccount, allAccounts = [], onSaveCap
     setTransferAmount('');
   };
 
-  // Ordenar los movimientos para que el más nuevo quede arriba (por fecha descendiente o ID descendiente)
+  // Ordenamiento seguro de los movimientos (más nuevo arriba)
   const sortedFlows = [...(activeAccount.capitalFlows || [])].sort((a, b) => {
-    if (b.date !== a.date) return new Date(b.date) - new Date(a.date);
-    return b.id.localeCompare(a.id);
+    const dateA = new Date(a.date || 0);
+    const dateB = new Date(b.date || 0);
+    if (dateB - dateA !== 0) return dateB - dateA;
+    return String(b.id || '').localeCompare(String(a.id || ''));
   });
 
   return (
@@ -260,35 +259,29 @@ export default function CapitalView({ activeAccount, allAccounts = [], onSaveCap
 
               return (
                 <div key={f.id} className="p-3.5 rounded-2xl border border-slate-800 bg-[#0b101d] grid grid-cols-12 gap-2 items-center text-xs hover:border-slate-700 transition">
-                  {/* Columna 1: Icono */}
                   <div className="col-span-1 flex justify-center">
                     <span className={`p-2 rounded-xl border ${isPositive ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/30' : 'bg-rose-950/40 text-rose-400 border-rose-500/30'}`}>
                       {isPositive ? <ArrowDownLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
                     </span>
                   </div>
 
-                  {/* Columna 2: Fecha */}
                   <div className="col-span-2 text-slate-300 font-bold">
                     {f.date}
                   </div>
 
-                  {/* Columna 3: Tipo de Movimiento */}
                   <div className="col-span-3">
                     <span className="font-bold text-white block truncate">{titleText}</span>
                     {isTransfer && <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-950 text-blue-400 border border-blue-800 inline-block mt-0.5">Transferencia</span>}
                   </div>
 
-                  {/* Columna 4: Comentario / Descripción */}
                   <div className="col-span-3 text-slate-400 truncate" title={f.description}>
                     {f.description || '-'}
                   </div>
 
-                  {/* Columna 5: Monto */}
                   <div className={`col-span-2 text-right font-black ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
                     {isPositive ? `+${formatExactCurrency(f.amount)}` : `-${formatExactCurrency(f.amount)}`}
                   </div>
 
-                  {/* Columna 6: Acciones (Editar y Eliminar) */}
                   <div className="col-span-1 flex items-center justify-end gap-2">
                     {!isTransfer && (
                       <button onClick={() => handleStartEdit(f)} className="text-slate-500 hover:text-blue-400 transition" title="Editar movimiento">
