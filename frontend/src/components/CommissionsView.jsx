@@ -51,7 +51,10 @@ export default function CommissionsView({ activeAccount, currentYear }) {
   });
 
   const list = Object.values(tickerStats).sort((a, b) => b.pnlNet - a.pnlNet);
-  const impactPct = grossPnlTotal !== 0 ? ((totalComms / Math.abs(grossPnlTotal)) * 100).toFixed(0) : '0';
+  
+  // Cálculo seguro del impacto considerando pérdidas o ganancias
+  const baseDenominator = Math.abs(grossPnlTotal) > 0 ? Math.abs(grossPnlTotal) : Math.abs(totalNet);
+  const impactPct = baseDenominator > 0 ? ((totalComms / baseDenominator) * 100).toFixed(0) : '0';
 
   return (
     <div className="space-y-4">

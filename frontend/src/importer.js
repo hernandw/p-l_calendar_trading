@@ -35,10 +35,21 @@ export function parseCsvFile(file, callbacks) {
 
       let headerRowIndex = -1;
       let isTransactionsFile = false;
+      let isSummaryCashFile = false;
       let brokerDetected = 'Schwab';
 
       for (let i = 0; i < Math.min(rows.length, 30); i++) {
         const rowStr = rows[i].map(c => String(c).trim().toLowerCase());
+        
+        // Detectar si es reporte de resumen de efectivo / cash balance de IBKR
+        const hasSummaryCols = rowStr.some(c => c.includes('basesummary') || c.includes('startingcash') || c.includes('endingcash'));
+        if (hasSummaryCols) {
+          headerRowIndex = i;
+          isSummaryCashFile = true;
+          brokerDetected = 'IBKR';
+          break;
+        }
+
         const hasAction = rowStr.some(c => c.includes('action') || c.includes('type') || c.includes('description'));
         const hasAmount = rowStr.some(c => c.includes('amount') || c.includes('monto') || c.includes('balance'));
         if (hasAction && hasAmount) {
@@ -61,7 +72,6 @@ export function parseCsvFile(file, callbacks) {
       }
 
       if (headerRowIndex === -1) {
-        // Fallback por defecto si es archivo de transacciones de IBKR
         headerRowIndex = 0;
         isTransactionsFile = true;
         brokerDetected = 'IBKR';
@@ -69,6 +79,61 @@ export function parseCsvFile(file, callbacks) {
 
       const headers = rows[headerRowIndex].map(h => String(h).trim());
 
+      // CASO A: Archivo de Resumen de Caja / Balance (`cash_balanced.csv`)
+      if (isSummaryCashFile) {
+        const flows = [];
+        const dataRow = rows[headerRowIndex + 1];
+        
+        if (dataRow) {
+          const toDateIdx = headers.findIndex(h => /todate/i.test(h));
+          const depositsIdx = headers.findIndex(h => /^deposits$/i.test(h));
+          const withdrawalsIdx = headers.findIndex(h => /^withdrawals$/i.test(h));
+          const startingCashIdx = headers.findIndex(h => /startingcash/i.test(h));
+
+          const dateRaw = toDateIdx !== -1 ? dataRow[toDateIdx] : new Date().toISOString().split('T')[0];
+          const parsedDate = parseFlexibleDate(dateRaw) || new Date().toISOString().split('T')[0];
+
+          const depositsVal = depositsIdx !== -1 ? parseFloat(String(dataRow[depositsIdx]).replace(/[\$,]/g, '')) || 0 : 0;
+          const withdrawalsVal = withdrawalsIdx !== -1 ? parseFloat(String(dataRow[withdrawalsIdx]).replace(/[\$,]/g, '')) || 0 : 0;
+          const startingVal = startingCashIdx !== -1 ? parseFloat(String(dataRow[startingCashIdx]).replace(/[\$,]/g, '')) || 0 : 0;
+
+          if (depositsVal > 0) {
+            flows.push({
+              id: `flow_sum_dep_${Date.now()}`,
+              type: 'deposit',
+              date: parsedDate,
+              amount: depositsVal,
+              description: 'Depósito reportado en Balance IBKR'
+            });
+          }
+
+          if (withdrawalsVal > 0) {
+            flows.push({
+              id: `flow_sum_wth_${Date.now()}`,
+              type: 'withdrawal',
+              date: parsedDate,
+              amount: withdrawalsVal,
+              description: 'Retiro reportado en Balance IBKR'
+            });
+          }
+
+          // Si no hay depósitos explícitos pero hay saldo inicial de caja significativo, se registra como aporte inicial
+          if (depositsVal === 0 && withdrawalsVal === 0 && startingVal > 0) {
+            flows.push({
+              id: `flow_sum_start_${Date.now()}`,
+              type: 'deposit',
+              date: parsedDate,
+              amount: startingVal,
+              description: 'Capital inicial / Caja IBKR'
+            });
+          }
+        }
+
+        callbacks.onSuccess({ type: 'transactions', broker: brokerDetected, flows });
+        return;
+      }
+
+      // CASO B: Archivo de Transacciones Estándar
       if (isTransactionsFile) {
         const flows = [];
         for (let r = headerRowIndex + 1; r < rows.length; r++) {
@@ -81,7 +146,6 @@ export function parseCsvFile(file, callbacks) {
           
           if (!parsedDate) continue;
 
-          // Buscar columna con valor numérico de dinero
           const amountCell = row.find(c => !isNaN(parseFloat(String(c).replace(/[\$,]/g, ''))) && Math.abs(parseFloat(String(c).replace(/[\$,]/g, ''))) > 0);
           if (!amountCell) continue;
 
@@ -101,6 +165,7 @@ export function parseCsvFile(file, callbacks) {
         return;
       }
 
+      // CASO C: Trades
       const symbolIdx = headers.findIndex(h => /^symbol$|description/i.test(h));
       const closedDateIdx = headers.findIndex(h => /closed\s*date|^tradedate$|datetime|^date$/i.test(h));
       const qtyIdx = headers.findIndex(h => /quantity|^qty$/i.test(h));
