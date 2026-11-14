@@ -1,48 +1,35 @@
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs'; // <--- Importamos bcryptjs
+import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+import { createClient } from '@supabase/supabase-js';
+
+// Cargar variables de entorno desde el archivo .env
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'trading_journal_secret_key_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
 
-const DATA_DIR = path.join(__dirname, 'data');
-const DB_FILE = path.join(DATA_DIR, 'database.json');
+// Credenciales desde el archivo .env
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error("Error: Faltan las credenciales de Supabase en el archivo .env");
+  process.exit(1);
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 app.use(cors());
 app.use(express.json());
-
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-
-if (!fs.existsSync(DB_FILE)) {
-  const initialData = {
-    users: [],
-    userDatas: {}
-  };
-  fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2), 'utf8');
-}
-
-const readDB = () => {
-  try {
-    const data = fs.readFileSync(DB_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    return { users: [], userDatas: {} };
-  }
-};
-
-const writeDB = (data) => {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
-};
 
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
@@ -56,7 +43,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// 1. Registro con contraseña encriptada (Hash)
+// 1. Registro de usuario (Tabla: users_diario_trading)
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -64,19 +51,28 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ error: 'Usuario y contraseña requeridos' });
     }
 
-    const db = readDB();
-    const existingUser = db.users.find(u => u.username === username);
+    // Verificar si el usuario ya existe
+    const { data: existingUser } = await supabase
+      .from('users_diario_trading')
+      .select('username')
+      .eq('username', username)
+      .single();
+
     if (existingUser) {
       return res.status(400).json({ error: 'El usuario ya existe' });
     }
 
-    // Encriptar la contraseña de forma segura
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    db.users.push({ username, password: hashedPassword });
+    // Insertar en la tabla users_diario_trading
+    const { error: userError } = await supabase
+      .from('users_diario_trading')
+      .insert([{ username, password: hashedPassword }]);
 
-    db.userDatas[username] = {
+    if (userError) throw userError;
+
+    // Estructura inicial del journal de trading
+    const initialUserData = {
       isDarkMode: true,
       activeAccountId: 'acc_default',
       accounts: [
@@ -91,25 +87,33 @@ app.post('/api/register', async (req, res) => {
       ]
     };
 
-    writeDB(db);
+    // Insertar en la tabla user_datas_diario_trading
+    await supabase
+      .from('user_datas_diario_trading')
+      .insert([{ username, data: initialUserData }]);
+
     res.status(201).json({ message: 'Usuario registrado con éxito' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Error en el servidor al registrar' });
   }
 });
 
-// 2. Inicio de sesión comparando el Hash
+// 2. Inicio de sesión (Tabla: users_diario_trading)
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const db = readDB();
-    const user = db.users.find(u => u.username === username);
+    
+    const { data: user, error } = await supabase
+      .from('users_diario_trading')
+      .select('*')
+      .eq('username', username)
+      .single();
 
-    if (!user) {
+    if (error || !user) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // Comparar la contraseña ingresada con el hash guardado en el JSON
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
@@ -122,38 +126,55 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// 3. Obtener datos del journal
-app.get('/api/data', authenticateToken, (req, res) => {
-  const db = readDB();
-  const userData = db.userDatas[req.user.username];
-  if (!userData) {
-    const defaultData = {
-      isDarkMode: true,
-      activeAccountId: 'acc_default',
-      accounts: [
-        {
-          id: 'acc_default',
-          broker: 'Interactive Brokers',
-          number: 'U1234567',
-          type: 'Margin',
-          appData: {},
-          capitalFlows: []
-        }
-      ]
-    };
-    db.userDatas[req.user.username] = defaultData;
-    writeDB(db);
-    return res.json(defaultData);
+// 3. Obtener datos del journal (Tabla: user_datas_diario_trading)
+app.get('/api/data', authenticateToken, async (req, res) => {
+  try {
+    const { data: record, error } = await supabase
+      .from('user_datas_diario_trading')
+      .select('data')
+      .eq('username', req.user.username)
+      .single();
+
+    if (error || !record) {
+      const defaultData = {
+        isDarkMode: true,
+        activeAccountId: 'acc_default',
+        accounts: [
+          {
+            id: 'acc_default',
+            broker: 'Interactive Brokers',
+            number: 'U1234567',
+            type: 'Margin',
+            appData: {},
+            capitalFlows: []
+          }
+        ]
+      };
+      await supabase
+        .from('user_datas_diario_trading')
+        .insert([{ username: req.user.username, data: defaultData }]);
+      return res.json(defaultData);
+    }
+
+    res.json(record.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener datos' });
   }
-  res.json(userData);
 });
 
-// 4. Guardar datos del journal
-app.post('/api/data', authenticateToken, (req, res) => {
-  const db = readDB();
-  db.userDatas[req.user.username] = req.body;
-  writeDB(db);
-  res.json({ success: true, message: 'Datos guardados correctamente en el servidor' });
+// 4. Guardar datos del journal (Tabla: user_datas_diario_trading)
+app.post('/api/data', authenticateToken, async (req, res) => {
+  try {
+    const { error } = await supabase
+      .from('user_datas_diario_trading')
+      .update({ data: req.body, updated_at: new Date() })
+      .eq('username', req.user.username);
+
+    if (error) throw error;
+    res.json({ success: true, message: 'Datos guardados correctamente en Supabase' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al guardar datos' });
+  }
 });
 
 app.use(express.static(path.join(__dirname, 'frontend/dist')));
@@ -163,10 +184,10 @@ app.get(/(.*)/, (req, res) => {
   if (fs.existsSync(indexPath)) {
     res.sendFile(indexPath);
   } else {
-    res.send('API del P&L Trading Journal funcionando correctamente.');
+    res.send('API del P&L Trading Journal con Supabase funcionando.');
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Servidor backend ES6 corriendo en puerto http://localhost:${PORT}`);
+  console.log(`Servidor backend conectado a Supabase corriendo en puerto http://localhost:${PORT}`);
 });
