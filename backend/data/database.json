@@ -1,4 +1,24 @@
 {
-  "users": [],
-  "userDatas": {}
+  "users": [
+    {
+      "username": "hernandw",
+      "password": "123456"
+    }
+  ],
+  "userDatas": {
+    "hernandw": {
+      "isDarkMode": true,
+      "activeAccountId": "acc_default",
+      "accounts": [
+        {
+          "id": "acc_default",
+          "broker": "Interactive Brokers",
+          "number": "U1234567",
+          "type": "Margin",
+          "appData": {},
+          "capitalFlows": []
+        }
+      ]
+    }
+  }
 }
